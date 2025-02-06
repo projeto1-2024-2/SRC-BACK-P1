@@ -56,7 +56,6 @@ model User {
   idUserRole String @default(uuid())
   role Role @relation(fields: [idUserRole], references: [id])
   userStatus String @default("Active")
-  roleType RoleTypes?
   name String
   email String
   password String
@@ -66,6 +65,7 @@ model User {
   updatedAt DateTime @default(now())
   searches Search[]
   Supplier Supplier?
+  pseudonym String?
 }
 
 model Search {

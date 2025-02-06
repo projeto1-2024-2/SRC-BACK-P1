@@ -1,10 +1,7 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -14,9 +11,8 @@ import { SharedModule } from './shared/shared.module';
       sortSchema: true,
       playground: process.env.ENV === 'dev',
     }),
-    SharedModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

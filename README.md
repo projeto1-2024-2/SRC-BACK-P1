@@ -9,5 +9,6 @@
 
 ### Autenticação
 
-Todas as rotas criadas, automaticamente são autenticadas. Para criar uma rota que não precisa de autenticação, utilize  o decorator 
+Todos os resolvers criados devem receber o decorator `@UseGuards(GqlAuthGuard)` (exemplo user.resolver.ts). 
+Para criar uma query que não precisa de autenticação, utilize  o decorator 
 `@IsPublicRoute()` (exemplo em auth.resolver.ts)

@@ -4,8 +4,11 @@ import { UserEntity } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/guards/auth.guard';
 
 @Resolver(() => UserEntity)
+@UseGuards(GqlAuthGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 

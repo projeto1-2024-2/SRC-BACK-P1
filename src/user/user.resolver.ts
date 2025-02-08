@@ -3,11 +3,13 @@ import { UserService } from './user.service';
 import { UserEntity } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 
 @Resolver(() => UserEntity)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
+  @IsPublicRoute()
   @Mutation(() => UserEntity, { name: 'createUser', nullable: true })
   async createUser(@Args('data') data: CreateUserInput) {
     return this.userService.create(data);
@@ -16,6 +18,11 @@ export class UserResolver {
   @Query(() => [UserEntity], { name: 'findAllusers', nullable: true })
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @Query(() => UserEntity, { name: 'findByEmail', nullable: true })
+  async findByEmail(@Args('email', { type: () => String }) email: string) {
+    return await this.userService.findByEmail(email);
   }
 
   @Query(() => UserEntity, { name: 'findOneuser', nullable: true })

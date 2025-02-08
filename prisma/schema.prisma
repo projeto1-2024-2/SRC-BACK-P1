@@ -1,144 +1,28 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator nestgraphql {
   provider = "node node_modules/prisma-nestjs-graphql"
   output   = "../src/shared/prismagraphql"
-  reExport = Directories
+  reExport = "Directories"
 }
 
 generator client {
   provider = "prisma-client-js"
 }
 
-enum Operation {
-  list
-  get
-  create
-  update
-  delete
-  search
-  onCreate
-  onUpdate
-  onDelete
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-enum RoleTypes {
-  ADMIN
-  SUPPLIER
-  USER
-}
-
-model Role {
-  id String @id @default(uuid()) @map("_id")
-  name String
-  roleType RoleTypes
-  permissions Permission[]
-  User User[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
-
-model Permission {
-  id String @id @default(uuid()) @map("_id")
-  modelName String
-  allowedOperations Operation[]
-  idRolePermissions String @default(uuid())
-  role Role @relation(fields: [idRolePermissions], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-}
 
 model User {
-  id String @id @default(uuid()) @map("_id")
-  idUserRole String @default(uuid())
-  role Role @relation(fields: [idUserRole], references: [id])
-  userStatus String @default("Active")
-  name String
-  email String
-  password String
-  phoneNumber String
-  picture String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  searches Search[]
-  Supplier Supplier?
-  pseudonym String?
-}
-
-model Search {
-  id String @id @default(uuid()) @map("_id")
-  idUser String @default(uuid())
-  User User @relation(fields: [idUser], references: [id])
-  question String
-  products Product[]
-  searchFeedback String 
-  createdAt DateTime @default(now())
-}
-
-model Supplier {
-  id String @id @default(uuid()) @map("_id")
-  idUser String @unique()
-  user User @relation(fields: [idUser], references: [id])
-  taxId String
-  createdAt DateTime @default(now())
-  products Product[]
-}
-
-model Establishment {
-  id String @id @default(uuid()) @map("_id")
-  name String
-  businessHours String
-  products Product[]
-  address Address?
-}
-
-model Product {
-  id String @id @default(uuid()) @map("_id")
-  title String
-  description String
-  brand String
-  model String
-  material String
-  imagens String
-  isAvaliable Boolean @default(true)
-  quantity Int
-  idSupplier String @default(uuid())
-  idEstablishment String @default(uuid())
-  suppliers Supplier[]
-  establishment Establishment @relation(fields: [idEstablishment], references: [id])
-  searches Search[]
-  dimensions ProductDimension?
-}
-
-model ProductDimension {
-  idProduct String @id @default(uuid())
-  product Product @relation(fields: [idProduct], references: [id])
-  length Float
-  height Float
-  width Float
-}
-
-model Address {
-  id String @id @default(uuid()) @map("_id")
-  idEstablishment String @unique()
-  establishment Establishment @relation(fields: [idEstablishment], references: [id])
-  street String
-  number Int
-  complement String
-  neighbourhood String
-  zipCode String
-  city String
-  state String
-  location Location?
-}
-
-model Location {
-  idAddress String @id @default(uuid()) @map("_id")
-  address Address @relation(fields: [idAddress], references: [id])
-  x Float
-  y Float
-  z Float
+  id          String    @id @default(uuid())
+  userStatus  String    @default("Active")
+  name        String
+  email       String    @unique
+  password    String   @map("password_hash")
+  phoneNumber String    @unique
+  picture     String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @map("updated_at")
+  pseudonym   String?
 }

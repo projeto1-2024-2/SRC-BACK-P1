@@ -1,15 +1,30 @@
 import { InputType, Field, OmitType } from '@nestjs/graphql';
-import { User } from '../entities/user.entity';
+import { UserEntity } from '../entities/user.entity';
+import { Optional } from '@nestjs/common';
 
-@InputType()
-export class CreateUserInput extends OmitType(User, [
+@InputType('CreateUserInput')
+export class CreateUserInput extends OmitType(UserEntity, [
   'id',
   'createdAt',
   'updatedAt',
+  'role',
 ]) {
   @Field(() => String)
   name: string;
 
   @Field(() => String)
   pseudonym: string;
+
+  @Field(() => String)
+  email: string;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String)
+  phoneNumber: string;
+
+  @Field(() => String)
+  @Optional()
+  picture: string;
 }

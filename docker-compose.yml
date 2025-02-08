@@ -1,15 +1,13 @@
 services:
   postgres:
     image: postgres
+    container_name: pgsql_p1_dev
     restart: always
     env_file:
-      - .env
+      - ./.env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_NAME=${POSTGRES_NAME}
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_HOST=${POSTGRES_HOST}
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:

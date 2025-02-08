@@ -1,8 +1,9 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { User as UserPrisma } from '@prisma/client';
+import { RoleEntity } from './role.entity';
 
 @ObjectType()
-export class User implements UserPrisma {
+export class UserEntity implements UserPrisma {
   @Field(() => ID)
   id: string;
 
@@ -27,13 +28,12 @@ export class User implements UserPrisma {
   @Field(() => Date)
   createdAt: Date;
 
-  @Field(() => String)
-  idUserRole: string;
+  @Field(() => RoleEntity)
+  role: RoleEntity;
 
   @Field(() => Date)
   updatedAt: Date;
 
   @Field(() => String)
   userStatus: string;
-
 }

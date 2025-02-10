@@ -13,16 +13,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id          String    @id @default(uuid())
-  userStatus  String    @default("Active")
   name        String
   email       String    @unique
-  password    String   @map("password_hash")
+  password    String    @map("password_hash")
   phoneNumber String    @unique
-  picture     String
+  image       Bytes?
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   pseudonym   String?
+  addressId   String
+  address     Address   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  supplier    Supplier?
+  contexts    Context[]
+}
+
+model Product {
+  id              String            @id @default(uuid())
+  title           String
+  description     String
+  brand           String
+  imagens         Json?
+  isAvaliable     Boolean           @default(true)
+  quantity        Int               @default(0)
+  establishmentId String            @default(uuid())
+  category        String?
+  status          StatusEnum        @default(ACTIVE)
+  price           Decimal
+  suppliers       Supplier[]
+  establishment   Establishment     @relation(fields: [establishmentId], references: [id])
+  dimensions      ProductDimension?
+}
+
+enum StatusEnum {
+  ACTIVE
+  INACTIVE
+}
+
+model Location {
+  addressId String  @id @default(uuid())
+  address   Address @relation(fields: [addressId], references: [id])
+  x         BigInt
+  y         BigInt
+  z         BigInt
+}
+
+model Supplier {
+  id            String         @id @default(uuid())
+  userId        String         @unique()
+  user          User           @relation(fields: [userId], references: [id])
+  taxId         String
+  createdAt     DateTime       @default(now())
+  products      Product[]
+  establishment Establishment? @relation(fields: [establishmentId], references: [id])
+
+  establishmentId String?
+}
+
+model Establishment {
+  id              String     @id @default(uuid())
+  name            String
+  operatingHours  String
+  commercialPhone String
+  taxId           String
+  addressId       String     @default(uuid())
+  products        Product[]
+  supplier        Supplier[]
+  address         Address    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
+}
+
+model Address {
+  id             String          @id @default(uuid())
+  street         String
+  number         Int
+  complement     String
+  neighbourhood  String
+  zipCode        String
+  city           String
+  state          String
+  location       Location?
+  users          User[]          @relation("UserAddress")
+  establishments Establishment[] @relation("EstablishmentAddress")
+}
+
+model ProductDimension {
+  productId String  @id @default(uuid())
+  length    Float?
+  height    Float?
+  width     Float?
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id               String    @id @default(uuid())
+  returnedProducts Json?
+  searchRating     Int?      @default(0)
+  createdAt        DateTime  @default(now())
+  contexts         Context[]
+}
+
+model Context {
+  userId         String       @default(uuid())
+  conversationId String       @default(uuid())
+  searchQuery    String?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, conversationId])
 }

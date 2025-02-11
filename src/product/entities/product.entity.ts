@@ -1,5 +1,7 @@
 import { Field, ObjectType, ID } from '@nestjs/graphql';
-import { Product as ProductPrisma } from '@prisma/client';
+import { Prisma, Product as ProductPrisma, StatusEnum } from '@prisma/client';
+import { Decimal } from '@prisma/client/runtime';
+import { GraphQLJSON } from 'graphql-type-json';
 
 @ObjectType()
 export class ProductEntity implements ProductPrisma {
@@ -7,7 +9,7 @@ export class ProductEntity implements ProductPrisma {
   id: string;
 
   @Field(() => String)
-  name: string;
+  title: string;
 
   @Field(() => String)
   description: string;
@@ -15,18 +17,24 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => String)
   brand: string;
 
-  @Field(() => String)
-  availability: string;
+  @Field(() => GraphQLJSON)
+  imagens: Prisma.JsonValue;
+
+  @Field(() => Boolean)
+  isAvaliable: boolean;
+
+  @Field(() => Number)
+  quantity: number;
 
   @Field(() => String)
-  images: string[];
+  establishmentId: string;
 
   @Field(() => String)
-  coverImage: string;
+  category: string;
 
-  @Field(() => Date)
-  createdAt: Date;
+  @Field(() => String)
+  status: StatusEnum;
 
-  @Field(() => Date)
-  updatedAt: Date;
+  @Field(() => Decimal)
+  price: Decimal;
 }

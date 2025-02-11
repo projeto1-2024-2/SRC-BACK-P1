@@ -1,8 +1,10 @@
 import { Field, InputType, OmitType } from '@nestjs/graphql';
 import { ProductEntity } from '../entities/product.entity';
-import { Prisma, StatusEnum } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import GraphQLJSON from 'graphql-type-json';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
 @InputType('CreateProductInput')
 export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
@@ -30,9 +32,9 @@ export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
   @Field(() => String)
   category: string;
 
-  @Field(() => String)
+  @Field(() => StatusEnum, { defaultValue: StatusEnum.ACTIVE })
   status: StatusEnum;
 
-  @Field(() => Decimal)
+  @Field(() => GraphQLDecimal)
   price: Decimal;
 }

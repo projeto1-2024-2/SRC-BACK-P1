@@ -3,62 +3,93 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
-import { Prisma } from '@prisma/client';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 
 @Injectable()
 export class ProductService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  private mapToProductEntity(product: any): ProductEntity {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return {
+      ...product,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    };
+  }
+
   async create(data: CreateProductInput): Promise<ProductEntity> {
-    return await this.prismaService.product.create({ data });
+    const product = await this.prismaService.product.create({ data });
+
+    return {
+      ...product,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    };
   }
 
   async findAll(): Promise<ProductEntity[]> {
-    return await this.prismaService.product.findMany();
+    const products = await this.prismaService.product.findMany();
+
+    return products.map((product) => ({
+      ...product,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    }));
   }
 
   async findByEstablishment(establishmentId: string): Promise<ProductEntity[]> {
-    return await this.prismaService.product.findMany({
+    const products = await this.prismaService.product.findMany({
       where: { establishmentId },
     });
+
+    return products.map((product) => ({
+      ...product,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    }));
   }
 
   async findByCategory(category: string): Promise<ProductEntity[]> {
-    return await this.prismaService.product.findMany({
+    const products = await this.prismaService.product.findMany({
       where: { category },
     });
+
+    return products.map((product) => ({
+      ...product,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    }));
   }
 
   async update(
     idProduct: string,
     data: UpdateProductInput,
   ): Promise<ProductEntity> {
-    const productExists = await this.prismaService.product.findUnique({
-      where: { id: idProduct },
-    });
-
-    if (!productExists) {
-      throw new HttpException('Product do not exists', HttpStatus.NOT_FOUND);
-    }
-    return await this.prismaService.product.update({
-      where: { id: idProduct },
-      data: data as Prisma.ProductUpdateInput,
-    });
-  }
-
-  async delete(idProduct: string): Promise<ProductEntity> {
-    const productExists = await this.prismaService.product.findUnique({
-      where: { id: idProduct },
-    });
-
-    if (!productExists) {
+    try {
+      const product = await this.prismaService.product.update({
+        where: { id: idProduct },
+        data: data,
+      });
+      return this.mapToProductEntity(product);
+    } catch (error) {
+      console.log(error);
       throw new HttpException(
-        `Product with ID: ${idProduct} does not exist`,
+        `Product with id:${idProduct} does not exists`,
         HttpStatus.NOT_FOUND,
       );
     }
-    return await this.prismaService.product.delete({
-      where: { id: idProduct },
-    });
+  }
+
+  async delete(idProduct: string): Promise<ProductEntity> {
+    try {
+      const product = await this.prismaService.product.delete({
+        where: { id: idProduct },
+      });
+
+      return this.mapToProductEntity(product);
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        `Product with id:${idProduct} does not exists`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }

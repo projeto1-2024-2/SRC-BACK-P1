@@ -1,7 +1,9 @@
-import { Field, ObjectType, ID } from '@nestjs/graphql';
-import { Prisma, Product as ProductPrisma, StatusEnum } from '@prisma/client';
+import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
+import { Prisma, Product as ProductPrisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import { GraphQLJSON } from 'graphql-type-json';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
 @ObjectType()
 export class ProductEntity implements ProductPrisma {
@@ -23,7 +25,7 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => Boolean)
   isAvaliable: boolean;
 
-  @Field(() => Number)
+  @Field(() => Int)
   quantity: number;
 
   @Field(() => String)
@@ -32,9 +34,9 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => String)
   category: string;
 
-  @Field(() => String)
+  @Field(() => StatusEnum)
   status: StatusEnum;
 
-  @Field(() => Decimal)
+  @Field(() => GraphQLDecimal)
   price: Decimal;
 }

@@ -1,8 +1,11 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { Prisma } from '@prisma/client';
 import { GraphQLJSON } from 'graphql-type-json';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
+import { Decimal } from '@prisma/client/runtime';
 
-@InputType()
+@InputType('UpdateProductInput')
 export class UpdateProductInput {
   @Field(() => String, { nullable: true })
   title?: string;
@@ -28,9 +31,9 @@ export class UpdateProductInput {
   @Field(() => String, { nullable: true })
   category?: string;
 
-  @Field(() => String, { nullable: true })
-  status?: string;
+  @Field(() => StatusEnum, { nullable: true })
+  status?: StatusEnum;
 
-  @Field(() => Number, { nullable: true })
-  price?: number;
+  @Field(() => GraphQLDecimal, { nullable: true })
+  price?: Decimal;
 }

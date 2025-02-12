@@ -27,4 +27,7 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @Field(() => String, { nullable: true })
   @Optional()
   picture: string;
+
+  @Field(() => String)
+  addressId: string;
 }

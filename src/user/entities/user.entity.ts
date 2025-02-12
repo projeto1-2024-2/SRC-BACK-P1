@@ -23,7 +23,7 @@ export class UserEntity implements UserPrisma {
   phoneNumber: string;
 
   @Field(() => String)
-  picture: string;
+  image: Buffer;
 
   @Field(() => Date)
   createdAt: Date;
@@ -36,4 +36,7 @@ export class UserEntity implements UserPrisma {
 
   @Field(() => String)
   userStatus: string;
+
+  @Field(() => String)
+  addressId: string;
 }

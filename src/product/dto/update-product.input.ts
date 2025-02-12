@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, ID } from '@nestjs/graphql';
 import { Prisma } from '@prisma/client';
 import { GraphQLJSON } from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
@@ -7,6 +7,9 @@ import { Decimal } from '@prisma/client/runtime';
 
 @InputType('UpdateProductInput')
 export class UpdateProductInput {
+  @Field(() => ID, { nullable: false })
+  id: string;
+
   @Field(() => String, { nullable: true })
   title?: string;
 

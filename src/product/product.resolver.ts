@@ -23,22 +23,9 @@ export class ProductResolver {
     return this.productService.findAll();
   }
 
-  @Query(() => [ProductEntity], { name: 'getProductsByEstablishment' })
-  async findByEstablishment(@Args('establishmentId') establishmentId: string) {
-    return this.productService.findByEstablishment(establishmentId);
-  }
-
-  @Query(() => [ProductEntity], { name: 'getProductsByCategory' })
-  async findByCategory(@Args('category') category: string) {
-    return this.productService.findByCategory(category);
-  }
-
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
-  async updateProduct(
-    @Args('id') id: string,
-    @Args('data') data: UpdateProductInput,
-  ) {
-    return this.productService.update(id, data);
+  async updateProduct(@Args('data') data: UpdateProductInput) {
+    return this.productService.update(data);
   }
 
   @Mutation(() => ProductEntity, { name: 'deleteProduct' })

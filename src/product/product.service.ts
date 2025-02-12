@@ -58,20 +58,17 @@ export class ProductService {
     }));
   }
 
-  async update(
-    idProduct: string,
-    data: UpdateProductInput,
-  ): Promise<ProductEntity> {
+  async update(data: UpdateProductInput): Promise<ProductEntity> {
     try {
       const product = await this.prismaService.product.update({
-        where: { id: idProduct },
+        where: { id: data.id },
         data: data,
       });
       return this.mapToProductEntity(product);
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        `Product with id:${idProduct} does not exists`,
+        `Product with id:${data.id} does not exists`,
         HttpStatus.NOT_FOUND,
       );
     }

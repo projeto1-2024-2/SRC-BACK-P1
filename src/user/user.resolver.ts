@@ -8,7 +8,6 @@ import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/guards/auth.guard';
 
 @Resolver(() => UserEntity)
-@UseGuards(GqlAuthGuard)
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
@@ -18,26 +17,31 @@ export class UserResolver {
     return this.userService.create(data);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Query(() => [UserEntity], { name: 'findAllusers', nullable: true })
   async findAll() {
     return this.userService.findAll();
   }
 
+  @UseGuards(GqlAuthGuard)
   @Query(() => UserEntity, { name: 'findByEmail', nullable: true })
   async findByEmail(@Args('email', { type: () => String }) email: string) {
     return await this.userService.findByEmail(email);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Query(() => UserEntity, { name: 'findOneuser', nullable: true })
   async findOne(@Args('id', { type: () => ID }) id: string) {
     return this.userService.findOne(id);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => UserEntity, { name: 'updateUser', nullable: true })
   async update(@Args('data') data: UpdateUserInput) {
     return this.userService.update(data);
   }
 
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => UserEntity, { name: 'deleteUser', nullable: true })
   async remove(@Args('id', { type: () => ID }) id: string) {
     return this.userService.remove(id);

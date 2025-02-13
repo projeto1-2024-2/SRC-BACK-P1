@@ -6,10 +6,10 @@ export class AddressEntity implements AddressPrisma {
   @Field(() => ID)
   id: string;
 
-  @Field(() => Int)
+  @Field(() => String)
   street: string;
 
-  @Field(() => String)
+  @Field(() => Int)
   number: number;
 
   @Field(() => String)
@@ -17,6 +17,8 @@ export class AddressEntity implements AddressPrisma {
 
   @Field(() => String)
   neighbourhood: string;
+
+  @Field(() => String)
   zipCode: string;
 
   @Field(() => String)

@@ -3,10 +3,10 @@ import { AddressEntity } from '../entities/address.entity';
 
 @InputType()
 export class CreateAddressInput extends OmitType(AddressEntity, ['id']) {
-  @Field(() => Int)
+  @Field(() => String)
   street: string;
 
-  @Field(() => String)
+  @Field(() => Int)
   number: number;
 
   @Field(() => String)
@@ -14,6 +14,8 @@ export class CreateAddressInput extends OmitType(AddressEntity, ['id']) {
 
   @Field(() => String)
   neighbourhood: string;
+
+  @Field(() => String)
   zipCode: string;
 
   @Field(() => String)

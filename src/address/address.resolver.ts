@@ -14,13 +14,19 @@ export class AddressResolver {
   constructor(private readonly addressService: AddressService) {}
 
   @Mutation(() => AddressEntity, { name: 'registerAddress' })
-  async registerAddress(@Args('data') data: CreateAddressInput) {
-    return this.addressService.create(data);
+  async registerAddress(
+    @CurrentUser() user: UserEntity,
+    @Args('data') data: CreateAddressInput,
+  ) {
+    return this.addressService.create(user, data);
   }
 
   @Mutation(() => AddressEntity, { name: 'updateAddress' })
-  async updateAddress(@Args('data') data: UpdateAddressInput) {
-    return this.addressService.update(data);
+  async updateAddress(
+    @CurrentUser() user: UserEntity,
+    @Args('data') data: UpdateAddressInput,
+  ) {
+    return this.addressService.update(user, data);
   }
 
   @Query(() => AddressEntity, { name: 'getAddress' })

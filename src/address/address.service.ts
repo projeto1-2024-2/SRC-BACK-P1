@@ -9,21 +9,34 @@ import { UpdateAddressInput } from './dto/update-address.input';
 export class AddressService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateAddressInput): Promise<AddressEntity> {
-    return await this.prismaService.address.create({ data });
+  async create(
+    user: UserEntity,
+    data: CreateAddressInput,
+  ): Promise<AddressEntity> {
+    const address = await this.prismaService.address.create({ data });
+
+    await this.prismaService.user.update({
+      where: { id: user.id },
+      data: { addressId: address.id },
+    });
+
+    return address;
   }
 
-  async update(data: UpdateAddressInput): Promise<AddressEntity> {
+  async update(
+    user: UserEntity,
+    data: UpdateAddressInput,
+  ): Promise<AddressEntity> {
     try {
       const address = await this.prismaService.address.update({
-        where: { id: data.id },
+        where: { id: user.addressId },
         data: data,
       });
       return address;
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        `Address with id:${data.id} does not exists`,
+        `Address with id:${user.addressId} does not exists`,
         HttpStatus.NOT_FOUND,
       );
     }

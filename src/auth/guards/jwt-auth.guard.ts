@@ -16,25 +16,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     const ctx = GqlExecutionContext.create(context);
     const user = ctx.getContext().req.user as IUserFromRequest;
 
-    // role get from @Role decorator
     const classRole = this.reflector.get<Role[]>('roles', ctx.getClass());
     const handlerRole = this.reflector.get<Role[]>('roles', ctx.getHandler());
 
     let allowedRoles: Role[] = [];
 
-    // If we use class for Role (not enum)
     if (classRole) allowedRoles = classRole;
     if (handlerRole) allowedRoles.concat(handlerRole);
 
-    // if we don't have role in database, ==> always access
-    // Check more at https://docs.nestjs.com/guards
     if (allowedRoles.length === 0) return true;
 
-    allowedRoles.push(Role.ADMIN); // Grants Admin user full access
+    allowedRoles.push(Role.ADMIN);
 
     console.log(user);
 
-    // if array[Admin, role from decorator ...] include user role --> alow access
     return user.role && allowedRoles.includes(user.role);
   }
 

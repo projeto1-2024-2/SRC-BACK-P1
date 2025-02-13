@@ -1,19 +1,25 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'CONSUMER', 'SUPPLIER');
 
-  - You are about to drop the column `picture` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `userStatus` on the `User` table. All the data in the column will be lost.
-  - Added the required column `addressId` to the `User` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "StatusEnum" AS ENUM ('ACTIVE', 'INACTIVE');
 
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "picture",
-DROP COLUMN "userStatus",
-ADD COLUMN     "addressId" TEXT NOT NULL,
-ADD COLUMN     "image" BYTEA;
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password_hash" TEXT NOT NULL,
+    "phoneNumber" TEXT NOT NULL,
+    "image" BYTEA,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "pseudonym" TEXT,
+    "addressId" TEXT NOT NULL,
+    "role" "Role" NOT NULL DEFAULT 'CONSUMER',
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Product" (
@@ -116,6 +122,12 @@ CREATE TABLE "_ProductToSupplier" (
 
     CONSTRAINT "_ProductToSupplier_AB_pkey" PRIMARY KEY ("A","B")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_phoneNumber_key" ON "User"("phoneNumber");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Supplier_userId_key" ON "Supplier"("userId");

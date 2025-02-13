@@ -23,8 +23,8 @@ model User {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   pseudonym   String?
-  addressId   String
-  address     Address   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  addressId   String?
+  address     Address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
   supplier    Supplier?
   contexts    Context[]
 }

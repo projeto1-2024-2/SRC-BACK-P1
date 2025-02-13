@@ -5,9 +5,9 @@ import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/guards/auth.guard';
 import { CurrentUser } from '../decorators';
 import { ChangePasswordInput } from '../dto/change-password.input';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Resolver(() => UserEntity)
 export class UserResolver {
@@ -19,37 +19,37 @@ export class UserResolver {
     return this.userService.create(data);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Query(() => [UserEntity], { name: 'findAllusers', nullable: true })
   async findAll() {
     return this.userService.findAll();
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Query(() => UserEntity, { name: 'findByEmail', nullable: true })
   async findByEmail(@Args('email', { type: () => String }) email: string) {
     return await this.userService.findByEmail(email);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Query(() => UserEntity, { name: 'findOneuser', nullable: true })
   async findOne(@Args('id', { type: () => ID }) id: string) {
     return this.userService.findOne(id);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: 'updateUser', nullable: true })
   async update(@Args('data') data: UpdateUserInput) {
     return this.userService.update(data);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: 'deleteUser', nullable: true })
   async remove(@Args('id', { type: () => ID }) id: string) {
     return this.userService.remove(id);
   }
 
-  @UseGuards(GqlAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity)
   async changePassword(
     @CurrentUser() user: UserEntity,

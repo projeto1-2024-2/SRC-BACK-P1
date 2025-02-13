@@ -2,7 +2,7 @@ import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 import { Address as AddressPrisma } from '@prisma/client';
 
 @ObjectType()
-export class Address implements AddressPrisma {
+export class AddressEntity implements AddressPrisma {
   @Field(() => ID)
   id: string;
 

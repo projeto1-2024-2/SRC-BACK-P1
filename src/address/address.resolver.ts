@@ -1,15 +1,15 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { GqlAuthGuard } from 'src/auth/guards/auth.guard';
 import { AddressService } from './address.service';
 import { AddressEntity } from './entities/address.entity';
 import { CreateAddressInput } from './dto/create-address.input';
 import { UpdateAddressInput } from './dto/update-address.input';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Resolver()
-@UseGuards(GqlAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class AddressResolver {
   constructor(private readonly addressService: AddressService) {}
 

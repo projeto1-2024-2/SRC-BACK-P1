@@ -39,7 +39,7 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @IsPhoneNumber()
   phoneNumber: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Optional()
   @IsString()
   image: Buffer;

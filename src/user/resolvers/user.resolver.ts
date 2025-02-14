@@ -48,13 +48,4 @@ export class UserResolver {
   async remove(@Args('id', { type: () => ID }) id: string) {
     return this.userService.remove(id);
   }
-
-  @UseGuards(JwtAuthGuard)
-  @Mutation(() => UserEntity)
-  async changePassword(
-    @CurrentUser() user: UserEntity,
-    @Args('data') input: ChangePasswordInput,
-  ) {
-    return this.userService.changePassword(user.id, user.password, input);
-  }
 }

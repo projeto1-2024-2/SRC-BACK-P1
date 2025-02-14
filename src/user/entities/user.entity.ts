@@ -36,9 +36,9 @@ export class UserEntity implements UserPrisma {
   @Field(() => Date)
   updatedAt: Date;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   addressId: string;
 
-  @Field(() => String, { defaultValue: Role.CONSUMER })
+  @Field(() => String)
   role: Role;
 }

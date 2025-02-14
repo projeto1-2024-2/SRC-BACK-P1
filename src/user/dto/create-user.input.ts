@@ -44,12 +44,10 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @IsString()
   image: Buffer;
 
-  @Field(() => String)
-  adressId: string;
-
   @Field(() => String, { nullable: true })
-  addressId: string;
-  @Field(() => String)
   @Optional()
+  addressId: string;
+
+  @Field(() => String, { defaultValue: Role.CONSUMER })
   role: Role;
 }

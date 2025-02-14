@@ -6,6 +6,7 @@ import { UpdateUserInput } from '../dto/update-user.input';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from '../decorators/roles.decorator';
 
 @Resolver(() => UserEntity)
 export class UserResolver {
@@ -18,12 +19,14 @@ export class UserResolver {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
   @Query(() => [UserEntity], { name: 'findAllusers', nullable: true })
   async findAll() {
     return this.userService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
+  @Roles('ADMIN')
   @Query(() => UserEntity, { name: 'findByEmail', nullable: true })
   async findByEmail(@Args('email', { type: () => String }) email: string) {
     return await this.userService.findByEmail(email);

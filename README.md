@@ -1,6 +1,6 @@
-# **Backend - Busca Inteligente de Fornecedores**
+# **📌 Backend - Busca Inteligente de Fornecedores**
 
-## **Visão Geral**
+## **📖 Visão Geral**
 Este é o backend de um sistema de busca inteligente de fornecedores. O cliente informa o produto que deseja encontrar, e o sistema retorna os fornecedores mais próximos, incluindo **contato e endereço**.
 
 O backend é desenvolvido utilizando:
@@ -11,28 +11,28 @@ O backend é desenvolvido utilizando:
 
 ---
 
-## **Configuração do Ambiente**
+## **🚀 Configuração do Ambiente**
 
-1. **Configurar variáveis de ambiente**  
-   - Copie o arquivo `.env.example` e renomeie para `.env`.  
-   - Preencha as chaves de acesso necessárias.
+**1️⃣ Configurar variáveis de ambiente**  
+   1. Copie o arquivo `.env.example` e renomeie para `.env`.  
+   2. Preencha as chaves de acesso necessárias.
 
-2. **Instalar dependências**  
+**2️⃣ Instalar dependências**  
    ```sh
    npm install
    ```
 
-3. **Rodar o backend em desenvolvimento**  
+**3️⃣ Rodar o backend em desenvolvimento**  
    ```sh
    npm run start:dev
    ```
 
-4. **Subir os containers com Docker**  
+**4️⃣ Subir os containers com Docker**  
    ```sh
    docker compose up --build
    ```
 
-5. **Gerar e aplicar migrações do banco de dados**  
+**5️⃣ Gerar e aplicar migrações do banco de dados**  
    ```sh
    npx prisma generate
    npx prisma migrate dev
@@ -40,17 +40,17 @@ O backend é desenvolvido utilizando:
 
 ---
 
-## **Endpoints**
+## **🎯 Endpoints**
 O backend utiliza **GraphQL** para expor os endpoints.
 
 - A interface do **GraphQL Playground** pode ser acessada via:  
   ```
-  http://localhost:3000/graphql
+  http://localhost:3005/graphql
   ```
 
 ---
 
-## **Banco de Dados**
+## **🗄️Banco de Dados**
 - **Banco utilizado:** PostgreSQL  
 - **Migrations:** As migrações são gerenciadas com Prisma.  
   - Para rodar as migrações, execute:
@@ -61,7 +61,7 @@ O backend utiliza **GraphQL** para expor os endpoints.
 
 ---
 
-## **Autenticação**
+## **🔑 Autenticação**
 O backend utiliza **JWT** para autenticação.
 
 - **Proteção de resolvers**  
@@ -79,6 +79,57 @@ O backend utiliza **JWT** para autenticação.
   _(exemplo: `auth.resolver.ts`)_
 
 ---
+
+## **📌 Exemplo de Queries e Mutations**
+
+**🔎 Buscar Produtos Disponíveis**
+
+```ts
+query {
+  getAllProducts {
+    id
+    title
+    description
+    price
+    isAvaliable
+    category
+  }
+}
+```
+
+**➕ Criar Novo Usuário**
+```ts
+mutation {
+  createUser(
+    data: {
+      name: "John Doe"
+      email: "john.doe@example.com"
+      password: "securepassword"
+      phoneNumber: "+5511987654321"
+      picture: "https://example.com/profile.jpg"
+    }
+  ) {
+    id
+    name
+    email
+    phoneNumber
+  }
+}
+```
+
+**📍 Buscar Endereço do Usuário Logado**
+```ts
+query {
+  getAddress {
+    id
+    street
+    city
+    state
+    zipCode
+  }
+}
+```
+
 
 Se precisar de mais informações, entre em contato com a equipe de desenvolvimento. 🚀
 

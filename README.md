@@ -1,14 +1,135 @@
-## SRC-BACK-P1
+# **📌 Backend - Busca Inteligente de Fornecedores**
 
-### Instruções de uso
+## **📖 Visão Geral**
+Este é o backend de um sistema de busca inteligente de fornecedores. O cliente informa o produto que deseja encontrar, e o sistema retorna os fornecedores mais próximos, incluindo **contato e endereço**.
 
-- Copie e cole o arquivo .env.example e renomeie ele apenas para .env
-- Em seguida, solicite as chaves de acesso
-- Após ter acesso as chaves, execute o docker-compose, com o comando `docker compose up --build`
-- Após o container subir, execute o prisma com `npx prisma generate` em seguida, execute o `npx prisma migrate dev`
+O backend é desenvolvido utilizando:
+- **[NestJS](https://nestjs.com/)** para estruturação da API.
+- **[GraphQL](https://graphql.org/)** como linguagem de consulta.
+- **[Prisma](https://www.prisma.io/)** para interação com o banco de dados.
+- **[PostgreSQL](https://www.postgresql.org/)** como banco de dados.
 
-### Autenticação
+---
 
-Todos os resolvers criados devem receber o decorator `@UseGuards(GqlAuthGuard)` (exemplo user.resolver.ts). 
-Para criar uma query que não precisa de autenticação, utilize  o decorator 
-`@IsPublicRoute()` (exemplo em auth.resolver.ts)
+## **🚀 Configuração do Ambiente**
+
+**1️⃣ Configurar variáveis de ambiente**  
+   1. Copie o arquivo `.env.example` e renomeie para `.env`.  
+   2. Preencha as chaves de acesso necessárias.
+
+**2️⃣ Instalar dependências**  
+   ```sh
+   npm install
+   ```
+
+**3️⃣ Rodar o backend em desenvolvimento**  
+   ```sh
+   npm run start:dev
+   ```
+
+**4️⃣ Subir os containers com Docker**  
+   ```sh
+   docker compose up --build
+   ```
+
+**5️⃣ Gerar e aplicar migrações do banco de dados**  
+   ```sh
+   npx prisma generate
+   npx prisma migrate dev
+   ```
+
+---
+
+## **🎯 Endpoints**
+O backend utiliza **GraphQL** para expor os endpoints.
+
+- A interface do **GraphQL Playground** pode ser acessada via:  
+  ```
+  http://localhost:3005/graphql
+  ```
+
+---
+
+## **🗄️Banco de Dados**
+- **Banco utilizado:** PostgreSQL  
+- **Migrations:** As migrações são gerenciadas com Prisma.  
+  - Para rodar as migrações, execute:
+    ```sh
+    npx prisma generate
+    npx prisma migrate dev
+    ```
+
+---
+
+## **🔑 Autenticação**
+O backend utiliza **JWT** para autenticação.
+
+- **Proteção de resolvers**  
+  Todos os resolvers privados devem incluir:  
+  ```ts
+  @UseGuards(JwtAuthGuard)
+  ```
+  _(exemplo: `user.resolver.ts`)_
+
+- **Rotas públicas**  
+  Para criar uma query que **não exige autenticação**, utilize:  
+  ```ts
+  @IsPublicRoute()
+  ```
+  _(exemplo: `auth.resolver.ts`)_
+
+---
+
+## **📌 Exemplo de Queries e Mutations**
+
+**🔎 Buscar Produtos Disponíveis**
+
+```ts
+query {
+  getAllProducts {
+    id
+    title
+    description
+    price
+    isAvaliable
+    category
+  }
+}
+```
+
+**➕ Criar Novo Usuário**
+```ts
+mutation {
+  createUser(
+    data: {
+      name: "John Doe"
+      email: "john.doe@example.com"
+      password: "securepassword"
+      phoneNumber: "+5511987654321"
+      picture: "https://example.com/profile.jpg"
+    }
+  ) {
+    id
+    name
+    email
+    phoneNumber
+  }
+}
+```
+
+**📍 Buscar Endereço do Usuário Logado**
+```ts
+query {
+  getAddress {
+    id
+    street
+    city
+    state
+    zipCode
+  }
+}
+```
+
+
+Se precisar de mais informações, entre em contato com a equipe de desenvolvimento. 🚀
+

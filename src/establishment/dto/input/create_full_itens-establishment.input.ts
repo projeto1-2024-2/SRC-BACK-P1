@@ -4,14 +4,16 @@ import {
   OmitType,
   GraphQLISODateTime,
 } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
-import { EstablishmentEntity } from '../entities/establishment.entity';
+import { IsDate, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { EstablishmentEntity } from '../../entities/establishment.entity';
 import { Optional } from '@nestjs/common';
 import { EstablishmentCount } from 'src/shared/prismagraphql/establishment/establishment-count.output';
 import { Supplier } from 'src/shared/prismagraphql/supplier';
 import { Product } from 'src/shared/prismagraphql/product';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Address } from 'src/shared/prismagraphql/address';
+import { Transform } from 'class-transformer';
+import { formatPhone } from '../../../utils/formatPhone.utils';
 
 @InputType('CreateEstablishmentInput')
 export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
@@ -24,11 +26,21 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
 
   @Field(() => Date)
   @IsNotEmpty()
-  operatingHours: Date;
+  @IsDate()
+  openingHours: Date;
+
+  @Field(() => Date)
+  @IsNotEmpty()
+  @IsDate()
+  closingHours: Date;
 
   @Field(() => String)
-  @IsNotEmpty()
   @IsString()
+  @Matches(
+    /^(?:\(\d{2}\)\s9\s\d{4}-\d{4}|(?:\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s9\s\d{4}-\d{4}|\d{2}\s9\s\d{4}-\d{4}|\d{11}))$/,
+    { message: 'Número de telefone inválido. Use o formato correto.' },
+  )
+  @Transform(({ value }: { value: string }) => formatPhone(value))
   commercialPhone: string;
 
   @Field(() => String)
@@ -43,7 +55,7 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
 
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
-  productss?: Product[];
+  products?: Product[];
 
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
@@ -63,4 +75,3 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => GraphQLISODateTime)
   updatedAt: Date = new Date();
 }
-// operatingHours: string = new Date().toLocaleTimeString();

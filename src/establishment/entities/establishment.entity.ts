@@ -17,7 +17,10 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   name: string;
 
   @Field(() => Date)
-  operatingHours: Date;
+  openingHours: Date;
+
+  @Field(() => Date)
+  closingHours: Date;
 
   @Field(() => String)
   commercialPhone: string;

@@ -81,7 +81,8 @@ model Supplier {
 model Establishment {
   id              String     @id @default(uuid())
   name            String
-  operatingHours  DateTime
+  openingHours    DateTime
+  closingHours    DateTime
   commercialPhone String
   taxId           String
   addressId       String     @default(uuid())

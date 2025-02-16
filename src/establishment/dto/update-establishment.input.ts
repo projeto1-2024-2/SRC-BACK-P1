@@ -16,25 +16,25 @@ export class UpdateEstablishmentInput extends PartialType(
   @IsNotEmpty()
   id: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @IsString()
   name?: string;
 
-  @Field(() => GraphQLISODateTime, { nullable: true })
+  @Field(() => Date)
   operatingHours?: Date;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @IsString()
   commercialPhone?: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @IsString()
   taxId?: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   @IsString()
   addressId?: string;
 
-  @Field(() => GraphQLISODateTime)
+  @Field(() => Date)
   updatedAt: Date = new Date();
 }

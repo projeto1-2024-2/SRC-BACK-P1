@@ -1,11 +1,10 @@
-import { Field, ObjectType, ID, Int, InputType } from '@nestjs/graphql';
+import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
 import { Prisma, Product as ProductPrisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import { GraphQLJSON } from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
-@InputType()
 @ObjectType()
 export class ProductEntity implements ProductPrisma {
   @Field(() => ID)

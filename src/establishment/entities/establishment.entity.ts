@@ -8,7 +8,7 @@ import {
 import { Product } from 'src/shared/prismagraphql/product';
 import { Supplier } from 'src/shared/prismagraphql/supplier/supplier.model';
 
-@ObjectType('Establishment')
+@ObjectType()
 export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => ID)
   id: string;
@@ -16,7 +16,7 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   name: string;
 
-  @Field(() => GraphQLISODateTime)
+  @Field(() => Date)
   operatingHours: Date;
 
   @Field(() => String)

@@ -8,7 +8,6 @@ import { EstablishmentService } from './establishment.service';
 
 @Resolver(() => EstablishmentEntity)
 @UseGuards(JwtAuthGuard)
-// @IsPublicRoute()
 export class EstablishmentResolver {
   constructor(private readonly establishmentService: EstablishmentService) {}
 

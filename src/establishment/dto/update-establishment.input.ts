@@ -1,42 +1,40 @@
-import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  InputType,
+  PartialType,
+} from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create-establishment.input';
-import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-@InputType()
+@InputType('UpdateEstablishmentInput')
 export class UpdateEstablishmentInput extends PartialType(
   CreateEstablishmentInput,
 ) {
   @Field(() => ID)
+  @IsNotEmpty()
   id: string;
 
   @Field(() => String, { nullable: true })
-  @IsNotEmpty()
   @IsString()
   name?: string;
 
-  @Field(() => String, { nullable: true })
-  @IsNotEmpty()
-  @IsString()
-  operatingHours?: string;
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  operatingHours?: Date;
 
   @Field(() => String, { nullable: true })
-  @IsNotEmpty()
   @IsString()
   commercialPhone?: string;
 
   @Field(() => String, { nullable: true })
-  @IsNotEmpty()
   @IsString()
   taxId?: string;
 
-  @Field(() => UpdateAddressInput, { nullable: true })
-  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
   @IsString()
-  address?: UpdateAddressInput;
+  addressId?: string;
 
-  @Field(() => Date)
-  @IsNotEmpty()
-  @IsString()
-  updatedAt: Date;
+  @Field(() => GraphQLISODateTime)
+  updatedAt: Date = new Date();
 }

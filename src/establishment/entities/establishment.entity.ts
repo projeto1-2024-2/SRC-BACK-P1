@@ -1,14 +1,14 @@
-import { Field, ID, InputType, ObjectType } from '@nestjs/graphql';
-import { Address } from 'src/shared/prismagraphql/address';
+import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import { GraphQLJSONObject } from 'graphql-type-json';
+import { Address } from 'src/shared/prismagraphql/address/address.model';
 import {
   EstablishmentCount,
   Establishment as EstablishmentPrisma,
 } from 'src/shared/prismagraphql/establishment';
 import { Product } from 'src/shared/prismagraphql/product';
-import { Supplier } from 'src/shared/prismagraphql/supplier';
+import { Supplier } from 'src/shared/prismagraphql/supplier/supplier.model';
 
-@InputType()
-@ObjectType()
+@ObjectType('Establishment')
 export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => ID)
   id: string;
@@ -16,8 +16,8 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   name: string;
 
-  @Field(() => String)
-  operatingHours: string;
+  @Field(() => GraphQLISODateTime)
+  operatingHours: Date;
 
   @Field(() => String)
   commercialPhone: string;
@@ -28,21 +28,21 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   addressId: string;
 
-  @Field(() => [Product])
+  @Field(() => [GraphQLJSONObject])
   products?: Product[];
 
-  @Field(() => [Supplier])
+  @Field(() => [GraphQLJSONObject])
   supplier?: Supplier[];
 
-  @Field(() => Address)
+  @Field(() => GraphQLJSONObject)
   address?: Address;
 
-  @Field(() => EstablishmentCount)
+  @Field(() => GraphQLJSONObject)
   _count?: EstablishmentCount;
 
-  @Field(() => Date)
+  @Field(() => GraphQLISODateTime)
   createdAt: Date;
 
-  @Field(() => Date)
+  @Field(() => GraphQLISODateTime)
   updatedAt: Date;
 }

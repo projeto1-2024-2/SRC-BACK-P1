@@ -3,9 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { User } from 'src/shared/prismagraphql/user';
 import { UserService } from 'src/user/user.service';
-import { AuthInput } from './dto/auth-input';
-import { PayloadJwt } from './dto/payload-jwt';
-import { AuthResponse } from './entities/auth.entity';
+import { AuthInput } from '../dto/auth-input';
+import { PayloadJwt } from '../dto/payload-jwt';
+import { AuthResponse } from '../entities/auth.entity';
 
 @Injectable()
 export class AuthService {

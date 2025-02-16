@@ -1,15 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateEstablishmentInput } from './dto/create-establishment.input';
+import { CreateEstablishmentInput } from '../establishment/dto/create-establishment.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { UpdateEstablishmentInput } from './dto/update-establishment.input';
+import { UpdateEstablishmentInput } from '../establishment/dto/update-establishment.input';
 import { Product } from '@prisma/client';
+import { ReturnEstablishmentDto } from '../establishment/dto/return-establishment-dto';
 
 @Injectable()
 export class EstablishmentService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(data: CreateEstablishmentInput): Promise<EstablishmentEntity> {
+  async create(
+    data: CreateEstablishmentInput,
+  ): Promise<ReturnEstablishmentDto> {
     const establishment = await this.prismaService.establishment.create({
       data: {
         name: data.name,
@@ -30,12 +33,10 @@ export class EstablishmentService {
             },
           },
         },
-        createdAt: new Date(),
-        updatedAt: new Date(),
       },
     });
 
-    return establishment;
+    return new ReturnEstablishmentDto(establishment);
   }
 
   async update(data: UpdateEstablishmentInput): Promise<EstablishmentEntity> {
@@ -97,28 +98,28 @@ export class EstablishmentService {
     }
   }
 
-  async findById(id: string): Promise<EstablishmentEntity> {
-    await this.checkExistsEstablishment(id);
+  //   async findById(id: string): Promise<EstablishmentEntity> {
+  //     await this.checkExistsEstablishment(id);
 
-    const establishment = await this.prismaService.establishment.findUnique({
-      where: { id },
-      include: {
-        address: true,
-        products: true,
-      },
-    });
+  //     const establishment = await this.prismaService.establishment.findUnique({
+  //       where: { id },
+  //       include: {
+  //         address: true,
+  //         products: true,
+  //       },
+  //     });
 
-    return establishment;
-  }
+  //     return establishment;
+  //   }
 
-  async findAll(): Promise<EstablishmentEntity[]> {
-    return this.prismaService.establishment.findMany({
-      include: {
-        address: true,
-        products: true,
-      },
-    });
-  }
+  //   async findAll(): Promise<EstablishmentEntity[]> {
+  //     return this.prismaService.establishment.findMany({
+  //       include: {
+  //         address: true,
+  //         products: true,
+  //       },
+  //     });
+  //   }
 
   async findProductsByEstablishment(id: string): Promise<Product[]> {
     await this.checkExistsEstablishment(id);

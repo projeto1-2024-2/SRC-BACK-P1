@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  CONSUMER
+  SUPPLIER
+}
+
 model User {
   id          String    @id @default(uuid())
   name        String
@@ -27,6 +33,7 @@ model User {
   address     Address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
   supplier    Supplier?
   contexts    Context[]
+  role        Role      @default(CONSUMER)
 }
 
 model Product {
@@ -74,7 +81,7 @@ model Supplier {
 model Establishment {
   id              String     @id @default(uuid())
   name            String
-  operatingHours  String
+  operatingHours  DateTime
   commercialPhone String
   taxId           String
   addressId       String     @default(uuid())

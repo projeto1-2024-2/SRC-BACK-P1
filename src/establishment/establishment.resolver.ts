@@ -78,7 +78,7 @@ export class EstablishmentResolver {
     return await this.establishmentService.fetchProductsByEstablishmentId(id);
   }
 
-  @Query(() => ReturnPartialProductsFromEstablishmentDto, {
+  @Query(() => [ReturnPartialProductsFromEstablishmentDto], {
     name: 'fetchProductsAllByEsyablishmentId',
   })
   async fetchProductsAllByEsyablishmentId(): Promise<

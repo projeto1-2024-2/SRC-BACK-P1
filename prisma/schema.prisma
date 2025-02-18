@@ -49,7 +49,7 @@ model Product {
   status          StatusEnum        @default(ACTIVE)
   price           Decimal
   suppliers       Supplier[]
-  establishment   Establishment     @relation(fields: [establishmentId], references: [id])
+  establishment   Establishment?     @relation(fields: [establishmentId], references: [id])
   dimensions      ProductDimension?
 }
 
@@ -67,15 +67,13 @@ model Location {
 }
 
 model Supplier {
-  id            String         @id @default(uuid())
-  userId        String         @unique()
-  user          User           @relation(fields: [userId], references: [id])
+  id            String           @id @default(uuid())
+  userId        String           @unique()
+  user          User             @relation(fields: [userId], references: [id])
   taxId         String
-  createdAt     DateTime       @default(now())
+  createdAt     DateTime         @default(now())
   products      Product[]
-  establishment Establishment? @relation(fields: [establishmentId], references: [id])
-
-  establishmentId String?
+  establishments SupplierEstablishment[]
 }
 
 model Establishment {
@@ -85,12 +83,22 @@ model Establishment {
   closingHours    DateTime
   commercialPhone String
   taxId           String
-  addressId       String?     @default(uuid())
+  addressId       String?    @default(uuid())
   products        Product[]
-  supplier        Supplier[]
-  address         Address?    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @default(now()) @map("updated_at")
+  suppliers       SupplierEstablishment[]
+  address         Address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @default(now()) @map("updated_at")
+}
+
+model SupplierEstablishment {
+  id             String        @id @default(uuid())
+  supplierId     String
+  establishmentId String
+  supplier      Supplier      @relation(fields: [supplierId], references: [id])
+  establishment Establishment @relation(fields: [establishmentId], references: [id])
+
+  @@unique([supplierId, establishmentId])
 }
 
 model Address {

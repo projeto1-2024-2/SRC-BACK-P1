@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { AddressModule } from './address/address.module';
 import { EstablishmentModule } from './establishment/establishment.module';
+import { SupplierModule } from './supplier/supplier.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { EstablishmentModule } from './establishment/establishment.module';
     ProductModule,
     AddressModule,
     EstablishmentModule,
+    SupplierModule,
   ],
   controllers: [],
   providers: [],

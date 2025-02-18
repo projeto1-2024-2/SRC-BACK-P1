@@ -1,12 +1,10 @@
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create_full_itens-establishment.input';
-import { IsDate, IsNotEmpty, IsString, Matches } from 'class-validator';
-import { Transform } from 'class-transformer';
-import { formatPhone } from '../../../utils/formatPhone.utils';
-import { Product, Supplier } from '@prisma/client';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { Address } from 'src/shared/prismagraphql/address';
 import { Optional } from '@nestjs/common';
+import { Product } from 'src/shared/prismagraphql/product';
 
 @InputType('UpdateFullItensEstablishmentInput')
 export class UpdateFullItensEstablishmentInput extends PartialType(
@@ -32,11 +30,6 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
 
   @Field(() => String)
   @IsString()
-  @Matches(
-    /^(?:\(\d{2}\)\s9\s\d{4}-\d{4}|(?:\(\d{2}\)\s?\d{4}-\d{4}|\d{2}\s9\s\d{4}-\d{4}|\d{2}\s9\s\d{4}-\d{4}|\d{11}))$/,
-    { message: 'Número de telefone inválido. Use o formato correto.' },
-  )
-  @Transform(({ value }: { value: string }) => formatPhone(value))
   commercialPhone?: string;
 
   @Field(() => String)
@@ -51,9 +44,8 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
   @Optional()
   products?: Product[];
 
-  @Field(() => [GraphQLJSONObject], { nullable: true })
-  @Optional()
-  supplier?: Supplier[];
+  @Field(() => String)
+  supplierIds: string[];
 
   @Field(() => GraphQLJSONObject, { nullable: false })
   @IsNotEmpty()

@@ -57,13 +57,20 @@ export class EstablishmentService {
     if (data.supplierIds && data.supplierIds.length > 0) {
       await this.prismaService.supplierEstablishment.createMany({
         data: data.supplierIds.map((supplierId) => ({
-          supplierId: supplierId,
+          supplierId,
           establishmentId: establishment.id,
         })),
       });
     }
 
-    return establishment;
+    return await this.prismaService.establishment.findUnique({
+      where: { id: establishment.id },
+      include: {
+        address: true,
+        products: true,
+        suppliers: true,
+      },
+    });
   }
 
   async update(

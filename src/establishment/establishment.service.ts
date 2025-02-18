@@ -8,6 +8,7 @@ import { UpdatePartialProductsEstablishmentInput } from './dto/input/update_part
 import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
 import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
+import { CreateAddressInput } from 'src/address/dto/create-address.input';
 
 @Injectable()
 export class EstablishmentService {
@@ -15,35 +16,11 @@ export class EstablishmentService {
 
   async create(
     data: CreateEstablishmentInput,
+    addressData: CreateAddressInput,
   ): Promise<ReturnFullItensEstablishmentDto> {
-    const addressData = data.address
-      ? {
-          connectOrCreate: {
-            where: { id: data.address.id || undefined },
-            create: {
-              street: data.address.street,
-              number: data.address.number,
-              complement: data.address.complement,
-              neighbourhood: data.address.neighbourhood,
-              zipCode: data.address.zipCode,
-              city: data.address.city,
-              state: data.address.state,
-            },
-          },
-        }
-      : undefined;
-
-    const productsData = data.products
-      ? {
-          connect: data.products.map((product) => ({ id: product.id })),
-        }
-      : undefined;
-
-    const supplierData = data.supplier
-      ? {
-          connect: data.supplier.map((supplier) => ({ id: supplier.id })),
-        }
-      : undefined;
+    const address = await this.prismaService.address.create({
+      data: addressData,
+    });
 
     const establishment = await this.prismaService.establishment.create({
       data: {
@@ -52,15 +29,13 @@ export class EstablishmentService {
         closingHours: data.closingHours,
         commercialPhone: data.commercialPhone,
         taxId: data.taxId,
-        updatedAt: data.updatedAt,
-        products: productsData,
-        supplier: supplierData,
-        address: addressData,
-      },
-      include: {
-        products: true,
-        supplier: true,
-        address: true,
+        addressId: address.id,
+        products: data.products
+          ? { connect: data.products.map((product) => ({ id: product.id })) }
+          : undefined,
+        supplier: data.supplier
+          ? { connect: data.supplier.map((supplier) => ({ id: supplier.id })) }
+          : undefined,
       },
     });
 

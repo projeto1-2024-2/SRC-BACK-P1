@@ -1,8 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EstablishmentEntity } from './entities/establishment.entity';
 import { CreateEstablishmentInput } from './dto/input/create_full_itens-establishment.input';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+
 import { EstablishmentService } from './establishment.service';
 import { ReturnFullItensEstablishmentDto } from './dto/view/return_full_itens-establishment-dto.view';
 import { UpdatePartialEstablishmentInput } from './dto/input/update_partial-establishment.input';
@@ -11,25 +10,32 @@ import { ReturnPartialProductsFromEstablishmentDto } from './dto/view/return_par
 import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
 import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
+import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
+import { CreateAddressInput } from 'src/address/dto/create-address.input';
 
 @Resolver(() => EstablishmentEntity)
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class EstablishmentResolver {
   constructor(private readonly establishmentService: EstablishmentService) {}
 
+  @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'createEstablishment' })
   async create(
     @Args('data') data: CreateEstablishmentInput,
+    @Args('addressData') addressData: CreateAddressInput,
   ): Promise<ReturnFullItensEstablishmentDto> {
-    return await this.establishmentService.create(data);
+    return await this.establishmentService.create(data, addressData);
   }
 
+  @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishment' })
   async update(
     @Args('data') data: UpdateFullItensEstablishmentInput,
   ): Promise<ReturnFullItensEstablishmentDto> {
     return await this.establishmentService.update(data);
   }
+
+  @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'updatePartialEstablishment' })
   async updatePartial(
     @Args('data') data: UpdatePartialEstablishmentInput,
@@ -37,6 +43,7 @@ export class EstablishmentResolver {
     return await this.establishmentService.updatePartial(data);
   }
 
+  @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentProducts' })
   async updateProducts(
     @Args('data') data: UpdatePartialProductsEstablishmentInput,
@@ -44,6 +51,7 @@ export class EstablishmentResolver {
     return await this.establishmentService.updateProducts(data);
   }
 
+  @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentAddress' })
   async updateAddress(
     @Args('data') data: UpdateAddressInput,
@@ -51,12 +59,14 @@ export class EstablishmentResolver {
     return await this.establishmentService.updateAddress(data);
   }
 
+  @IsPublicRoute()
   @Mutation(() => Boolean, { name: 'deleteEstablishment' })
   async delete(@Args('id') id: string): Promise<boolean> {
     await this.establishmentService.delete(id);
     return true;
   }
 
+  @IsPublicRoute()
   @Query(() => EstablishmentEntity, { name: 'findEstablishmentById' })
   async findById(
     @Args('id') id: string,
@@ -64,11 +74,13 @@ export class EstablishmentResolver {
     return await this.establishmentService.findById(id);
   }
 
+  @IsPublicRoute()
   @Query(() => [EstablishmentEntity], { name: 'findAllEstablishments' })
   async findAll(): Promise<ReturnFullItensEstablishmentDto[]> {
     return await this.establishmentService.findAll();
   }
 
+  @IsPublicRoute()
   @Query(() => ReturnPartialProductsFromEstablishmentDto, {
     name: 'fetchProductsByEstablishmentId',
   })

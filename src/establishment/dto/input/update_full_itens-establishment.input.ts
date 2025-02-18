@@ -5,7 +5,6 @@ import { Transform } from 'class-transformer';
 import { formatPhone } from '../../../utils/formatPhone.utils';
 import { Product, Supplier } from '@prisma/client';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { EstablishmentCount } from 'src/shared/prismagraphql/establishment';
 import { Address } from 'src/shared/prismagraphql/address';
 import { Optional } from '@nestjs/common';
 
@@ -59,10 +58,6 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
   @Field(() => GraphQLJSONObject, { nullable: false })
   @IsNotEmpty()
   address?: Address;
-
-  @Field(() => GraphQLJSONObject, { nullable: false })
-  @IsNotEmpty()
-  _count?: EstablishmentCount;
 
   @Field(() => Date)
   updatedAt: Date = new Date();

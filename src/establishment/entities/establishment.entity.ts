@@ -28,8 +28,8 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   taxId: string;
 
-  @Field(() => String)
-  addressId: string;
+  @Field(() => String, { nullable: true })
+  addressId?: string;
 
   @Field(() => [GraphQLJSONObject])
   products?: Product[];

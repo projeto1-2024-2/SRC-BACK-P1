@@ -1,23 +1,18 @@
-import {
-  InputType,
-  Field,
-  OmitType,
-  GraphQLISODateTime,
-} from '@nestjs/graphql';
+import { InputType, Field, OmitType } from '@nestjs/graphql';
 import { IsDate, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { EstablishmentEntity } from '../../entities/establishment.entity';
 import { Optional } from '@nestjs/common';
-import { EstablishmentCount } from 'src/shared/prismagraphql/establishment/establishment-count.output';
 import { Supplier } from 'src/shared/prismagraphql/supplier';
 import { Product } from 'src/shared/prismagraphql/product';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Address } from 'src/shared/prismagraphql/address';
 import { Transform } from 'class-transformer';
 import { formatPhone } from '../../../utils/formatPhone.utils';
 
 @InputType('CreateEstablishmentInput')
 export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   'id',
+  'createdAt',
+  'updatedAt',
 ]) {
   @Field(() => String)
   @IsNotEmpty()
@@ -48,10 +43,9 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @IsString()
   taxId: string;
 
-  @Field(() => String)
-  @IsNotEmpty()
-  @IsString()
-  addressId: string;
+  @Field(() => String, { nullable: true })
+  @Optional()
+  addressId?: string;
 
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
@@ -60,18 +54,4 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
   supplier?: Supplier[];
-
-  @Field(() => GraphQLJSONObject, { nullable: false })
-  @IsNotEmpty()
-  address?: Address;
-
-  @Field(() => GraphQLJSONObject, { nullable: false })
-  @IsNotEmpty()
-  _count?: EstablishmentCount;
-
-  @Field(() => GraphQLISODateTime)
-  createdAt: Date = new Date();
-
-  @Field(() => GraphQLISODateTime)
-  updatedAt: Date = new Date();
 }

@@ -85,10 +85,10 @@ model Establishment {
   closingHours    DateTime
   commercialPhone String
   taxId           String
-  addressId       String     @default(uuid())
+  addressId       String?     @default(uuid())
   products        Product[]
   supplier        Supplier[]
-  address         Address    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
+  address         Address?    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
 }

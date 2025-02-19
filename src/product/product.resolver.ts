@@ -3,10 +3,13 @@ import { ProductService } from './product.service';
 import { ProductEntity } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { UseGuards } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/user/decorators';
 
 @Resolver(() => ProductEntity)
-// @UseGuards(JwtAuthGuard)
-// @Roles('SUPPLIER')
+@UseGuards(JwtAuthGuard)
+@Roles('SUPPLIER')
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 

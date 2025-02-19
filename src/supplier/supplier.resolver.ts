@@ -2,15 +2,16 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { Supplier } from 'src/shared/prismagraphql/supplier';
 import { SupplierService } from './supplier.service';
 import { CreateSupplierInput } from './dto/create-supplier.dto';
-import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/user/decorators';
+import { UseGuards } from '@nestjs/common/decorators';
 
 @Resolver()
-// @UseGuards(JwtAuthGuard)
-@IsPublicRoute()
+@UseGuards(JwtAuthGuard)
 export class SupplierResolver {
   constructor(private supplierService: SupplierService) {}
 
-  // @Roles('CONSUMER')
+  @Roles('CONSUMER')
   @Mutation(() => Supplier, { name: 'createSupplier' })
   async createSupplier(
     @Args('userId') userId: string,

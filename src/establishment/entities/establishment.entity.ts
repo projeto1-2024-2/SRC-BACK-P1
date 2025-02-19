@@ -7,7 +7,6 @@ import {
 } from 'src/shared/prismagraphql/establishment';
 import { Product } from 'src/shared/prismagraphql/product';
 import { SupplierEstablishment } from 'src/shared/prismagraphql/supplier-establishment';
-import { Supplier } from 'src/shared/prismagraphql/supplier/supplier.model';
 
 @ObjectType()
 export class EstablishmentEntity implements EstablishmentPrisma {
@@ -34,9 +33,6 @@ export class EstablishmentEntity implements EstablishmentPrisma {
 
   @Field(() => [GraphQLJSONObject])
   products?: Product[];
-
-  @Field(() => [GraphQLJSONObject])
-  supplier?: Supplier[];
 
   @Field(() => GraphQLJSONObject)
   address?: Address;

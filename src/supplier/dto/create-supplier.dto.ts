@@ -1,14 +1,15 @@
-import { InputType, Field, OmitType } from '@nestjs/graphql';
-import { IsString, IsUUID } from 'class-validator';
-import { SupplierEntity } from '../entities/supplier.entity';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-@InputType('CreateSupplierInput')
-export class CreateSupplierInput extends OmitType(SupplierEntity, ['id']) {
+@InputType()
+export class CreateSupplierInput {
   @Field(() => String)
-  @IsUUID()
+  @IsNotEmpty()
+  @IsString()
   userId: string;
 
   @Field(() => String)
+  @IsNotEmpty()
   @IsString()
   taxId: string;
 }

@@ -1,10 +1,10 @@
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create_full_itens-establishment.input';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
-import { GraphQLJSONObject } from 'graphql-type-json';
-import { Address } from 'src/shared/prismagraphql/address';
 import { Optional } from '@nestjs/common';
-import { Product } from 'src/shared/prismagraphql/product';
+import { CreateProductInput } from 'src/product/dto/create-product.input';
+import { CreateAddressInput } from 'src/address/dto/create-address.input';
+import { UpdateProductInput } from 'src/product/dto/update-product.input';
 
 @InputType('UpdateFullItensEstablishmentInput')
 export class UpdateFullItensEstablishmentInput extends PartialType(
@@ -36,21 +36,27 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
   @IsString()
   taxId?: string;
 
-  @Field(() => String)
-  @IsString()
-  addressId?: string;
-
-  @Field(() => [GraphQLJSONObject], { nullable: true })
+  @Field(() => [CreateProductInput], { nullable: true })
   @Optional()
-  products?: Product[];
+  newProducts?: CreateProductInput[];
 
-  @Field(() => String)
-  supplierIds: string[];
+  @Field(() => [UpdateProductInput], { nullable: true })
+  @Optional()
+  updateProducts?: UpdateProductInput[];
 
-  @Field(() => GraphQLJSONObject, { nullable: false })
-  @IsNotEmpty()
-  address?: Address;
+  @Field(() => [String], { nullable: true })
+  @Optional()
+  deleteProducts?: string[];
 
-  @Field(() => Date)
-  updatedAt: Date = new Date();
+  @Field(() => CreateAddressInput, { nullable: true })
+  @Optional()
+  newAddress?: CreateAddressInput;
+
+  @Field(() => [String], { nullable: true })
+  @Optional()
+  deleteSupplierIds?: string[];
+
+  @Field(() => [String], { nullable: true })
+  @Optional()
+  newSupplierIds?: string[];
 }

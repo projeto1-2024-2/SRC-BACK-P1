@@ -11,7 +11,7 @@ export class ReturnPartialProductsFromEstablishmentDto {
   @Field()
   name!: string;
 
-  @Field(() => GraphQLJSONObject, { nullable: true })
+  @Field(() => [GraphQLJSONObject], { nullable: true })
   products!: Product[];
 
   constructor(establishment: EstablishmentEntity) {

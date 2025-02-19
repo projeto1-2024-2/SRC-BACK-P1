@@ -23,9 +23,8 @@ export class EstablishmentResolver {
   async create(
     @Args('userId') userId: string,
     @Args('data') data: CreateEstablishmentInput,
-    @Args('addressData') addressData: CreateAddressInput,
   ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.create(data, addressData, userId);
+    return await this.establishmentService.create(data, userId);
   }
 
   @IsPublicRoute()
@@ -102,11 +101,11 @@ export class EstablishmentResolver {
   }
 
   @Query(() => [ReturnPartialProductsFromEstablishmentDto], {
-    name: 'fetchProductsAllByEsyablishmentId',
+    name: 'fetchProductsAll',
   })
   async fetchProductsAllByEsyablishmentId(): Promise<
     ReturnPartialProductsFromEstablishmentDto[]
   > {
-    return await this.establishmentService.fetchProductsAllByEsyablishmentId();
+    return await this.establishmentService.fetchProductsAll();
   }
 }

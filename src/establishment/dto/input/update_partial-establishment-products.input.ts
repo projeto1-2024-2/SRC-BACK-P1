@@ -1,9 +1,9 @@
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create_full_itens-establishment.input';
 import { IsNotEmpty, IsString } from 'class-validator';
-import { GraphQLJSONObject } from 'graphql-type-json';
 import { Optional } from '@nestjs/common';
-import { Product } from '@prisma/client';
+import { CreateProductInput } from 'src/product/dto/create-product.input';
+import { UpdateProductInput } from 'src/product/dto/update-product.input';
 
 @InputType('UpdatePArtialProductsEstablishmentInput')
 export class UpdatePartialProductsEstablishmentInput extends PartialType(
@@ -17,9 +17,17 @@ export class UpdatePartialProductsEstablishmentInput extends PartialType(
   @IsString()
   name?: string;
 
-  @Field(() => [GraphQLJSONObject], { nullable: true })
+  @Field(() => [CreateProductInput], { nullable: true })
   @Optional()
-  products?: Product[];
+  newProducts?: CreateProductInput[];
+
+  @Field(() => [UpdateProductInput], { nullable: true })
+  @Optional()
+  updateProducts?: UpdateProductInput[];
+
+  @Field(() => [String], { nullable: true })
+  @Optional()
+  deleteProducts?: string[];
 
   @Field(() => Date)
   updatedAt: Date = new Date();

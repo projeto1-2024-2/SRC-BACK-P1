@@ -4,10 +4,13 @@ import GraphQLJSON from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { Prisma } from '@prisma/client';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 @InputType('UpdateProductInput')
 export class UpdateProductInput {
   @Field(() => ID)
+  @IsNotEmpty()
+  @IsString()
   id: string;
 
   @Field(() => String, { nullable: true })

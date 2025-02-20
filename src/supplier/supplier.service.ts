@@ -4,6 +4,7 @@ import { CreateSupplierInput } from './dto/create-supplier.dto';
 import { Role } from 'src/shared/prismagraphql/prisma';
 import { UserService } from 'src/user/user.service';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { SupplierEntity } from './entities/supplier.entity';
 
 @Injectable()
 export class SupplierService {
@@ -49,17 +50,26 @@ export class SupplierService {
     });
   }
 
-  async delete(supplierId: string): Promise<boolean> {
+  async delete(user: UserEntity): Promise<boolean> {
+    await this.prismaService.user.update({
+      where: { id: user.id },
+      data: { role: Role.CONSUMER },
+    });
+
     await this.prismaService.supplier.delete({
-      where: { id: supplierId },
+      where: { userId: user.id },
     });
     return true;
   }
 
-  private validatePermission(userId: string, dataUserId: string) {
-    if (userId !== dataUserId) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    }
+  async update(
+    user: UserEntity,
+    data: CreateSupplierInput,
+  ): Promise<SupplierEntity> {
+    return await this.prismaService.supplier.update({
+      where: { userId: user.id },
+      data: { ...data },
+    });
   }
 
   async checkExistsSupplier(userId: string) {

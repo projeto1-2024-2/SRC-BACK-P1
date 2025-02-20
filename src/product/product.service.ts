@@ -60,7 +60,7 @@ export class ProductService {
     establishmentId: string,
   ) {
     await this.checkExistsEstablishmentById(establishmentId);
-    if (!updateProducts || updateProducts?.length) {
+    if (!updateProducts || updateProducts?.length < 0) {
       throw new HttpException(
         `Nenhum produto informado para atualização no estabelecimento ${establishmentId}.`,
         HttpStatus.NOT_FOUND,

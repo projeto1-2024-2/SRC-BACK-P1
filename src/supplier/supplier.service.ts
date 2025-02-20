@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateSupplierInput } from './dto/create-supplier.dto';
 import { Role } from 'src/shared/prismagraphql/prisma';
 import { UserService } from 'src/user/user.service';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class SupplierService {
@@ -11,53 +12,48 @@ export class SupplierService {
     private userService: UserService,
   ) {}
 
-  async create(data: CreateSupplierInput, userId: string) {
-    await this.checkExistsUser(userId);
-
-    this.validatePermission(userId, data.userId);
-
-    await this.checkExistsSupplier(userId);
+  async create(data: CreateSupplierInput, user: UserEntity) {
+    await this.checkExistsSupplier(user.id);
 
     const supplier = await this.prismaService.supplier.create({
       data: {
+        userId: user.id,
         ...data,
       },
     });
 
     await this.prismaService.user.update({
-      where: { id: data.userId },
+      where: { id: user.id },
       data: { role: Role.SUPPLIER },
     });
 
     return supplier;
   }
 
-  async delete(supplierId: string) {
+  async findById(supplierId: string) {
+    const supplier = await this.prismaService.supplier.findUnique({
+      where: { id: supplierId },
+      include: { user: true, establishments: true, products: true },
+    });
+
+    if (!supplier) {
+      throw new HttpException('Supplier not found', HttpStatus.NOT_FOUND);
+    }
+
+    return supplier;
+  }
+
+  async findAll() {
+    return this.prismaService.supplier.findMany({
+      include: { user: true, establishments: true, products: true },
+    });
+  }
+
+  async delete(supplierId: string): Promise<boolean> {
     await this.prismaService.supplier.delete({
       where: { id: supplierId },
     });
-
-    const establishments = await this.prismaService.establishment.findMany({
-      where: {
-        suppliers: { none: {} },
-      },
-    });
-
-    await this.prismaService.establishment.deleteMany({
-      where: {
-        id: { in: establishments.map((e) => e.id) },
-      },
-    });
-
     return true;
-  }
-
-  private async checkExistsUser(userId: string) {
-    const exists = await this.userService.existsById(userId);
-
-    if (!exists) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
   }
 
   private validatePermission(userId: string, dataUserId: string) {

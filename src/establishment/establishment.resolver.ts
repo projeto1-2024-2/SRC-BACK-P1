@@ -5,76 +5,73 @@ import { EstablishmentService } from './establishment.service';
 import { UpdatePartialEstablishmentInput } from './dto/input/update_partial-establishment.input';
 import { UpdatePartialProductsEstablishmentInput } from './dto/input/update_partial-establishment-products.input';
 import { ReturnPartialProductsFromEstablishmentDto } from './dto/view/return_partial-products-from-establishment.dto.view';
-import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
 import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
-import { CreateAddressInput } from 'src/address/dto/create-address.input';
+import { UseGuards } from '@nestjs/common/decorators';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/user/decorators';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { UpdatePartialAddressEstablishmentInput } from './dto/input/update_partial-establishment-address.input';
 
 @Resolver(() => EstablishmentEntity)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class EstablishmentResolver {
   constructor(private readonly establishmentService: EstablishmentService) {}
 
-  @IsPublicRoute()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles('SUPPLIER')
+  @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'createEstablishment' })
   async create(
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
     @Args('data') data: CreateEstablishmentInput,
   ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.create(data, userId);
+    return await this.establishmentService.create(data, user);
   }
 
-  @IsPublicRoute()
+  @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishment' })
   async update(
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
     @Args('data') data: UpdateFullItensEstablishmentInput,
   ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.update(data, userId);
+    return await this.establishmentService.update(data, user);
   }
 
-  @IsPublicRoute()
+  @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'updatePartialEstablishment' })
   async updatePartial(
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
     @Args('data') data: UpdatePartialEstablishmentInput,
   ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.updatePartial(data, userId);
+    return await this.establishmentService.updatePartial(data, user);
   }
 
-  @IsPublicRoute()
+  @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentProducts' })
   async updateProducts(
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
     @Args('data') data: UpdatePartialProductsEstablishmentInput,
   ): Promise<ReturnPartialProductsFromEstablishmentDto> {
-    return await this.establishmentService.updateProducts(data, userId);
+    return await this.establishmentService.updateProducts(data, user);
   }
 
-  @IsPublicRoute()
+  @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentAddress' })
   async updateAddress(
-    @Args('userId') userId: string,
-    @Args('data') data: UpdateAddressInput,
-    @Args('addressData') addressData: CreateAddressInput,
+    @CurrentUser() user: UserEntity,
+    @Args('data') data: UpdatePartialAddressEstablishmentInput,
   ): Promise<ReturnPartialAddressFromEstablishmentDto> {
-    return await this.establishmentService.updateAddress(
-      data,
-      addressData,
-      userId,
-    );
+    return await this.establishmentService.updateAddress(data, user);
   }
 
-  @IsPublicRoute()
+  @Roles('SUPPLIER')
   @Mutation(() => Boolean, { name: 'deleteEstablishment' })
   async delete(
     @Args('id') id: string,
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
   ): Promise<boolean> {
-    await this.establishmentService.delete(id, userId);
+    await this.establishmentService.delete(id, user);
     return true;
   }
 
@@ -100,6 +97,7 @@ export class EstablishmentResolver {
     return await this.establishmentService.fetchProductsByEstablishmentId(id);
   }
 
+  @IsPublicRoute()
   @Query(() => [ReturnPartialProductsFromEstablishmentDto], {
     name: 'fetchProductsAll',
   })

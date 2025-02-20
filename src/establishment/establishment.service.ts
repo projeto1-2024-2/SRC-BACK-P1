@@ -5,13 +5,12 @@ import { UpdatePartialEstablishmentInput } from './dto/input/update_partial-esta
 import { ReturnPartialProductsFromEstablishmentDto } from './dto/view/return_partial-products-from-establishment.dto.view';
 import { UpdatePartialProductsEstablishmentInput } from './dto/input/update_partial-establishment-products.input';
 import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
-import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
-import { CreateAddressInput } from 'src/address/dto/create-address.input';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { Supplier } from 'src/shared/prismagraphql/supplier';
 import { UserService } from 'src/user/user.service';
 import { ProductService } from 'src/product/product.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UpdatePartialAddressEstablishmentInput } from './dto/input/update_partial-establishment-address.input';
 
 @Injectable()
 export class EstablishmentService {
@@ -23,15 +22,11 @@ export class EstablishmentService {
 
   async create(
     data: CreateEstablishmentInput,
-    userId: string,
+    user: UserEntity,
   ): Promise<EstablishmentEntity> {
-    await this.checkExistsUserbyId(userId);
-
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
-
-    this.validateSuplier(supplier);
 
     this.containSupplier(data.supplierIds, supplier.id);
 
@@ -73,22 +68,19 @@ export class EstablishmentService {
 
   async update(
     data: UpdateFullItensEstablishmentInput,
-    userId: string,
+    user: UserEntity,
   ): Promise<EstablishmentEntity> {
-    await this.checkExistsUserbyId(userId);
     await this.checkExistsEstablishmentById(data.id);
 
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
 
-    this.validateSuplier(supplier);
     await this.checkRelationSupplierEstablishment(data.id, supplier.id);
 
     if (data.newSupplierIds && data.newSupplierIds?.length > 0) {
       await this.checkExistsAllSuppliers(data.newSupplierIds);
     }
-
     if (data.deleteSupplierIds && data.deleteSupplierIds?.length > 0) {
       await this.checkExistsAllSuppliers(data.deleteSupplierIds);
     }
@@ -96,13 +88,11 @@ export class EstablishmentService {
     if (data.newProducts && data.newProducts?.length > 0) {
       await this.productService.createMany(data.newProducts, data.id);
     }
-
     if (data.updateProducts && data.updateProducts?.length > 0) {
       await this.productService.updateMany(data.updateProducts, data.id);
     }
-
-    if (data.newProducts && data.newProducts?.length > 0) {
-      await this.productService.createMany(data.newProducts, data.id);
+    if (data.deleteProducts && data.deleteProducts?.length > 0) {
+      await this.productService.deleteMany(data.deleteProducts, data.id);
     }
 
     return this.prismaService.$transaction(async (prisma) => {
@@ -130,12 +120,11 @@ export class EstablishmentService {
         select: { addressId: true },
       });
 
-      let addressId = establishmentData?.addressId;
       if (data.newAddress) {
-        const newAddress = await prisma.address.create({
+        await prisma.address.update({
+          where: { id: establishmentData.addressId },
           data: data.newAddress,
         });
-        addressId = newAddress.id;
       }
 
       const updatedEstablishment = await prisma.establishment.update({
@@ -146,7 +135,6 @@ export class EstablishmentService {
           closingHours: data.closingHours,
           commercialPhone: data.commercialPhone,
           taxId: data.taxId,
-          addressId: addressId,
         },
         include: {
           products: true,
@@ -155,28 +143,19 @@ export class EstablishmentService {
         },
       });
 
-      if (data.newAddress && establishmentData?.addressId) {
-        await prisma.address.delete({
-          where: { id: establishmentData.addressId },
-        });
-      }
-
       return updatedEstablishment;
     });
   }
 
   async updatePartial(
     data: UpdatePartialEstablishmentInput,
-    userId: string,
+    user: UserEntity,
   ): Promise<EstablishmentEntity> {
     await this.checkExistsEstablishmentById(data.id);
-    await this.checkExistsUserbyId(userId);
 
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
-
-    this.validateSuplier(supplier);
 
     await this.checkRelationSupplierEstablishment(data.id, supplier.id);
 
@@ -196,27 +175,21 @@ export class EstablishmentService {
 
   async updateProducts(
     data: UpdatePartialProductsEstablishmentInput,
-    userId: string,
+    user: UserEntity,
   ): Promise<ReturnPartialProductsFromEstablishmentDto> {
     await this.checkExistsEstablishmentById(data.id);
-    await this.checkExistsUserbyId(userId);
 
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
-
-    this.validateSuplier(supplier);
-
     await this.checkRelationSupplierEstablishment(data.id, supplier.id);
 
     if (data.newProducts && data.newProducts?.length > 0) {
       await this.productService.createMany(data.newProducts, data.id);
     }
-
     if (data.updateProducts && data.updateProducts?.length > 0) {
       await this.productService.updateMany(data.updateProducts, data.id);
     }
-
     if (data.deleteProducts && data.deleteProducts?.length > 0) {
       await this.productService.deleteMany(data.deleteProducts, data.id);
     }
@@ -230,60 +203,43 @@ export class EstablishmentService {
   }
 
   async updateAddress(
-    data: UpdateAddressInput,
-    addressData: CreateAddressInput,
-    userId: string,
+    data: UpdatePartialAddressEstablishmentInput,
+    user: UserEntity,
   ): Promise<ReturnPartialAddressFromEstablishmentDto> {
     await this.checkExistsEstablishmentById(data.id);
-    await this.checkExistsUserbyId(userId);
 
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
 
-    this.validateSuplier(supplier);
     await this.checkRelationSupplierEstablishment(data.id, supplier.id);
 
     const establishmentEntity =
       await this.prismaService.establishment.findUnique({
         where: { id: data.id },
-        include: { suppliers: { select: { supplierId: true } }, address: true },
-      });
-
-    if (!establishmentEntity) {
-      throw new HttpException('Establishment not found', HttpStatus.NOT_FOUND);
-    }
-
-    return this.prismaService.$transaction(async (tx) => {
-      if (establishmentEntity.address) {
-        await tx.address.delete({
-          where: { id: establishmentEntity.address.id },
-        });
-      }
-
-      const address = await tx.address.create({
-        data: addressData,
-      });
-
-      const establishment = await tx.establishment.update({
-        where: { id: data.id },
-        data: { addressId: address.id },
         include: { address: true },
       });
 
-      return new ReturnPartialAddressFromEstablishmentDto(establishment);
+    await this.prismaService.address.update({
+      where: { id: establishmentEntity.address.id },
+      data: data.newAddress,
     });
+
+    const establishment = await this.prismaService.establishment.findUnique({
+      where: { id: data.id },
+      include: { address: true },
+    });
+
+    return new ReturnPartialAddressFromEstablishmentDto(establishment);
   }
 
-  async delete(id: string, userId: string): Promise<boolean> {
+  async delete(id: string, user: UserEntity): Promise<boolean> {
     await this.checkExistsEstablishmentById(id);
-    await this.checkExistsUserbyId(userId);
 
     const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
+      where: { userId: user.id },
     });
 
-    this.validateSuplier(supplier);
     await this.checkRelationSupplierEstablishment(id, supplier.id);
 
     await this.prismaService.establishment.delete({
@@ -362,7 +318,7 @@ export class EstablishmentService {
   }
 
   private async checkExistsAllSuppliers(supplierIds: string[]) {
-    if (!supplierIds?.length) {
+    if (!supplierIds || !supplierIds?.length) {
       throw new HttpException(
         'List of suppliers invalid',
         HttpStatus.BAD_REQUEST,
@@ -392,31 +348,6 @@ export class EstablishmentService {
     });
 
     return exists !== null;
-  }
-
-  private async checkExistsUserbyId(userId: string) {
-    const exists = await this.userService.existsById(userId);
-
-    if (!exists) {
-      throw new HttpException(
-        `User id:${userId} does not exist`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-  }
-
-  private async checkExistsSupplier(userId: string) {
-    const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
-    });
-
-    this.validateSuplier(supplier);
-  }
-
-  private validateSuplier(supplier: Supplier) {
-    if (!supplier) {
-      throw new HttpException('Supplier not found', HttpStatus.UNAUTHORIZED);
-    }
   }
 
   containSupplier(suppliersIds: string[], id: string) {

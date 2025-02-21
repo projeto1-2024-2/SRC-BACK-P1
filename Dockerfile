@@ -16,3 +16,4 @@ RUN chown -R node:node /home/node/app_dev
 USER node
 
 RUN npx prisma generate
+RUN npx prisma migrate deploy

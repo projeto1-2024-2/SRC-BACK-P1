@@ -1,7 +1,24 @@
 services:
-  postgres:
+  api_p1:
+    container_name: src-back-p1
+    build: ./
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    ports:
+      - 8088:3005
+    depends_on:
+      - pgsql_p1
+    volumes:
+      - .:/usr/src/app_dev
+      - /usr/src/app_dev/node_modules
+    networks:
+      - ondeacho
+    command: npm run start:dev
+    
+  pgsql_p1:
     image: postgres
-    container_name: pgsql_p1_dev
+    container_name: pgsql_p1
     restart: always
     env_file:
       - ./.env
@@ -11,12 +28,15 @@ services:
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
-      - '5436:5432'
+      - 5437:5432
     networks:
-      - onde_acho_network
+      - ondeacho
 
 networks:
-  onde_acho_network:
+  ondeacho:
+    name: ondeacho
+    external: true
+    
 
 volumes:
   postgres:

@@ -15,6 +15,8 @@ import { AddressModule } from './address/address.module';
       autoSchemaFile: join(process.cwd(), 'graphql/schema.gql'),
       sortSchema: true,
       playground: process.env.ENV === 'dev',
+      useGlobalPrefix: true,
+      path: '/graphql',
     }),
     UserModule,
     PrismaModule,

@@ -36,7 +36,7 @@ model User {
   role        Role      @default(CONSUMER)
 }
 
-model Product {
+model product {
   id              String            @id @default(uuid())
   title           String
   description     String
@@ -51,6 +51,9 @@ model Product {
   suppliers       Supplier[]
   establishment   Establishment     @relation(fields: [establishmentId], references: [id])
   dimensions      ProductDimension?
+  last_update     DateTime  @default(now()) @map("last_update")
+  created_on      DateTime  @default(now()) @map("created_on")
+  is_deleted      Boolean           @default(false)
 }
 
 enum StatusEnum {
@@ -72,7 +75,7 @@ model Supplier {
   user          User           @relation(fields: [userId], references: [id])
   taxId         String
   createdAt     DateTime       @default(now())
-  products      Product[]
+  products      product[]
   establishment Establishment? @relation(fields: [establishmentId], references: [id])
 
   establishmentId String?
@@ -85,7 +88,7 @@ model Establishment {
   commercialPhone String
   taxId           String
   addressId       String     @default(uuid())
-  products        Product[]
+  products        product[]
   supplier        Supplier[]
   address         Address    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
 }
@@ -109,7 +112,7 @@ model ProductDimension {
   length    Float?
   height    Float?
   width     Float?
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Conversation {

@@ -1,10 +1,11 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateSupplierInput } from './dto/create-supplier.dto';
+import { CreateSupplierInput } from './dto/create-supplier.input';
 import { Role } from 'src/shared/prismagraphql/prisma';
 import { UserService } from 'src/user/user.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { SupplierEntity } from './entities/supplier.entity';
+import { UpdateSupplierInput } from './dto/update-supplier.input';
 
 @Injectable()
 export class SupplierService {
@@ -50,7 +51,9 @@ export class SupplierService {
     });
   }
 
-  async delete(user: UserEntity): Promise<boolean> {
+  async delete(id: string, user: UserEntity): Promise<boolean> {
+    await this.checkSupplier(id, user);
+
     await this.prismaService.user.update({
       where: { id: user.id },
       data: { role: Role.CONSUMER },
@@ -64,12 +67,29 @@ export class SupplierService {
 
   async update(
     user: UserEntity,
-    data: CreateSupplierInput,
+    data: UpdateSupplierInput,
   ): Promise<SupplierEntity> {
+    await this.checkSupplier(data.id, user);
+
     return await this.prismaService.supplier.update({
       where: { userId: user.id },
       data: { ...data },
     });
+  }
+
+  private async checkSupplier(id: string, user: UserEntity) {
+    if (user.role !== 'ADMIN') {
+      const supplier = await this.prismaService.supplier.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (supplier.id !== id) {
+        throw new HttpException(
+          'User already has a supplier',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    }
   }
 
   async checkExistsSupplier(userId: string) {

@@ -1,10 +1,10 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
-import { Decimal } from '@prisma/client/runtime';
 import GraphQLJSON from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { Prisma } from '@prisma/client';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Decimal } from '@prisma/client/runtime';
 
 @InputType('UpdateProductInput')
 export class UpdateProductInput {
@@ -14,32 +14,41 @@ export class UpdateProductInput {
   id: string;
 
   @Field(() => String, { nullable: true })
+  @IsString()
   title?: string;
 
   @Field(() => String, { nullable: true })
+  @IsString()
   description?: string;
 
   @Field(() => String, { nullable: true })
+  @IsString()
   brand?: string;
 
   @Field(() => GraphQLJSON, { nullable: true })
   imagens?: Prisma.JsonValue;
 
   @Field(() => Boolean, { nullable: true })
+  @IsBoolean()
   isAvaliable?: boolean;
 
   @Field(() => Number, { nullable: true })
+  @IsNumber()
   quantity?: number;
 
-  @Field(() => String, { nullable: true })
-  establishmentId?: string;
+  @Field(() => String, { nullable: false })
+  @IsNotEmpty()
+  @IsString()
+  establishmentId: string;
 
   @Field(() => String, { nullable: true })
+  @IsString()
   category?: string;
 
   @Field(() => StatusEnum, { nullable: true })
   status?: StatusEnum;
 
   @Field(() => GraphQLDecimal, { nullable: true })
+  @IsNumber()
   price?: Decimal;
 }

@@ -11,6 +11,7 @@ export class UpdatePartialProductsEstablishmentInput extends PartialType(
 ) {
   @Field(() => ID)
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @Field(() => String)

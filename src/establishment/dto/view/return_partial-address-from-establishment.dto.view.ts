@@ -6,13 +6,13 @@ import { GraphQLJSONObject } from 'graphql-type-json';
 @ObjectType('ReturnPartialAddressFromEstablishmentDto')
 export class ReturnPartialAddressFromEstablishmentDto {
   @Field()
-  id!: string;
+  id: string;
 
   @Field()
-  name!: string;
+  name: string;
 
   @Field(() => GraphQLJSONObject, { nullable: true })
-  address!: Address;
+  address: Address;
 
   constructor(establishment: EstablishmentEntity) {
     this.id = establishment.id;

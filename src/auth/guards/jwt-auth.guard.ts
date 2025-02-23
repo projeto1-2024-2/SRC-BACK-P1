@@ -22,13 +22,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     let allowedRoles: Role[] = [];
 
     if (classRole) allowedRoles = classRole;
-    if (handlerRole) allowedRoles.concat(handlerRole);
+    if (handlerRole) allowedRoles.push(...handlerRole);
 
     if (allowedRoles.length === 0) return true;
 
     allowedRoles.push(Role.ADMIN);
-
-    console.log(user);
 
     return user.role && allowedRoles.includes(user.role);
   }

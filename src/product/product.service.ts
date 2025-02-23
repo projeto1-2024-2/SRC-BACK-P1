@@ -4,6 +4,7 @@ import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { UserEntity } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class ProductService {
@@ -18,8 +19,14 @@ export class ProductService {
     };
   }
 
-  async create(data: CreateProductInput): Promise<ProductEntity> {
+  async create(
+    data: CreateProductInput,
+    user: UserEntity,
+  ): Promise<ProductEntity> {
     await this.checkExistsEstablishmentById(data.establishmentId);
+
+    await this.checkRelationSupplierEstablishment(data.establishmentId, user);
+
     const product = await this.prismaService.product.create({ data });
 
     return {
@@ -31,8 +38,13 @@ export class ProductService {
   async createMany(
     data: CreateProductInput[],
     establishmentId: string,
+    user?: UserEntity,
   ): Promise<ProductEntity[]> {
     await this.checkExistsEstablishmentById(establishmentId);
+
+    if (user) {
+      await this.checkRelationSupplierEstablishment(establishmentId, user);
+    }
 
     if (!data || !data.length) {
       throw new HttpException(
@@ -56,11 +68,17 @@ export class ProductService {
   }
 
   async updateMany(
-    updateProducts: UpdateProductInput[],
+    data: UpdateProductInput[],
     establishmentId: string,
+    user?: UserEntity,
   ) {
     await this.checkExistsEstablishmentById(establishmentId);
-    if (!updateProducts || updateProducts?.length < 0) {
+
+    if (user) {
+      await this.checkRelationSupplierEstablishment(establishmentId, user);
+    }
+
+    if (!data || !data.length) {
       throw new HttpException(
         `Nenhum produto informado para atualização no estabelecimento ${establishmentId}.`,
         HttpStatus.NOT_FOUND,
@@ -68,7 +86,7 @@ export class ProductService {
     }
 
     return this.prismaService.$transaction(async (prisma) => {
-      const productIds = updateProducts.map((p) => p.id);
+      const productIds = data.map((p) => p.id);
       const existingProducts = await prisma.product.findMany({
         where: {
           id: { in: productIds },
@@ -78,9 +96,7 @@ export class ProductService {
 
       const existingProductIds = new Set(existingProducts.map((p) => p.id));
 
-      const validUpdates = updateProducts.filter((p) =>
-        existingProductIds.has(p.id),
-      );
+      const validUpdates = data.filter((p) => existingProductIds.has(p.id));
 
       if (!validUpdates.length) {
         throw new HttpException(
@@ -112,9 +128,18 @@ export class ProductService {
     });
   }
 
-  async deleteMany(deleteProducts: string[], establishmentId: string) {
+  async deleteMany(
+    deleteProducts: string[],
+    establishmentId: string,
+    user?: UserEntity,
+  ) {
     await this.checkExistsEstablishmentById(establishmentId);
-    if (!deleteProducts || deleteProducts?.length < 1) {
+
+    if (user) {
+      await this.checkRelationSupplierEstablishment(establishmentId, user);
+    }
+
+    if (!deleteProducts || !deleteProducts.length) {
       throw new HttpException(
         `Nenhum produto informado para exclusão no estabelecimento ${establishmentId}.`,
         HttpStatus.NOT_FOUND,
@@ -182,15 +207,19 @@ export class ProductService {
     }));
   }
 
-  async update(data: UpdateProductInput): Promise<ProductEntity> {
+  async update(
+    data: UpdateProductInput,
+    user: UserEntity,
+  ): Promise<ProductEntity> {
+    await this.checkExistsEstablishmentById(data.establishmentId);
+    await this.checkRelationSupplierEstablishment(data.establishmentId, user);
     try {
       const product = await this.prismaService.product.update({
         where: { id: data.id },
         data: data,
       });
       return this.mapToProductEntity(product);
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new HttpException(
         `Product with id:${data.id} does not exists`,
         HttpStatus.NOT_FOUND,
@@ -198,15 +227,24 @@ export class ProductService {
     }
   }
 
-  async delete(idProduct: string): Promise<ProductEntity> {
+  async delete(idProduct: string, user: UserEntity): Promise<ProductEntity> {
     try {
-      const product = await this.prismaService.product.delete({
+      const product = await this.prismaService.product.findUnique({
+        where: { id: idProduct },
+      });
+
+      await this.checkExistsEstablishmentById(product.establishmentId);
+      await this.checkRelationSupplierEstablishment(
+        product.establishmentId,
+        user,
+      );
+
+      await this.prismaService.product.delete({
         where: { id: idProduct },
       });
 
       return this.mapToProductEntity(product);
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new HttpException(
         `Product with id:${idProduct} does not exists`,
         HttpStatus.NOT_FOUND,
@@ -223,6 +261,38 @@ export class ProductService {
         `Estabelecimento com id:${establishmentId} não encontrado`,
         HttpStatus.NOT_FOUND,
       );
+    }
+  }
+
+  private async checkRelationSupplierEstablishment(
+    establishmentId: string,
+    user: UserEntity,
+  ) {
+    if (user.role !== 'ADMIN') {
+      const establishmentEntity =
+        await this.prismaService.establishment.findUnique({
+          where: { id: establishmentId },
+          include: {
+            suppliers: {
+              select: { supplierId: true },
+            },
+          },
+        });
+
+      const supplier = await this.prismaService.supplier.findUnique({
+        where: { userId: user.id },
+      });
+
+      const exists = establishmentEntity.suppliers.some(
+        (s) => s.supplierId === supplier.id,
+      );
+
+      if (!exists) {
+        throw new HttpException(
+          'You cannot be a supplier of your own establishment',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
     }
   }
 }

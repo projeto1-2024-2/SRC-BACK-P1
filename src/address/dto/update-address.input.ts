@@ -1,5 +1,5 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @InputType()
 export class UpdateAddressInput {
@@ -10,7 +10,7 @@ export class UpdateAddressInput {
 
   @Field(() => String, { nullable: true })
   @IsNotEmpty()
-  @IsInt()
+  @IsNumber()
   number: number;
 
   @Field(() => String, { nullable: true })

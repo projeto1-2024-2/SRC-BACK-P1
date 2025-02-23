@@ -6,13 +6,13 @@ import { Product } from 'src/shared/prismagraphql/product';
 @ObjectType('ReturnPartialProductsFromEstablishment')
 export class ReturnPartialProductsFromEstablishmentDto {
   @Field()
-  id!: string;
+  id: string;
 
   @Field()
-  name!: string;
+  name: string;
 
   @Field(() => [GraphQLJSONObject], { nullable: true })
-  products!: Product[];
+  products: Product[];
 
   constructor(establishment: EstablishmentEntity) {
     this.id = establishment.id;

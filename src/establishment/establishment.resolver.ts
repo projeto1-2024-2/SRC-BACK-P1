@@ -71,8 +71,7 @@ export class EstablishmentResolver {
     @Args('id') id: string,
     @CurrentUser() user: UserEntity,
   ): Promise<boolean> {
-    await this.establishmentService.delete(id, user);
-    return true;
+    return await this.establishmentService.delete(id, user);
   }
 
   @IsPublicRoute()

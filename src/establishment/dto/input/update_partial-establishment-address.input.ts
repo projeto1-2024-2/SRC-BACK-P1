@@ -10,13 +10,15 @@ export class UpdatePartialAddressEstablishmentInput extends PartialType(
 ) {
   @Field(() => ID)
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @Field(() => String)
+  @IsNotEmpty()
   @IsString()
   name: string;
 
   @Field(() => GraphQLJSONObject, { nullable: false })
   @IsNotEmpty()
-  newAddress!: UpdateAddressInput;
+  newAddress: UpdateAddressInput;
 }

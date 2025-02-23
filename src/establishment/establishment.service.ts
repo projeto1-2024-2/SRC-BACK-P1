@@ -125,7 +125,6 @@ export class EstablishmentService {
     user: UserEntity,
   ): Promise<ReturnPartialProductsFromEstablishmentDto> {
     await this.checkExistsEstablishmentById(data.id);
-
     await this.checkRelationSupplierEstablishment(data.id, user);
 
     await this.updateProductsEstablishment(
@@ -148,7 +147,6 @@ export class EstablishmentService {
     user: UserEntity,
   ): Promise<ReturnPartialAddressFromEstablishmentDto> {
     await this.checkExistsEstablishmentById(data.id);
-
     await this.checkRelationSupplierEstablishment(data.id, user);
 
     await this.updateAddressEstablishment(data.newAddress, data.id);
@@ -163,7 +161,6 @@ export class EstablishmentService {
 
   async delete(id: string, user: UserEntity): Promise<boolean> {
     await this.checkExistsEstablishmentById(id);
-
     await this.checkRelationSupplierEstablishment(id, user);
 
     await this.prismaService.establishment.delete({
@@ -263,7 +260,18 @@ export class EstablishmentService {
           skipDuplicates: true,
         });
       }
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
 
+      throw new HttpException(
+        'Erro ao adicionar fornecedores.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
       if (deleteSupplierIds && deleteSupplierIds.length > 0) {
         await this.checkExistsAllSuppliers(deleteSupplierIds);
         await this.prismaService.supplierEstablishment.deleteMany({
@@ -279,7 +287,7 @@ export class EstablishmentService {
       }
 
       throw new HttpException(
-        'Erro ao atualizar fornecedores.',
+        'Erro ao remover fornecedores.',
         HttpStatus.BAD_REQUEST,
       );
     }

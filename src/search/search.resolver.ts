@@ -15,24 +15,4 @@ export class SearchResolver {
   ) {
     return await this.searchService.searchProducts(keywords);
   }
-
-  @Mutation(() => String, { name: 'updateProduct' })
-  async updateProduct(
-    @Args({ name: 'id', type: () => String }) id: string,
-    @Args({ name: 'newTitle', type: () => String }) title: string,
-    @Args({ name: 'newBrand', type: () => String }) brand: string,
-    @Args({ name: 'newDescription', type: () => String }) description: string,
-  ) {
-    return await this.searchService.updateDocumentByQuery(
-      id,
-      title,
-      brand,
-      description,
-    );
-  }
-
-  @Mutation(() => String, { name: 'deleteProduct' })
-  async deleteProduct(@Args({ name: 'id', type: () => String }) id: string) {
-    return await this.searchService.deleteProduct(id);
-  }
 }

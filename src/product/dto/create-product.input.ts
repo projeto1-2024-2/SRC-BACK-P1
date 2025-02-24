@@ -7,7 +7,12 @@ import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
 @InputType('CreateProductInput')
-export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
+export class CreateProductInput extends OmitType(ProductEntity, [
+  'id',
+  'last_update',
+  'is_deleted',
+  'created_on',
+]) {
   @Field(() => String)
   title: string;
 

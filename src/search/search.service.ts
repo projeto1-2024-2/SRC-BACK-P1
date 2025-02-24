@@ -1,9 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { ProductEntity } from '../product/entities/product.entity';
 import axios from 'axios';
+import { NlpService } from 'src/nlp/nlp.service';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class SearchService {
-  async searchProducts(keywords: string[]) {
+  constructor(
+    private nplService: NlpService,
+    @Inject(forwardRef(() => ProductService))
+    private productService: ProductService,
+  ) {}
+
+  async searchProductsPipeline(conversation: string) {
+    try {
+      // FIXME: estou utilizando as keywords chumbadas pq meu pc quase fritou com 6 containers rodando + o modelo de pln
+      //const keywords =
+      //  await this.nplService.getKeywordsByConversation(conversation);
+      const keywords = ['Mouse'];
+
+      const products_id: { id: string }[] =
+        await this.searchProductsElasticSearch(keywords);
+
+      const result: ProductEntity[] = await Promise.all(
+        products_id.map(async (p) => await this.productService.findById(p.id)),
+      );
+
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async searchProductsElasticSearch(keywords: string[]) {
     try {
       const query = `
           query {

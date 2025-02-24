@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { AddressModule } from './address/address.module';
 import { SearchModule } from './search/search.module';
+import { NlpModule } from './nlp/nlp.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SearchModule } from './search/search.module';
     ProductModule,
     AddressModule,
     SearchModule,
+    NlpModule,
   ],
   controllers: [],
   providers: [],

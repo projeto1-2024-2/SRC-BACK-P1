@@ -11,17 +11,17 @@ import { SupplierEntity } from './entities/supplier.entity';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 import { UpdateSupplierInput } from './dto/update-supplier.input';
 
-@Resolver(() => Supplier)
+@Resolver(() => SupplierEntity)
 @UseGuards(JwtAuthGuard)
 export class SupplierResolver {
   constructor(private supplierService: SupplierService) {}
 
   @IsPublicRoute()
-  @Mutation(() => Supplier, { name: 'createSupplier' })
+  @Mutation(() => SupplierEntity, { name: 'createSupplier' })
   async createSupplier(
     @CurrentUser() user: UserEntity,
     @Args('data') data: CreateSupplierInput,
-  ): Promise<Supplier> {
+  ): Promise<SupplierEntity> {
     return this.supplierService.create(data, user);
   }
 
@@ -43,13 +43,13 @@ export class SupplierResolver {
     return this.supplierService.update(user, data);
   }
 
-  @Query(() => Supplier, { name: 'findSupplierById', nullable: true })
-  async findById(@Args('id') id: string): Promise<Supplier | null> {
+  @Query(() => SupplierEntity, { name: 'findSupplierById', nullable: true })
+  async findById(@Args('id') id: string): Promise<SupplierEntity | null> {
     return this.supplierService.findById(id);
   }
 
-  @Query(() => [Supplier], { name: 'findAllSuppliers' })
-  async findAll(): Promise<Supplier[]> {
+  @Query(() => [SupplierEntity], { name: 'findAllSuppliers' })
+  async findAll(): Promise<SupplierEntity[]> {
     return this.supplierService.findAll();
   }
 }

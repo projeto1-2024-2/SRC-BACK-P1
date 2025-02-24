@@ -4,10 +4,14 @@ import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { SearchService } from 'src/search/search.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly searchService: SearchService,
+  ) {}
 
   private mapToProductEntity(product: any): ProductEntity {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -64,6 +68,12 @@ export class ProductService {
         where: { id: data.id },
         data: data,
       });
+      await this.searchService.updateDocumentByQuery(
+        data.id,
+        data.title,
+        data.brand,
+        data.description,
+      );
       return this.mapToProductEntity(product);
     } catch (error) {
       console.log(error);
@@ -79,6 +89,7 @@ export class ProductService {
       const product = await this.prismaService.product.delete({
         where: { id: idProduct },
       });
+      await this.searchService.deleteProduct(idProduct);
 
       return this.mapToProductEntity(product);
     } catch (error) {

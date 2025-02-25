@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
-import { Product } from 'src/shared/prismagraphql/product';
+import { product } from 'src/shared/prismagraphql/product';
 
 @ObjectType('ReturnPartialProductsFromEstablishment')
 export class ReturnPartialProductsFromEstablishmentDto {
@@ -12,7 +12,7 @@ export class ReturnPartialProductsFromEstablishmentDto {
   name: string;
 
   @Field(() => [GraphQLJSONObject], { nullable: true })
-  products: Product[];
+  products: product[];
 
   constructor(establishment: EstablishmentEntity) {
     this.id = establishment.id;

@@ -2,17 +2,13 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSupplierInput } from './dto/create-supplier.input';
 import { Role } from 'src/shared/prismagraphql/prisma';
-import { UserService } from 'src/user/user.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { SupplierEntity } from './entities/supplier.entity';
 import { UpdateSupplierInput } from './dto/update-supplier.input';
 
 @Injectable()
 export class SupplierService {
-  constructor(
-    private prismaService: PrismaService,
-    private userService: UserService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(data: CreateSupplierInput, user: UserEntity) {
     await this.checkExistsSupplier(user.id);

@@ -35,7 +35,6 @@ export class ProductService {
     user: UserEntity,
   ): Promise<ProductEntity> {
     await this.checkExistsEstablishmentById(data.establishmentId);
-
     await this.checkRelationSupplierEstablishment(data.establishmentId, user);
 
     const product = await this.prismaService.product.create({ data });
@@ -242,7 +241,6 @@ export class ProductService {
     }
   }
 
-
   async update(
     data: UpdateProductInput,
     user: UserEntity,
@@ -284,7 +282,7 @@ export class ProductService {
       await this.prismaService.product.delete({
         where: { id: idProduct },
       });
-      await this.searchService.deleteProduct(idProduct);  async update(data: UpdateProductInput): Promise<ProductEntity> {
+      await this.searchService.deleteProduct(idProduct);
 
       return this.mapToProductEntity(product);
     } catch {

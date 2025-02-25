@@ -1,5 +1,5 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { Product } from 'src/shared/prismagraphql/product';
+import { product } from 'src/shared/prismagraphql/product';
 import {
   SupplierCount,
   Supplier as SupplierPrisma,
@@ -21,14 +21,17 @@ export class SupplierEntity implements SupplierPrisma {
   @Field(() => [SupplierEstablishment], { nullable: true })
   establishments?: SupplierEstablishment[];
 
-  @Field(() => [Product], { nullable: true })
-  products?: Product[];
+  @Field(() => [product], { nullable: true })
+  products?: product[];
 
   @Field(() => User, { nullable: true })
   user?: User;
 
   @Field(() => Date)
   createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
 
   @Field(() => SupplierCount, { nullable: true })
   _count?: SupplierCount;

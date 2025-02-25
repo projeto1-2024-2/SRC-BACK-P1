@@ -76,7 +76,7 @@ model Supplier {
   taxId         String
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
-  products      Product[]
+  products      product[]
   establishments SupplierEstablishment[]
 }
 
@@ -88,7 +88,7 @@ model Establishment {
   commercialPhone String
   taxId           String
   addressId       String?    @default(uuid())
-  products        Product[]
+  products        product[]
   suppliers       SupplierEstablishment[]
   address         Address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now()) @map("created_at")

@@ -14,7 +14,12 @@ import {
 } from 'class-validator';
 
 @InputType('CreateProductInput')
-export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
+export class CreateProductInput extends OmitType(ProductEntity, [
+  'id',
+  'last_update',
+  'is_deleted',
+  'created_on',
+]) {
   @Field(() => String)
   @IsNotEmpty()
   @IsString()

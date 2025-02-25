@@ -51,4 +51,10 @@ export class UpdateProductInput {
   @Field(() => GraphQLDecimal, { nullable: true })
   @IsNumber()
   price?: Decimal;
+
+  @Field(() => Date)
+  last_update?: Date;
+
+  @Field(() => Boolean)
+  is_deleted?: boolean;
 }

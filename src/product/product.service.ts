@@ -1,14 +1,25 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { UserEntity } from 'src/user/entities/user.entity';
+import { SearchService } from 'src/search/search.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => SearchService))
+    private readonly searchService: SearchService,
+  ) {}
 
   private mapToProductEntity(product: any): ProductEntity {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -31,6 +42,9 @@ export class ProductService {
 
     return {
       ...product,
+      last_update: new Date(),
+      created_on: new Date(),
+      is_deleted: false,
       status: StatusEnum[product.status as keyof typeof StatusEnum],
     };
   }
@@ -207,6 +221,28 @@ export class ProductService {
     }));
   }
 
+  async findById(id: string): Promise<ProductEntity | null> {
+    try {
+      const product = await this.prismaService.product.findUnique({
+        where: { id: id },
+      });
+      if (!product) {
+        throw new HttpException(
+          `Product with id:${id} does not exists`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        ...product,
+        status: StatusEnum[product.status as keyof typeof StatusEnum],
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to fetch product');
+    }
+  }
+
+
   async update(
     data: UpdateProductInput,
     user: UserEntity,
@@ -218,6 +254,12 @@ export class ProductService {
         where: { id: data.id },
         data: data,
       });
+      await this.searchService.updateDocumentByQuery(
+        data.id,
+        data.title,
+        data.brand,
+        data.description,
+      );
       return this.mapToProductEntity(product);
     } catch {
       throw new HttpException(
@@ -242,6 +284,7 @@ export class ProductService {
       await this.prismaService.product.delete({
         where: { id: idProduct },
       });
+      await this.searchService.deleteProduct(idProduct);  async update(data: UpdateProductInput): Promise<ProductEntity> {
 
       return this.mapToProductEntity(product);
     } catch {

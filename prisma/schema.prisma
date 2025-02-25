@@ -49,7 +49,7 @@ model product {
   status          StatusEnum        @default(ACTIVE)
   price           Decimal
   suppliers       Supplier[]
-  establishment   Establishment     @relation(fields: [establishmentId], references: [id])
+  establishment   Establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   dimensions      ProductDimension?
   last_update     DateTime  @default(now()) @map("last_update")
   created_on      DateTime  @default(now()) @map("created_on")
@@ -70,27 +70,39 @@ model Location {
 }
 
 model Supplier {
-  id            String         @id @default(uuid())
-  userId        String         @unique()
-  user          User           @relation(fields: [userId], references: [id])
+  id            String           @id @default(uuid())
+  userId        String           @unique()
+  user          User             @relation(fields: [userId], references: [id])
   taxId         String
-  createdAt     DateTime       @default(now())
-  products      product[]
-  establishment Establishment? @relation(fields: [establishmentId], references: [id])
-
-  establishmentId String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @default(now())
+  products      Product[]
+  establishments SupplierEstablishment[]
 }
 
 model Establishment {
   id              String     @id @default(uuid())
   name            String
-  operatingHours  String
+  openingHours    DateTime
+  closingHours    DateTime
   commercialPhone String
   taxId           String
-  addressId       String     @default(uuid())
-  products        product[]
-  supplier        Supplier[]
-  address         Address    @relation(name: "EstablishmentAddress", fields: [addressId], references: [id])
+  addressId       String?    @default(uuid())
+  products        Product[]
+  suppliers       SupplierEstablishment[]
+  address         Address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @default(now()) @map("updated_at")
+}
+
+model SupplierEstablishment {
+  id             String        @id @default(uuid())
+  supplierId     String
+  establishmentId String
+  supplier      Supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  establishment Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, establishmentId])
 }
 
 model Address {

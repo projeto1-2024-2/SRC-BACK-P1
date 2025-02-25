@@ -1,6 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { User as UserPrisma } from '@prisma/client';
 import { Role } from '@prisma/client';
+import { Supplier } from 'src/shared/prismagraphql/supplier';
 
 registerEnumType(Role, {
   name: 'Role',
@@ -38,6 +39,9 @@ export class UserEntity implements UserPrisma {
 
   @Field(() => String, { nullable: true })
   addressId: string;
+
+  @Field(() => Supplier, { nullable: true })
+  supplier: Supplier;
 
   @Field(() => String)
   role: Role;

@@ -76,11 +76,4 @@ export class UserService {
 
     await this.prismaService.user.delete({ where: { id } });
   }
-
-  async existsById(id: string): Promise<boolean> {
-    const user = await this.prismaService.user.findUnique({
-      where: { id },
-    });
-    return !!user;
-  }
 }

@@ -14,10 +14,8 @@ export class SearchService {
 
   async searchProductsPipeline(conversation: string) {
     try {
-      // FIXME: estou utilizando as keywords chumbadas pq meu pc quase fritou com 6 containers rodando + o modelo de pln
-      //const keywords =
-      //  await this.nplService.getKeywordsByConversation(conversation);
-      const keywords = ['Mouse'];
+      const keywords =
+      await this.nplService.getKeywordsByConversation(conversation);
 
       const products_id: { id: string }[] =
         await this.searchProductsElasticSearch(keywords);

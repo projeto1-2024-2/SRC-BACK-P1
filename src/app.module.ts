@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { AddressModule } from './address/address.module';
+import { EstablishmentModule } from './establishment/establishment.module';
+import { SupplierModule } from './supplier/supplier.module';
 import { SearchModule } from './search/search.module';
 import { NlpModule } from './nlp/nlp.module';
 
@@ -25,6 +27,8 @@ import { NlpModule } from './nlp/nlp.module';
     AuthModule,
     ProductModule,
     AddressModule,
+    EstablishmentModule,
+    SupplierModule,
     SearchModule,
     NlpModule,
   ],

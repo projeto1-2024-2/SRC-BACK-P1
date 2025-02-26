@@ -16,7 +16,7 @@ export class NlpService {
       const response = await axios.post(process.env.NLP_URL, {
         query,
       });
-      return response.data.data.keywords;
+      return response.data.data.keywords.keywords;
     } catch (error) {
       console.log(error);
     }

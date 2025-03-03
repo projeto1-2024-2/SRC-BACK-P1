@@ -39,4 +39,7 @@ export class ProductEntity implements ProductPrisma {
 
   @Field(() => GraphQLDecimal)
   price: Decimal;
+
+  @Field(() => [String])
+  keywords: string[];
 }

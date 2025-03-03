@@ -51,6 +51,7 @@ model Product {
   suppliers       Supplier[]
   establishment   Establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   dimensions      ProductDimension?
+  keywords        String[]
 }
 
 enum StatusEnum {

@@ -51,4 +51,8 @@ export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
   @Field(() => GraphQLDecimal)
   @IsNotEmpty()
   price: Decimal;
+
+  @Field(() => [String])
+  @IsOptional()
+  keywords: string[];
 }

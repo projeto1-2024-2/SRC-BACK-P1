@@ -19,6 +19,12 @@ export class ProductService {
   }
 
   async create(data: CreateProductInput): Promise<ProductEntity> {
+    if (data.keywords.length == 0) {
+      data.keywords = this.createKeywordsByTitleDescription(
+        data.title,
+        data.description,
+      );
+    }
     await this.checkExistsEstablishmentById(data.establishmentId);
     const product = await this.prismaService.product.create({ data });
 
@@ -224,5 +230,18 @@ export class ProductService {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  private createKeywordsByTitleDescription(title: string, description: string) {
+    const keywords: string[] = [];
+    const titleSplitted = title.split(' ');
+    const descriptionSplitted = description.split(' ');
+    titleSplitted.map((i) => {
+      keywords.push(i);
+    });
+    descriptionSplitted.map((i) => {
+      keywords.push(i);
+    });
+    return keywords;
   }
 }

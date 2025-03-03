@@ -42,4 +42,7 @@ export class UpdateProductInput {
 
   @Field(() => GraphQLDecimal, { nullable: true })
   price?: Decimal;
+
+  @Field(() => String, { nullable: true })
+  keywords?: string[];
 }

@@ -45,7 +45,7 @@ export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
   category: string;
 
   @Field(() => StatusEnum, { defaultValue: StatusEnum.ACTIVE })
-  @IsNotEmpty()
+  @IsOptional()
   status: StatusEnum;
 
   @Field(() => GraphQLDecimal)

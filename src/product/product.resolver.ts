@@ -17,16 +17,7 @@ export class ProductResolver {
     return this.productService.create(data);
   }
 
-  @Mutation(() => [ProductEntity], { name: 'createProducts' })
-  async createProducts(
-    @Args('data', { type: () => [CreateProductInput] })
-    data: CreateProductInput[],
-    @Args('establishmentId') establishmentId: string,
-  ): Promise<ProductEntity[]> {
-    return this.productService.createMany(data, establishmentId);
-  }
-
-  @Query(() => [ProductEntity], { name: 'getAllProducts' })
+  @Query(() => [ProductEntity], { name: 'getProducts' })
   async findAll(): Promise<ProductEntity[]> {
     return this.productService.findAll();
   }
@@ -39,7 +30,7 @@ export class ProductResolver {
   }
 
   @Mutation(() => ProductEntity, { name: 'deleteProduct' })
-  async deleteProduct(@Args('id') id: string): Promise<ProductEntity> {
+  async deleteProduct(@Args('id') id: string): Promise<string> {
     return this.productService.delete(id);
   }
 }

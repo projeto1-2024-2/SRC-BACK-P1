@@ -22,9 +22,6 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => GraphQLJSON)
   imagens: Prisma.JsonValue;
 
-  @Field(() => Boolean)
-  isAvaliable: boolean;
-
   @Field(() => Int)
   quantity: number;
 

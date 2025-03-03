@@ -2,14 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateEstablishmentInput } from './dto/input/create_full_itens-establishment.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePartialEstablishmentInput } from './dto/input/update_partial-establishment.input';
-import { ReturnPartialProductsFromEstablishmentDto } from './dto/view/return_partial-products-from-establishment.dto.view';
-import { UpdatePartialProductsEstablishmentInput } from './dto/input/update_partial-establishment-products.input';
-import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
-import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
-import { CreateAddressInput } from 'src/address/dto/create-address.input';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { Supplier } from 'src/shared/prismagraphql/supplier';
+import { supplier } from 'src/shared/prismagraphql/supplier';
 import { UserService } from 'src/user/user.service';
 import { ProductService } from 'src/product/product.service';
 
@@ -194,87 +189,6 @@ export class EstablishmentService {
     return establishment;
   }
 
-  async updateProducts(
-    data: UpdatePartialProductsEstablishmentInput,
-    userId: string,
-  ): Promise<ReturnPartialProductsFromEstablishmentDto> {
-    await this.checkExistsEstablishmentById(data.id);
-    await this.checkExistsUserbyId(userId);
-
-    const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
-    });
-
-    this.validateSuplier(supplier);
-
-    await this.checkRelationSupplierEstablishment(data.id, supplier.id);
-
-    if (data.newProducts && data.newProducts?.length > 0) {
-      await this.productService.createMany(data.newProducts, data.id);
-    }
-
-    if (data.updateProducts && data.updateProducts?.length > 0) {
-      await this.productService.updateMany(data.updateProducts, data.id);
-    }
-
-    if (data.deleteProducts && data.deleteProducts?.length > 0) {
-      await this.productService.deleteMany(data.deleteProducts, data.id);
-    }
-
-    const establishment = await this.prismaService.establishment.findUnique({
-      where: { id: data.id },
-      include: { products: true },
-    });
-
-    return new ReturnPartialProductsFromEstablishmentDto(establishment);
-  }
-
-  async updateAddress(
-    data: UpdateAddressInput,
-    addressData: CreateAddressInput,
-    userId: string,
-  ): Promise<ReturnPartialAddressFromEstablishmentDto> {
-    await this.checkExistsEstablishmentById(data.id);
-    await this.checkExistsUserbyId(userId);
-
-    const supplier = await this.prismaService.supplier.findUnique({
-      where: { userId: userId },
-    });
-
-    this.validateSuplier(supplier);
-    await this.checkRelationSupplierEstablishment(data.id, supplier.id);
-
-    const establishmentEntity =
-      await this.prismaService.establishment.findUnique({
-        where: { id: data.id },
-        include: { suppliers: { select: { supplierId: true } }, address: true },
-      });
-
-    if (!establishmentEntity) {
-      throw new HttpException('Establishment not found', HttpStatus.NOT_FOUND);
-    }
-
-    return this.prismaService.$transaction(async (tx) => {
-      if (establishmentEntity.address) {
-        await tx.address.delete({
-          where: { id: establishmentEntity.address.id },
-        });
-      }
-
-      const address = await tx.address.create({
-        data: addressData,
-      });
-
-      const establishment = await tx.establishment.update({
-        where: { id: data.id },
-        data: { addressId: address.id },
-        include: { address: true },
-      });
-
-      return new ReturnPartialAddressFromEstablishmentDto(establishment);
-    });
-  }
-
   async delete(id: string, userId: string): Promise<boolean> {
     await this.checkExistsEstablishmentById(id);
     await this.checkExistsUserbyId(userId);
@@ -290,21 +204,6 @@ export class EstablishmentService {
       where: { id },
     });
     return true;
-  }
-
-  async fetchProductsByEstablishmentId(
-    id: string,
-  ): Promise<ReturnPartialProductsFromEstablishmentDto> {
-    await this.checkExistsEstablishmentById(id);
-
-    const establishment = await this.prismaService.establishment.findUnique({
-      where: { id },
-      include: {
-        products: true,
-      },
-    });
-
-    return new ReturnPartialProductsFromEstablishmentDto(establishment);
   }
 
   async findById(id: string): Promise<EstablishmentEntity> {
@@ -333,21 +232,6 @@ export class EstablishmentService {
     });
 
     return establishments;
-  }
-
-  async fetchProductsAll(): Promise<
-    ReturnPartialProductsFromEstablishmentDto[]
-  > {
-    const establishments = await this.prismaService.establishment.findMany({
-      include: {
-        products: true,
-      },
-    });
-
-    return establishments.map(
-      (establishment) =>
-        new ReturnPartialProductsFromEstablishmentDto(establishment),
-    );
   }
 
   private async checkExistsEstablishmentById(id: string): Promise<void> {
@@ -413,7 +297,7 @@ export class EstablishmentService {
     this.validateSuplier(supplier);
   }
 
-  private validateSuplier(supplier: Supplier) {
+  private validateSuplier(supplier: supplier) {
     if (!supplier) {
       throw new HttpException('Supplier not found', HttpStatus.UNAUTHORIZED);
     }

@@ -1,5 +1,5 @@
 import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
-import { Prisma, Product as ProductPrisma } from '@prisma/client';
+import { Prisma, product as ProductPrisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
 import { GraphQLJSON } from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';

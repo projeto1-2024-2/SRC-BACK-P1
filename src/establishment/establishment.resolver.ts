@@ -2,23 +2,16 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EstablishmentEntity } from './entities/establishment.entity';
 import { CreateEstablishmentInput } from './dto/input/create_full_itens-establishment.input';
 import { EstablishmentService } from './establishment.service';
-import { UpdatePartialEstablishmentInput } from './dto/input/update_partial-establishment.input';
-import { UpdatePartialProductsEstablishmentInput } from './dto/input/update_partial-establishment-products.input';
-import { ReturnPartialProductsFromEstablishmentDto } from './dto/view/return_partial-products-from-establishment.dto.view';
-import { UpdateAddressInput } from 'src/address/dto/update-address.input';
-import { ReturnPartialAddressFromEstablishmentDto } from './dto/view/return_partial-address-from-establishment.dto.view';
-import { UpdateFullItensEstablishmentInput } from './dto/input/update_full_itens-establishment.input';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
-import { CreateAddressInput } from 'src/address/dto/create-address.input';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver(() => EstablishmentEntity)
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class EstablishmentResolver {
   constructor(private readonly establishmentService: EstablishmentService) {}
 
   @IsPublicRoute()
-  // @UseGuards(JwtAuthGuard)
-  // @Roles('SUPPLIER')
   @Mutation(() => EstablishmentEntity, { name: 'createEstablishment' })
   async create(
     @Args('userId') userId: string,
@@ -27,48 +20,8 @@ export class EstablishmentResolver {
     return await this.establishmentService.create(data, userId);
   }
 
-  @IsPublicRoute()
-  @Mutation(() => EstablishmentEntity, { name: 'updateEstablishment' })
-  async update(
-    @Args('userId') userId: string,
-    @Args('data') data: UpdateFullItensEstablishmentInput,
-  ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.update(data, userId);
-  }
+  //TODO: REFAZER UPDATE
 
-  @IsPublicRoute()
-  @Mutation(() => EstablishmentEntity, { name: 'updatePartialEstablishment' })
-  async updatePartial(
-    @Args('userId') userId: string,
-    @Args('data') data: UpdatePartialEstablishmentInput,
-  ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.updatePartial(data, userId);
-  }
-
-  @IsPublicRoute()
-  @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentProducts' })
-  async updateProducts(
-    @Args('userId') userId: string,
-    @Args('data') data: UpdatePartialProductsEstablishmentInput,
-  ): Promise<ReturnPartialProductsFromEstablishmentDto> {
-    return await this.establishmentService.updateProducts(data, userId);
-  }
-
-  @IsPublicRoute()
-  @Mutation(() => EstablishmentEntity, { name: 'updateEstablishmentAddress' })
-  async updateAddress(
-    @Args('userId') userId: string,
-    @Args('data') data: UpdateAddressInput,
-    @Args('addressData') addressData: CreateAddressInput,
-  ): Promise<ReturnPartialAddressFromEstablishmentDto> {
-    return await this.establishmentService.updateAddress(
-      data,
-      addressData,
-      userId,
-    );
-  }
-
-  @IsPublicRoute()
   @Mutation(() => Boolean, { name: 'deleteEstablishment' })
   async delete(
     @Args('id') id: string,
@@ -88,24 +41,5 @@ export class EstablishmentResolver {
   @Query(() => [EstablishmentEntity], { name: 'findAllEstablishments' })
   async findAll(): Promise<EstablishmentEntity[]> {
     return await this.establishmentService.findAll();
-  }
-
-  @IsPublicRoute()
-  @Query(() => ReturnPartialProductsFromEstablishmentDto, {
-    name: 'fetchProductsByEstablishmentId',
-  })
-  async fetchProductsByEstablishmentId(
-    @Args('id') id: string,
-  ): Promise<ReturnPartialProductsFromEstablishmentDto> {
-    return await this.establishmentService.fetchProductsByEstablishmentId(id);
-  }
-
-  @Query(() => [ReturnPartialProductsFromEstablishmentDto], {
-    name: 'fetchProductsAll',
-  })
-  async fetchProductsAllByEsyablishmentId(): Promise<
-    ReturnPartialProductsFromEstablishmentDto[]
-  > {
-    return await this.establishmentService.fetchProductsAll();
   }
 }

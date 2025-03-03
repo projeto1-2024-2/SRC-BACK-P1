@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
-import { User } from 'src/shared/prismagraphql/user';
+import { user } from 'src/shared/prismagraphql/user';
 import { UserService } from 'src/user/user.service';
 import { AuthInput } from '../dto/auth-input';
 import { PayloadJwt } from '../dto/payload-jwt';
@@ -26,7 +26,7 @@ export class AuthService {
     }
     return this.login(user);
   }
-  private async login(user: User): Promise<AuthResponse> {
+  private async login(user: user): Promise<AuthResponse> {
     const { id: sub, email, name } = user;
     const payload: PayloadJwt = {
       sub,

@@ -2,7 +2,7 @@ import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create_full_itens-establishment.input';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Address } from 'src/shared/prismagraphql/address';
+import { address } from 'src/shared/prismagraphql/address';
 
 @InputType('UpdatePartialAddressEstablishmentInput')
 export class UpdatePartialAddressEstablishmentInput extends PartialType(
@@ -22,7 +22,7 @@ export class UpdatePartialAddressEstablishmentInput extends PartialType(
 
   @Field(() => GraphQLJSONObject, { nullable: false })
   @IsNotEmpty()
-  address?: Address;
+  address?: address;
 
   @Field(() => Date)
   updatedAt: Date = new Date();

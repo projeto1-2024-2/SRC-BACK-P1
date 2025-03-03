@@ -4,7 +4,7 @@ import { EstablishmentEntity } from '../../entities/establishment.entity';
 import { Optional } from '@nestjs/common';
 import { CreateAddressInput } from 'src/address/dto/create-address.input';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Product } from 'src/shared/prismagraphql/product';
+import { product } from 'src/shared/prismagraphql/product';
 
 @InputType('CreateEstablishmentInput')
 export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
@@ -36,13 +36,9 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @IsString()
   taxId: string;
 
-  @Field(() => String, { nullable: true })
-  @Optional()
-  addressId?: string;
-
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
-  products?: Product[];
+  products?: product[];
 
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()

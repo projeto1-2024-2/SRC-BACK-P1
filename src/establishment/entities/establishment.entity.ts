@@ -1,12 +1,9 @@
 import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { Address } from 'src/shared/prismagraphql/address/address.model';
-import {
-  EstablishmentCount,
-  Establishment as EstablishmentPrisma,
-} from 'src/shared/prismagraphql/establishment';
-import { Product } from 'src/shared/prismagraphql/product';
-import { SupplierEstablishment } from 'src/shared/prismagraphql/supplier-establishment';
+import { establishment as EstablishmentPrisma } from 'src/shared/prismagraphql/establishment';
+import { EstablishmentCount } from 'src/shared/prismagraphql/prisma';
+import { product } from 'src/shared/prismagraphql/product';
+import { supplierEstablishment } from 'src/shared/prismagraphql/supplier-establishment';
 
 @ObjectType()
 export class EstablishmentEntity implements EstablishmentPrisma {
@@ -29,16 +26,13 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   taxId: string;
 
   @Field(() => String, { nullable: true })
-  addressId?: string;
+  addressId: string;
 
   @Field(() => [GraphQLJSONObject])
-  products?: Product[];
-
-  @Field(() => GraphQLJSONObject)
-  address?: Address;
+  products?: product[];
 
   @Field(() => [GraphQLJSONObject])
-  suppliers?: SupplierEstablishment[];
+  suppliers?: supplierEstablishment[];
 
   @Field(() => GraphQLJSONObject)
   _count?: EstablishmentCount;

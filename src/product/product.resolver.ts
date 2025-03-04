@@ -3,10 +3,15 @@ import { ProductService } from './product.service';
 import { ProductEntity } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
+import { UseGuards } from '@nestjs/common';
+import { Roles } from 'src/user/decorators';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { PaginatedProducts } from './dto/paginated-products.input';
+import { PaginationInput } from 'src/pagination/pagination.input';
 
+@UseGuards(JwtAuthGuard)
+@Roles('SUPPLIER')
 @Resolver(() => ProductEntity)
-// @UseGuards(JwtAuthGuard)
-// @Roles('SUPPLIER')
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
@@ -17,9 +22,12 @@ export class ProductResolver {
     return this.productService.create(data);
   }
 
-  @Query(() => [ProductEntity], { name: 'getProducts' })
-  async findAll(): Promise<ProductEntity[]> {
-    return this.productService.findAll();
+  @Query(() => PaginatedProducts, { name: 'getProducts' })
+  async findAll(
+    @Args('pagination', { nullable: true }) pagination: PaginationInput,
+    @Args('establishmentId', { nullable: false }) establishmentId: string,
+  ): Promise<PaginatedProducts> {
+    return this.productService.findAll(pagination, establishmentId);
   }
 
   @Mutation(() => ProductEntity, { name: 'updateProduct' })

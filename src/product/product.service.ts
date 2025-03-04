@@ -4,10 +4,16 @@ import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { PaginationInput } from 'src/pagination/pagination.input';
+import { PaginatedProducts } from './dto/paginated-products.input';
+import { EstablishmentService } from 'src/establishment/establishment.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly establishmentService: EstablishmentService,
+  ) {}
 
   async create(data: CreateProductInput): Promise<ProductEntity> {
     if (data.keywords.length == 0) {
@@ -16,7 +22,13 @@ export class ProductService {
         data.description,
       );
     }
-    await this.checkExistsEstablishmentById(data.establishmentId);
+    await this.checkProductExistsByTitleDescription(
+      data.title,
+      data.description,
+    );
+    await this.establishmentService.checkExistsEstablishmentById(
+      data.establishmentId,
+    );
     const product = await this.prismaService.product.create({ data });
 
     return {
@@ -25,13 +37,24 @@ export class ProductService {
     };
   }
 
-  async findAll(): Promise<ProductEntity[]> {
-    const products = await this.prismaService.product.findMany();
+  async findAll(
+    pagination: PaginationInput,
+    establishmentId: string,
+  ): Promise<PaginatedProducts> {
+    const { take, skip, cursor } = pagination;
+    const products = await this.prismaService.product.findMany({
+      take: take + 1,
+      skip: skip || 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      where: { establishmentId },
+    });
 
-    return products.map((product) => ({
-      ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
-    }));
+    const hasMore = products.length > take;
+
+    return {
+      products: products.slice(0, take),
+      hasMore,
+    };
   }
 
   async findByEstablishment(establishmentId: string): Promise<ProductEntity[]> {
@@ -90,15 +113,17 @@ export class ProductService {
     }
   }
 
-  private async checkExistsEstablishmentById(establishmentId: string) {
-    const exists = await this.prismaService.establishment.findUnique({
-      where: { id: establishmentId },
+  private async checkProductExistsByTitleDescription(
+    title: string,
+    description: string,
+  ) {
+    const existingProduct = await this.prismaService.product.findFirst({
+      where: { title: title, description: description },
     });
-    if (!exists) {
-      throw new HttpException(`Establishment not found`, HttpStatus.NOT_FOUND);
+    if (existingProduct) {
+      throw new HttpException('Product already exits', HttpStatus.CONFLICT);
     }
   }
-
   private async checkProductExists(id: string) {
     const existingProduct = await this.prismaService.product.findUnique({
       where: { id },

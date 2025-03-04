@@ -82,8 +82,6 @@ export class UserService {
       where: { id },
     });
 
-    console.log('user', user);
-
     return !!user;
   }
 }

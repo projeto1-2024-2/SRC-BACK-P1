@@ -28,8 +28,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     allowedRoles.push(Role.ADMIN);
 
-    console.log(user);
-
     return user.role && allowedRoles.includes(user.role);
   }
 

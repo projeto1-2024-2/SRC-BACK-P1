@@ -11,12 +11,12 @@ export class SupplierService {
     private userService: UserService,
   ) {}
 
-  async create(data: CreateSupplierInput, userId: string) {
-    await this.checkExistsUser(userId);
+  async create(data: CreateSupplierInput) {
+    await this.checkExistsUser(data.userId);
 
-    this.validatePermission(userId, data.userId);
+    this.validatePermission(data.userId, data.userId);
 
-    await this.checkExistsSupplier(userId);
+    await this.checkExistsSupplier(data.userId);
 
     const supplier = await this.prismaService.supplier.create({
       data: {

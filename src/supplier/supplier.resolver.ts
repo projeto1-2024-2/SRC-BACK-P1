@@ -9,7 +9,7 @@ import { Roles } from 'src/user/decorators';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 
 @UseGuards(JwtAuthGuard)
-@Roles('SUPPLIER', 'ADMIN')
+@Roles('ADMIN')
 @Resolver(() => SupplierEntity)
 export class SupplierResolver {
   constructor(private supplierService: SupplierService) {}
@@ -17,9 +17,8 @@ export class SupplierResolver {
   @IsPublicRoute()
   @Mutation(() => supplier, { name: 'createSupplier' })
   async createSupplier(
-    @Args('userId') userId: string,
     @Args('data') data: CreateSupplierInput,
   ): Promise<supplier> {
-    return this.supplierService.create(data, userId);
+    return this.supplierService.create(data);
   }
 }

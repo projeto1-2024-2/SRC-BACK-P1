@@ -10,7 +10,7 @@ import { PaginatedProducts } from './dto/paginated-products.input';
 import { PaginationInput } from 'src/pagination/pagination.input';
 
 @UseGuards(JwtAuthGuard)
-@Roles('SUPPLIER')
+@Roles('SUPPLIER', 'ADMIN')
 @Resolver(() => ProductEntity)
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}

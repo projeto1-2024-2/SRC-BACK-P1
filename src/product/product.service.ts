@@ -57,26 +57,25 @@ export class ProductService {
     };
   }
 
-  async findByEstablishment(establishmentId: string): Promise<ProductEntity[]> {
+  async findByCategory(
+    pagination: PaginationInput,
+    category: string,
+    establishmentId: string,
+  ): Promise<PaginatedProducts> {
+    const { take, skip, cursor } = pagination;
     const products = await this.prismaService.product.findMany({
-      where: { establishmentId },
+      take: take + 1,
+      skip: skip || 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      where: { establishmentId, category },
     });
 
-    return products.map((product) => ({
-      ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
-    }));
-  }
+    const hasMore = products.length > take;
 
-  async findByCategory(category: string): Promise<ProductEntity[]> {
-    const products = await this.prismaService.product.findMany({
-      where: { category },
-    });
-
-    return products.map((product) => ({
-      ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
-    }));
+    return {
+      products: products.slice(0, take),
+      hasMore,
+    };
   }
 
   async update(data: UpdateProductInput): Promise<ProductEntity> {

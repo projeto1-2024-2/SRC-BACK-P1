@@ -25,9 +25,22 @@ export class ProductResolver {
   @Query(() => PaginatedProducts, { name: 'getProducts' })
   async findAll(
     @Args('pagination', { nullable: true }) pagination: PaginationInput,
-    @Args('establishmentId', { nullable: false }) establishmentId: string,
+    @Args('establishmentId') establishmentId: string,
   ): Promise<PaginatedProducts> {
     return this.productService.findAll(pagination, establishmentId);
+  }
+
+  @Query(() => PaginatedProducts, { name: 'getProductsByCategory' })
+  async findAllByCategory(
+    @Args('pagination', { nullable: true }) pagination: PaginationInput,
+    @Args('category') category: string,
+    @Args('establishmentId') establishmentId: string,
+  ): Promise<PaginatedProducts> {
+    return this.productService.findByCategory(
+      pagination,
+      category,
+      establishmentId,
+    );
   }
 
   @Mutation(() => ProductEntity, { name: 'updateProduct' })

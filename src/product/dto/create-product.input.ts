@@ -28,9 +28,6 @@ export class CreateProductInput extends OmitType(ProductEntity, ['id']) {
   @IsOptional()
   imagens: Prisma.JsonValue;
 
-  @Field(() => Boolean)
-  isAvaliable: boolean;
-
   @Field(() => Number)
   @IsNotEmpty()
   quantity: number;

@@ -26,7 +26,7 @@ export class ProductService {
       data.title,
       data.description,
     );
-    await this.establishmentService.checkExistsEstablishmentById(
+    await this.establishmentService.checkEstablishmentByid(
       data.establishmentId,
     );
     const product = await this.prismaService.product.create({ data });
@@ -36,6 +36,19 @@ export class ProductService {
       status: StatusEnum[product.status as keyof typeof StatusEnum],
     };
   }
+
+  async findById(productId: string): Promise<ProductEntity> {
+    await this.checkProductExists(productId);
+    const product = await this.prismaService.product.findUnique({
+      where: { id: productId },
+    });
+
+    return {
+      ...product,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    };
+  }
+
 
   async findAll(
     pagination: PaginationInput,

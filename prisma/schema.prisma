@@ -31,7 +31,6 @@ model user {
   pseudonym   String?
   addressId   String?
   address     address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
-  supplier    supplier?
   contexts    context[]
   role        Role      @default(CONSUMER)
 }
@@ -47,7 +46,6 @@ model product {
   category        String?
   status          StatusEnum
   price           Decimal
-  suppliers       supplier[]
   establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
@@ -66,17 +64,6 @@ model location {
   z         BigInt
 }
 
-model supplier {
-  id            String           @id @default(uuid())
-  userId        String           @unique()
-  user          user             @relation(fields: [userId], references: [id])
-  taxId         String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now())
-  products      product[]
-  establishments supplierEstablishment[]
-}
-
 model establishment {
   id              String     @id @default(uuid())
   name            String
@@ -86,21 +73,11 @@ model establishment {
   taxId           String
   addressId       String?    @default(uuid())
   products        product[]
-  suppliers       supplierEstablishment[]
   address         address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @default(now()) @map("updated_at")
 }
 
-model supplierEstablishment {
-  id             String        @id @default(uuid())
-  supplierId     String
-  establishmentId String
-  supplier      supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  establishment establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-
-  @@unique([supplierId, establishmentId])
-}
 
 model address {
   id             String          @id @default(uuid())

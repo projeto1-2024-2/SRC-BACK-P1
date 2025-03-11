@@ -19,7 +19,7 @@ enum Role {
   SUPPLIER
 }
 
-model User {
+model user {
   id          String    @id @default(uuid())
   name        String
   email       String    @unique
@@ -30,9 +30,8 @@ model User {
   updatedAt   DateTime  @default(now()) @map("updated_at")
   pseudonym   String?
   addressId   String?
-  address     Address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
-  supplier    Supplier?
-  contexts    Context[]
+  address     address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  contexts    context[]
   role        Role      @default(CONSUMER)
 }
 
@@ -42,18 +41,17 @@ model product {
   description     String
   brand           String
   imagens         Json?
-  isAvaliable     Boolean           @default(true)
   quantity        Int               @default(0)
   establishmentId String            @default(uuid())
   category        String?
-  status          StatusEnum        @default(ACTIVE)
+  status          StatusEnum        
   price           Decimal
-  suppliers       Supplier[]
-  establishment   Establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-  dimensions      ProductDimension?
-  last_update     DateTime  @default(now()) @map("last_update")
-  created_on      DateTime  @default(now()) @map("created_on")
-  is_deleted      Boolean           @default(false)
+  establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  dimensions      productDimension?
+  keywords        String[]
+  created_at      DateTime   @default(now()) @map("created_at")
+  updated_at      DateTime   @default(now()) @map("updated_at")
+  is_deleted      Boolean    @default(false)
 }
 
 enum StatusEnum {
@@ -61,26 +59,16 @@ enum StatusEnum {
   INACTIVE
 }
 
-model Location {
+model location {
   addressId String  @id @default(uuid())
-  address   Address @relation(fields: [addressId], references: [id])
+  address   address @relation(fields: [addressId], references: [id])
   x         BigInt
   y         BigInt
   z         BigInt
 }
 
-model Supplier {
-  id            String           @id @default(uuid())
-  userId        String           @unique()
-  user          User             @relation(fields: [userId], references: [id])
-  taxId         String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now())
-  products      product[]
-  establishments SupplierEstablishment[]
-}
 
-model Establishment {
+model establishment {
   id              String     @id @default(uuid())
   name            String
   openingHours    DateTime
@@ -89,23 +77,13 @@ model Establishment {
   taxId           String
   addressId       String?    @default(uuid())
   products        product[]
-  suppliers       SupplierEstablishment[]
-  address         Address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
+  address         address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @default(now()) @map("updated_at")
 }
 
-model SupplierEstablishment {
-  id             String        @id @default(uuid())
-  supplierId     String
-  establishmentId String
-  supplier      Supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  establishment Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
 
-  @@unique([supplierId, establishmentId])
-}
-
-model Address {
+model address {
   id             String          @id @default(uuid())
   street         String
   number         Int
@@ -114,12 +92,12 @@ model Address {
   zipCode        String
   city           String
   state          String
-  location       Location?
-  users          User[]          @relation("UserAddress")
-  establishments Establishment[] @relation("EstablishmentAddress")
+  location       location?
+  users          user[]          @relation("UserAddress")
+  establishments establishment[] @relation("EstablishmentAddress")
 }
 
-model ProductDimension {
+model productDimension {
   productId String  @id @default(uuid())
   length    Float?
   height    Float?
@@ -127,21 +105,21 @@ model ProductDimension {
   product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-model Conversation {
+model conversation {
   id               String    @id @default(uuid())
   returnedProducts Json?
   searchRating     Int?      @default(0)
   createdAt        DateTime  @default(now())
-  contexts         Context[]
+  contexts         context[]
 }
 
-model Context {
+model context {
   userId         String       @default(uuid())
   conversationId String       @default(uuid())
   searchQuery    String?
   createdAt      DateTime     @default(now())
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation   conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           user         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([userId, conversationId])
 }

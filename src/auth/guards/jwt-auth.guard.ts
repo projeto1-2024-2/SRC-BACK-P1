@@ -4,6 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from '@prisma/client';
+import { IS_PUBLIC_KEY } from '../decorators/is-public-route.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -11,9 +12,19 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     super();
   }
   public async canActivate(context: ExecutionContext) {
+    const ctx = GqlExecutionContext.create(context);
+
+    const isPublic = this.reflector.get<boolean>(
+      IS_PUBLIC_KEY,
+      ctx.getHandler(),
+    );
+
+    if (isPublic) {
+      return true;
+    }
+
     await super.canActivate(context);
 
-    const ctx = GqlExecutionContext.create(context);
     const user = ctx.getContext().req.user as IUserFromRequest;
 
     const classRole = this.reflector.get<Role[]>('roles', ctx.getClass());
@@ -27,8 +38,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     if (allowedRoles.length === 0) return true;
 
     allowedRoles.push(Role.ADMIN);
-
-    console.log(user);
 
     return user.role && allowedRoles.includes(user.role);
   }

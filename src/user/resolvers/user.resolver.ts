@@ -9,6 +9,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 
 @Resolver(() => UserEntity)
+@UseGuards(JwtAuthGuard)
+@Roles('CONSUMER', 'ADMIN')
 export class UserResolver {
   constructor(private readonly userService: UserService) {}
 
@@ -18,33 +20,26 @@ export class UserResolver {
     return this.userService.create(data);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Roles('ADMIN')
   @Query(() => [UserEntity], { name: 'findAllusers', nullable: true })
   async findAll() {
     return this.userService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Roles('ADMIN')
   @Query(() => UserEntity, { name: 'findByEmail', nullable: true })
   async findByEmail(@Args('email', { type: () => String }) email: string) {
     return await this.userService.findByEmail(email);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query(() => UserEntity, { name: 'findOneuser', nullable: true })
   async findOne(@Args('id', { type: () => ID }) id: string) {
     return this.userService.findOne(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: 'updateUser', nullable: true })
   async update(@Args('data') data: UpdateUserInput) {
     return this.userService.update(data);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Mutation(() => UserEntity, { name: 'deleteUser', nullable: true })
   async remove(@Args('id', { type: () => ID }) id: string) {
     return this.userService.remove(id);

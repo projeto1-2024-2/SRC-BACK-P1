@@ -10,7 +10,6 @@ export class CreateUserInput extends OmitType(UserEntity, [
   'createdAt',
   'updatedAt',
   'addressId',
-  'supplier',
 ]) {
   @Field(() => String, {
     nullable: false,

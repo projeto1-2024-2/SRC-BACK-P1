@@ -37,10 +37,6 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @IsString()
   taxId: string;
 
-  @Field(() => String, { nullable: true })
-  @Optional()
-  addressId?: string;
-
   @Field(() => [GraphQLJSONObject], { nullable: true })
   @Optional()
   products?: product[];
@@ -48,8 +44,4 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()
   newAddress: CreateAddressInput;
-
-  @Field(() => [String])
-  @IsNotEmpty()
-  supplierIds?: string[];
 }

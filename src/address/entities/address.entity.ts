@@ -1,5 +1,5 @@
 import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
-import { Address as AddressPrisma } from '@prisma/client';
+import { address as AddressPrisma } from '@prisma/client';
 
 @ObjectType()
 export class AddressEntity implements AddressPrisma {

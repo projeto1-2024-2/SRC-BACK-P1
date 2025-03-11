@@ -1,10 +1,10 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { User } from 'src/shared/prismagraphql/user';
+import { user } from 'src/shared/prismagraphql/user';
 
 @ObjectType()
 export class AuthResponse {
-  @Field(() => User)
-  user: User;
+  @Field(() => user)
+  user: user;
   @Field(() => String)
   access_token: string;
 }

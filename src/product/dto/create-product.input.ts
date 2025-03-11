@@ -5,20 +5,14 @@ import { Decimal } from '@prisma/client/runtime';
 import GraphQLJSON from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 @InputType('CreateProductInput')
 export class CreateProductInput extends OmitType(ProductEntity, [
   'id',
-  'last_update',
   'is_deleted',
-  'created_on',
+  'created_at',
+  'updated_at',
 ]) {
   @Field(() => String)
   @IsNotEmpty()
@@ -39,10 +33,6 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   @IsOptional()
   imagens: Prisma.JsonValue;
 
-  @Field(() => Boolean)
-  @IsBoolean()
-  isAvaliable: boolean;
-
   @Field(() => Number)
   @IsNotEmpty()
   quantity: number;
@@ -58,11 +48,15 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   category: string;
 
   @Field(() => StatusEnum, { defaultValue: StatusEnum.ACTIVE })
-  @IsNotEmpty()
+  @IsOptional()
   status: StatusEnum;
 
   @Field(() => GraphQLDecimal)
   @IsNotEmpty()
   @IsNumber()
   price: Decimal;
+
+  @Field(() => [String])
+  @IsOptional()
+  keywords: string[];
 }

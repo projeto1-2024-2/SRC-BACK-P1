@@ -55,12 +55,4 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
   @Field(() => CreateAddressInput, { nullable: true })
   @Optional()
   newAddress?: CreateAddressInput;
-
-  @Field(() => [String], { nullable: true })
-  @Optional()
-  deleteSupplierIds?: string[];
-
-  @Field(() => [String], { nullable: true })
-  @Optional()
-  newSupplierIds?: string[];
 }

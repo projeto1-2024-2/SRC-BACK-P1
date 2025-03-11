@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Conversation } from '@prisma/client';
 import axios from 'axios';
 
 @Injectable()

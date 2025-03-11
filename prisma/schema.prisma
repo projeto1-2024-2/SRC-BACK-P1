@@ -31,7 +31,6 @@ model user {
   pseudonym   String?
   addressId   String?
   address     address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
-  supplier    supplier?
   contexts    context[]
   role        Role      @default(CONSUMER)
 }
@@ -45,12 +44,14 @@ model product {
   quantity        Int               @default(0)
   establishmentId String            @default(uuid())
   category        String?
-  status          StatusEnum
+  status          StatusEnum        
   price           Decimal
-  suppliers       supplier[]
   establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
+  created_at      DateTime   @default(now()) @map("created_at")
+  updated_at      DateTime   @default(now()) @map("updated_at")
+  is_deleted      Boolean    @default(false)
 }
 
 enum StatusEnum {
@@ -66,15 +67,6 @@ model location {
   z         BigInt
 }
 
-model supplier {
-  id            String           @id @default(uuid())
-  userId        String           @unique()
-  user          user             @relation(fields: [userId], references: [id])
-  taxId         String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @default(now())
-  products      product[]
-}
 
 model establishment {
   id              String     @id @default(uuid())

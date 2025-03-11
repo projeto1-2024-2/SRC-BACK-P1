@@ -44,8 +44,4 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()
   newAddress: CreateAddressInput;
-
-  @Field(() => [String])
-  @IsNotEmpty()
-  supplierIds?: string[];
 }

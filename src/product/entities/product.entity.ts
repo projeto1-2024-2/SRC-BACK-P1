@@ -1,13 +1,13 @@
 import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
-import { Prisma, product as ProductPrisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
 import { Decimal } from '@prisma/client/runtime';
 import { GraphQLJSON } from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
-import { product } from 'src/shared/prismagraphql/product';
 
 @ObjectType()
-export class ProductEntity implements product {
+export class ProductEntity implements ProductPrisma {
   @Field(() => ID)
   id: string;
 
@@ -40,4 +40,13 @@ export class ProductEntity implements product {
 
   @Field(() => [String])
   keywords: string[];
+
+  @Field(() => Date)
+  created_at: Date;
+
+  @Field(() => Boolean)
+  is_deleted: boolean;
+
+  @Field(() => Date)
+  updated_at: Date;
 }

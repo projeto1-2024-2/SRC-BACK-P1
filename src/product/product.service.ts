@@ -13,12 +13,15 @@ import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedProducts } from './dto/paginated-products.input';
 import { EstablishmentService } from 'src/establishment/establishment.service';
+import { SearchService } from 'src/search/search.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => EstablishmentService))
     private readonly establishmentService: EstablishmentService,
+    private readonly searchService: SearchService,
   ) {}
 
   async create(data: CreateProductInput): Promise<ProductEntity> {
@@ -32,15 +35,15 @@ export class ProductService {
       data.title,
       data.description,
     );
-    await this.establishmentService.checkExistsEstablishmentById(
+    await this.establishmentService.checkEstablishmentById(
       data.establishmentId,
     );
     const product = await this.prismaService.product.create({ data });
 
     return {
       ...product,
-      last_update: new Date(),
-      created_on: new Date(),
+      created_at: new Date(),
+      updated_at: new Date(),
       is_deleted: false,
       status: StatusEnum[product.status as keyof typeof StatusEnum],
     };
@@ -108,12 +111,10 @@ export class ProductService {
     }
   }
 
-  async update(
-    data: UpdateProductInput,
-    user: UserEntity,
-  ): Promise<ProductEntity> {
-    await this.checkExistsEstablishmentById(data.establishmentId);
-    await this.checkRelationSupplierEstablishment(data.establishmentId, user);
+  async update(data: UpdateProductInput): Promise<ProductEntity> {
+    await this.establishmentService.checkEstablishmentById(
+      data.establishmentId,
+    );
     try {
       await this.checkProductExists(data.id);
       const product = await this.prismaService.product.update({

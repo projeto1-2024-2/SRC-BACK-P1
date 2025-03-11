@@ -18,10 +18,9 @@ export class ProductResolver {
   @Roles('SUPPLIER')
   @Mutation(() => ProductEntity, { name: 'createProduct' })
   async createProduct(
-    @CurrentUser() user: UserEntity,
     @Args('data') data: CreateProductInput,
   ): Promise<ProductEntity> {
-    return this.productService.create(data, user);
+    return this.productService.create(data);
   }
 
   @Query(() => PaginatedProducts, { name: 'getProducts' })
@@ -49,9 +48,8 @@ export class ProductResolver {
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
   async updateProduct(
     @Args('data') data: UpdateProductInput,
-    @CurrentUser() user: UserEntity,
   ): Promise<ProductEntity> {
-    return this.productService.update(data, user);
+    return this.productService.update(data);
   }
 
   @Roles('SUPPLIER', 'ADMIN')

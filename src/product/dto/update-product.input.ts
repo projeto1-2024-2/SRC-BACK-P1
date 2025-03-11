@@ -28,10 +28,6 @@ export class UpdateProductInput {
   @Field(() => GraphQLJSON, { nullable: true })
   imagens?: Prisma.JsonValue;
 
-  @Field(() => Boolean, { nullable: true })
-  @IsBoolean()
-  isAvaliable?: boolean;
-
   @Field(() => Number, { nullable: true })
   @IsNumber()
   quantity?: number;
@@ -52,14 +48,9 @@ export class UpdateProductInput {
   @IsNumber()
   price?: Decimal;
 
-<<<<<<< HEAD
   @Field(() => String, { nullable: true })
   keywords?: string[];
-=======
-  @Field(() => Date)
-  last_update?: Date;
 
   @Field(() => Boolean)
   is_deleted?: boolean;
->>>>>>> develop
 }

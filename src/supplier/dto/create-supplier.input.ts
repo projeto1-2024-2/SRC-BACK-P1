@@ -6,10 +6,5 @@ export class CreateSupplierInput {
   @Field(() => String)
   @IsNotEmpty()
   @IsString()
-  userId: string;
-
-  @Field(() => String)
-  @IsNotEmpty()
-  @IsString()
   taxId: string;
 }

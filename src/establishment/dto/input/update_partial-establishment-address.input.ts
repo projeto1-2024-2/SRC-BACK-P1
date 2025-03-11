@@ -3,6 +3,7 @@ import { CreateEstablishmentInput } from './create_full_itens-establishment.inpu
 import { IsNotEmpty, IsString } from 'class-validator';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { address } from 'src/shared/prismagraphql/address';
+import { UpdateAddressInput } from 'src/address/dto/update-address.input';
 
 @InputType('UpdatePartialAddressEstablishmentInput')
 export class UpdatePartialAddressEstablishmentInput extends PartialType(
@@ -10,15 +11,13 @@ export class UpdatePartialAddressEstablishmentInput extends PartialType(
 ) {
   @Field(() => ID)
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @Field(() => String)
+  @IsNotEmpty()
   @IsString()
-  name?: string;
-
-  @Field(() => String)
-  @IsString()
-  addressId?: string;
+  name: string;
 
   @Field(() => GraphQLJSONObject, { nullable: false })
   @IsNotEmpty()
@@ -26,4 +25,5 @@ export class UpdatePartialAddressEstablishmentInput extends PartialType(
 
   @Field(() => Date)
   updatedAt: Date = new Date();
+  newAddress: UpdateAddressInput;
 }

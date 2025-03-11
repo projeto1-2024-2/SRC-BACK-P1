@@ -51,6 +51,9 @@ model product {
   establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
+  last_update     DateTime  @default(now()) @map("last_update")
+  created_on      DateTime  @default(now()) @map("created_on")
+  is_deleted      Boolean           @default(false)
 }
 
 enum StatusEnum {

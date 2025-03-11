@@ -1,7 +1,7 @@
 import { InputType, Field, OmitType } from '@nestjs/graphql';
 import { UserEntity } from '../entities/user.entity';
 import { Optional } from '@nestjs/common';
-import { IsEmail, IsPhoneNumber, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 import { Role } from '../user.types';
 
 @InputType('CreateUserInput')
@@ -9,10 +9,13 @@ export class CreateUserInput extends OmitType(UserEntity, [
   'id',
   'createdAt',
   'updatedAt',
+  'addressId',
+  'supplier',
 ]) {
   @Field(() => String, {
     nullable: false,
   })
+  @IsNotEmpty()
   @IsString()
   name: string;
 
@@ -24,12 +27,15 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @Field(() => String, {
     nullable: false,
   })
+  @IsNotEmpty()
+  @IsString()
   @IsEmail()
   email: string;
 
   @Field(() => String, {
     nullable: false,
   })
+  @IsNotEmpty()
   @IsString()
   password: string;
 

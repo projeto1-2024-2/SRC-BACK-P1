@@ -12,27 +12,31 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
 ) {
   @Field(() => ID)
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @Field(() => String)
+  @Optional()
   @IsString()
   name?: string;
 
   @Field(() => Date)
-  @IsNotEmpty()
+  @Optional()
   @IsDate()
   openingHours?: Date;
 
   @Field(() => Date)
-  @IsNotEmpty()
+  @Optional()
   @IsDate()
   closingHours?: Date;
 
   @Field(() => String)
+  @Optional()
   @IsString()
   commercialPhone?: string;
 
   @Field(() => String)
+  @Optional()
   @IsString()
   taxId?: string;
 

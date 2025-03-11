@@ -1,9 +1,4 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
-import { SupplierCount } from 'src/shared/prismagraphql/prisma';
-import { product } from 'src/shared/prismagraphql/product';
-import { supplier as SupplierPrisma } from 'src/shared/prismagraphql/supplier';
-import { supplierEstablishment } from 'src/shared/prismagraphql/supplier-establishment';
-import { user } from 'src/shared/prismagraphql/user';
 
 @ObjectType()
 export class SupplierEntity implements SupplierPrisma {

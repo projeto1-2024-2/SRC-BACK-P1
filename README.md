@@ -11,7 +11,7 @@ O backend é desenvolvido utilizando:
 
 ---
 
-## **🚀 Configuração do Ambiente**
+## Configuração do Ambiente
 
 **1️⃣ Configurar variáveis de ambiente**  
    1. Copie o arquivo `.env.example` e renomeie para `.env`.  
@@ -25,11 +25,6 @@ O backend é desenvolvido utilizando:
 **3️⃣ Rodar o backend em desenvolvimento**  
    ```sh
    npm run start:dev
-   ```
-
-**4️⃣ Subir os containers com Docker**  
-   ```sh
-   docker compose up --build
    ```
 
 **5️⃣ Gerar e aplicar migrações do banco de dados**  
@@ -130,6 +125,9 @@ query {
 }
 ```
 
+## Docker
+O docker atual do projeto está configurado para executar o banco de dados e a api. Para executar utilize o comando `docker compose -f 'docker-compose.yml' up -d --build`.
+Caso você esteja trabalhando localmente na API, execute o comando acima, após os dois containers subirem, pause o container da API com o comando `docker container stop <NOME DO CONTAINER DA API>` em seguida, execute [localmente a sua API](#Configuração-do-Ambiente).
 
 Se precisar de mais informações, entre em contato com a equipe de desenvolvimento. 🚀
 

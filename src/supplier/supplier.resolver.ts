@@ -7,6 +7,7 @@ import { SupplierEntity } from './entities/supplier.entity';
 import { UseGuards } from '@nestjs/common';
 import { Roles } from 'src/user/decorators';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
+import { UpdateSupplierInput } from './dto/update-supplier.input';
 
 @UseGuards(JwtAuthGuard)
 @Roles('ADMIN')

@@ -1,15 +1,14 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateSupplierInput } from './dto/create-supplier.dto';
+import { CreateSupplierInput } from './dto/create-supplier.input';
 import { Role } from 'src/shared/prismagraphql/prisma';
-import { UserService } from 'src/user/user.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { SupplierEntity } from './entities/supplier.entity';
+import { UpdateSupplierInput } from './dto/update-supplier.input';
 
 @Injectable()
 export class SupplierService {
-  constructor(
-    private prismaService: PrismaService,
-    private userService: UserService,
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(data: CreateSupplierInput) {
     await this.checkExistsUser(data.userId);
@@ -20,49 +19,76 @@ export class SupplierService {
 
     const supplier = await this.prismaService.supplier.create({
       data: {
+        userId: user.id,
         ...data,
       },
     });
 
     await this.prismaService.user.update({
-      where: { id: data.userId },
+      where: { id: user.id },
       data: { role: Role.SUPPLIER },
     });
 
     return supplier;
   }
 
-  async delete(supplierId: string) {
-    await this.prismaService.supplier.delete({
+  async findById(supplierId: string) {
+    const supplier = await this.prismaService.supplier.findUnique({
       where: { id: supplierId },
+      include: { user: true, establishments: true, products: true },
     });
 
-    const establishments = await this.prismaService.establishment.findMany({
-      where: {
-        suppliers: { none: {} },
-      },
+    if (!supplier) {
+      throw new HttpException('Supplier not found', HttpStatus.NOT_FOUND);
+    }
+
+    return supplier;
+  }
+
+  async findAll() {
+    return this.prismaService.supplier.findMany({
+      include: { user: true, establishments: true, products: true },
+    });
+  }
+
+  async delete(id: string, user: UserEntity): Promise<boolean> {
+    await this.checkSupplier(id, user);
+
+    await this.prismaService.user.update({
+      where: { id: user.id },
+      data: { role: Role.CONSUMER },
     });
 
-    await this.prismaService.establishment.deleteMany({
-      where: {
-        id: { in: establishments.map((e) => e.id) },
-      },
+    await this.prismaService.supplier.delete({
+      where: { userId: user.id },
     });
-
     return true;
   }
 
-  private async checkExistsUser(userId: string) {
-    const exists = await this.userService.existsById(userId);
+  async update(
+    user: UserEntity,
+    data: UpdateSupplierInput,
+  ): Promise<SupplierEntity> {
+    await this.checkSupplier(data.id, user);
 
-    if (!exists) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
+    return await this.prismaService.supplier.update({
+      where: { userId: user.id },
+      data: { ...data },
+    });
   }
 
-  private validatePermission(userId: string, dataUserId: string) {
-    if (userId !== dataUserId) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+  private async checkSupplier(id: string, user: UserEntity) {
+    if (user.role !== 'ADMIN') {
+      const supplier = await this.prismaService.supplier.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (supplier.id !== id) {
+        throw new HttpException(
+          'User already has a supplier',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
     }
   }
 

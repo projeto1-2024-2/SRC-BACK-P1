@@ -74,7 +74,6 @@ model supplier {
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @default(now())
   products      product[]
-  establishments supplierEstablishment[]
 }
 
 model establishment {
@@ -86,21 +85,11 @@ model establishment {
   taxId           String
   addressId       String?    @default(uuid())
   products        product[]
-  suppliers       supplierEstablishment[]
   address         address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @default(now()) @map("updated_at")
 }
 
-model supplierEstablishment {
-  id             String        @id @default(uuid())
-  supplierId     String
-  establishmentId String
-  supplier      supplier      @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-  establishment establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
-
-  @@unique([supplierId, establishmentId])
-}
 
 model address {
   id             String          @id @default(uuid())

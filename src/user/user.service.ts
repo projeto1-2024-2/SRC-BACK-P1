@@ -81,7 +81,6 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
-
     return !!user;
   }
 }

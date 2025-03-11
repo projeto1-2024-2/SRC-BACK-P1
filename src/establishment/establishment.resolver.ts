@@ -14,10 +14,10 @@ export class EstablishmentResolver {
   @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'createEstablishment' })
   async create(
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
     @Args('data') data: CreateEstablishmentInput,
   ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.create(data, userId);
+    return await this.establishmentService.create(data, user);
   }
 
   //TODO: REFAZER UPDATE
@@ -25,10 +25,9 @@ export class EstablishmentResolver {
   @Mutation(() => Boolean, { name: 'deleteEstablishment' })
   async delete(
     @Args('id') id: string,
-    @Args('userId') userId: string,
+    @CurrentUser() user: UserEntity,
   ): Promise<boolean> {
-    await this.establishmentService.delete(id, userId);
-    return true;
+    return await this.establishmentService.delete(id, user);
   }
 
   @IsPublicRoute()

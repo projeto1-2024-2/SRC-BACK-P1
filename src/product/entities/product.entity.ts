@@ -4,9 +4,10 @@ import { Decimal } from '@prisma/client/runtime';
 import { GraphQLJSON } from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
+import { product } from 'src/shared/prismagraphql/product';
 
 @ObjectType()
-export class ProductEntity implements ProductPrisma {
+export class ProductEntity implements product {
   @Field(() => ID)
   id: string;
 

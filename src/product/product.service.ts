@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
@@ -12,6 +18,7 @@ import { EstablishmentService } from 'src/establishment/establishment.service';
 export class ProductService {
   constructor(
     private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => EstablishmentService))
     private readonly establishmentService: EstablishmentService,
   ) {}
 
@@ -48,7 +55,6 @@ export class ProductService {
       status: StatusEnum[product.status as keyof typeof StatusEnum],
     };
   }
-
 
   async findAll(
     pagination: PaginationInput,

@@ -1,9 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateEstablishmentInput } from './dto/create_full_itens-establishment.input';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateFullItensEstablishmentInput } from './dto/update_full_itens-establishment.input';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { UserService } from 'src/user/user.service';
 import { ProductService } from 'src/product/product.service';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedEstablishment } from './dto/paginated-establishment.input';
@@ -12,7 +17,7 @@ import { PaginatedEstablishment } from './dto/paginated-establishment.input';
 export class EstablishmentService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly userService: UserService,
+    @Inject(forwardRef(() => ProductService))
     private readonly productService: ProductService,
   ) {}
 
@@ -72,7 +77,6 @@ export class EstablishmentService {
         },
         include: {
           products: true,
-          suppliers: true,
           address: true,
         },
       });
@@ -87,7 +91,7 @@ export class EstablishmentService {
     });
   }
 
-  async addingProducts(establishmentId: string, productsId: [string]) {
+  async addingProducts(establishmentId: string, productsId: string[]) {
     await this.checkEstablishmentByid(establishmentId);
 
     const productsToAdd = await Promise.all(
@@ -104,9 +108,13 @@ export class EstablishmentService {
         },
       },
     });
+
+    return this.prismaService.establishment.findUnique({
+      where: { id: establishmentId },
+    });
   }
 
-  async removeProducts(establishmentId: string, productsId: [string]) {
+  async removeProducts(establishmentId: string, productsId: string[]) {
     await this.checkEstablishmentByid(establishmentId);
 
     const productsToRemove = await Promise.all(
@@ -123,22 +131,15 @@ export class EstablishmentService {
         },
       },
     });
-    const productsRemoved = await Promise.all(
+    await Promise.all(
       productsToRemove.map(async (i) => {
         await this.productService.delete(i.id);
       }),
     );
 
-    return productsRemoved;
-  }
-
-  async delete(id: string): Promise<string> {
-    await this.checkEstablishmentByid(id);
-
-    await this.prismaService.establishment.delete({
-      where: { id },
+    return this.prismaService.establishment.findUnique({
+      where: { id: establishmentId },
     });
-    return id;
   }
 
   async findById(id: string): Promise<EstablishmentEntity> {
@@ -148,7 +149,6 @@ export class EstablishmentService {
       include: {
         address: true,
         products: true,
-        suppliers: true,
         _count: true,
       },
     });
@@ -165,7 +165,6 @@ export class EstablishmentService {
       include: {
         address: true,
         products: true,
-        suppliers: true,
         _count: true,
       },
     });
@@ -176,6 +175,15 @@ export class EstablishmentService {
       establishments: establishments.slice(0, take),
       hasMore,
     };
+  }
+
+  async delete(id: string): Promise<string> {
+    await this.checkEstablishmentByid(id);
+
+    await this.prismaService.establishment.delete({
+      where: { id },
+    });
+    return id;
   }
 
   async checkEstablishmentByid(id: string) {

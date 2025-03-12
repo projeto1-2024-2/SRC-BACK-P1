@@ -35,7 +35,7 @@ export class ProductService {
       data.title,
       data.description,
     );
-    await this.establishmentService.checkEstablishmentById(
+    await this.establishmentService.checkEstablishmentByid(
       data.establishmentId,
     );
     const product = await this.prismaService.product.create({ data });
@@ -112,7 +112,7 @@ export class ProductService {
   }
 
   async update(data: UpdateProductInput): Promise<ProductEntity> {
-    await this.establishmentService.checkEstablishmentById(
+    await this.establishmentService.checkEstablishmentByid(
       data.establishmentId,
     );
     try {

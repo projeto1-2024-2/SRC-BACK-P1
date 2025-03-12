@@ -67,7 +67,6 @@ model location {
   z         BigInt
 }
 
-
 model establishment {
   id              String     @id @default(uuid())
   name            String

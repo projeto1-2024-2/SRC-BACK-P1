@@ -40,7 +40,6 @@ model product {
   title           String
   description     String
   brand           String
-  imagens         Json?
   quantity        Int               @default(0)
   establishmentId String            @default(uuid())
   category        String?
@@ -52,6 +51,7 @@ model product {
   created_at      DateTime   @default(now()) @map("created_at")
   updated_at      DateTime   @default(now()) @map("updated_at")
   is_deleted      Boolean    @default(false)
+  last_update     DateTime   @default(now()) @map("last_update")
 }
 
 enum StatusEnum {

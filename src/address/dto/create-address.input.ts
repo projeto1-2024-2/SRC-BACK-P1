@@ -1,39 +1,40 @@
 import { Field, InputType, Int, OmitType } from '@nestjs/graphql';
 import { AddressEntity } from '../entities/address.entity';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @InputType()
 export class CreateAddressInput extends OmitType(AddressEntity, ['id']) {
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   street: string;
 
   @Field(() => Int)
+  @IsNumber()
   number: number;
 
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   complement: string;
 
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   neighbourhood: string;
 
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   zipCode: string;
 
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   city: string;
 
   @Field(() => String)
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   state: string;
 }

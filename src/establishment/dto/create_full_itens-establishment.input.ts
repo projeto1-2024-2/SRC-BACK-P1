@@ -28,6 +28,7 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   closingHours: Date;
 
   @Field(() => String)
+  @IsNotEmpty()
   @IsString()
   commercialPhone: string;
 
@@ -43,7 +44,4 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()
   newAddress: CreateAddressInput;
-
-  @Field(() => [String])
-  supplierIds?: string[];
 }

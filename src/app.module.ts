@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { ProductModule } from './product/product.module';
 import { AddressModule } from './address/address.module';
 import { EstablishmentModule } from './establishment/establishment.module';
+import { SearchModule } from './search/search.module';
+import { NlpModule } from './nlp/nlp.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { EstablishmentModule } from './establishment/establishment.module';
       autoSchemaFile: join(process.cwd(), 'graphql/schema.gql'),
       sortSchema: true,
       playground: process.env.ENV === 'dev',
+      useGlobalPrefix: true,
+      path: '/graphql',
     }),
     UserModule,
     PrismaModule,
@@ -23,6 +27,8 @@ import { EstablishmentModule } from './establishment/establishment.module';
     ProductModule,
     AddressModule,
     EstablishmentModule,
+    SearchModule,
+    NlpModule,
   ],
   controllers: [],
   providers: [],

@@ -33,8 +33,7 @@ export class AddressService {
         data: data,
       });
       return address;
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new HttpException(
         `Address with id:${user.addressId} does not exists`,
         HttpStatus.NOT_FOUND,
@@ -47,8 +46,7 @@ export class AddressService {
       return await this.prismaService.address.findUnique({
         where: { id: data.addressId },
       });
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new HttpException(
         `Address with id:${data.addressId} does not exists`,
         HttpStatus.NOT_FOUND,

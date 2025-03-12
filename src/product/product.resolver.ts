@@ -15,6 +15,7 @@ import { PaginationInput } from 'src/pagination/pagination.input';
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
+  @Roles('SUPPLIER')
   @Mutation(() => ProductEntity, { name: 'createProduct' })
   async createProduct(
     @Args('data') data: CreateProductInput,
@@ -43,6 +44,7 @@ export class ProductResolver {
     );
   }
 
+  @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
   async updateProduct(
     @Args('data') data: UpdateProductInput,
@@ -50,6 +52,7 @@ export class ProductResolver {
     return this.productService.update(data);
   }
 
+  @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'deleteProduct' })
   async deleteProduct(@Args('id') id: string): Promise<string> {
     return this.productService.delete(id);

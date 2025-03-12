@@ -13,6 +13,7 @@ import { ProductService } from 'src/product/product.service';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedEstablishment } from './dto/paginated-establishment.input';
 
+
 @Injectable()
 export class EstablishmentService {
   constructor(

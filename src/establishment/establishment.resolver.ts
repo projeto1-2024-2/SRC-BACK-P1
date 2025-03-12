@@ -17,7 +17,6 @@ export class EstablishmentResolver {
   @IsPublicRoute()
   @Mutation(() => EstablishmentEntity, { name: 'createEstablishment' })
   async create(
-    @Args('userId') userId: string,
     @Args('data') data: CreateEstablishmentInput,
   ): Promise<EstablishmentEntity> {
     return await this.establishmentService.create(data);

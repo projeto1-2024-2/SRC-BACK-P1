@@ -13,6 +13,7 @@ import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedProducts } from './dto/paginated-products.input';
 import { EstablishmentService } from 'src/establishment/establishment.service';
+import { SearchService } from 'src/search/search.service';
 
 @Injectable()
 export class ProductService {
@@ -20,6 +21,7 @@ export class ProductService {
     private readonly prismaService: PrismaService,
     @Inject(forwardRef(() => EstablishmentService))
     private readonly establishmentService: EstablishmentService,
+    private readonly searchService: SearchService,
   ) {}
 
   async create(data: CreateProductInput): Promise<ProductEntity> {
@@ -40,18 +42,9 @@ export class ProductService {
 
     return {
       ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
-    };
-  }
-
-  async findById(productId: string): Promise<ProductEntity> {
-    await this.checkProductExists(productId);
-    const product = await this.prismaService.product.findUnique({
-      where: { id: productId },
-    });
-
-    return {
-      ...product,
+      created_at: new Date(),
+      updated_at: new Date(),
+      is_deleted: false,
       status: StatusEnum[product.status as keyof typeof StatusEnum],
     };
   }
@@ -97,16 +90,45 @@ export class ProductService {
     };
   }
 
+  async findById(id: string): Promise<ProductEntity | null> {
+    try {
+      const product = await this.prismaService.product.findUnique({
+        where: { id: id },
+      });
+      if (!product) {
+        throw new HttpException(
+          `Product with id:${id} does not exists`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        ...product,
+        status: StatusEnum[product.status as keyof typeof StatusEnum],
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to fetch product');
+    }
+  }
+
   async update(data: UpdateProductInput): Promise<ProductEntity> {
+    await this.establishmentService.checkEstablishmentByid(
+      data.establishmentId,
+    );
     try {
       await this.checkProductExists(data.id);
       const product = await this.prismaService.product.update({
         where: { id: data.id },
         data: data,
       });
+      await this.searchService.updateDocumentByQuery(
+        data.id,
+        data.title,
+        data.brand,
+        data.description,
+      );
       return this.mapToProductEntity(product);
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new HttpException(
         `Product with id:${data.id} does not exists`,
         HttpStatus.NOT_FOUND,

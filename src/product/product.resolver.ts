@@ -90,7 +90,7 @@ export class ProductResolver {
     @Args('productImages') images: UploadImageProductInput,
     @CurrentUser() establishment: EstablishmentEntity,
     @Args('productId') productId: string,
-  ): Promise<String> {
+  ): Promise<string> {
     const file = images?.image;
     const filePromise = Promise.resolve(file);
     return await this.productService.uploadImagesProduct(

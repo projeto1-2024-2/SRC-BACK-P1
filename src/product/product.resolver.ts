@@ -44,6 +44,11 @@ export class ProductResolver {
     );
   }
 
+  @Query(() => ProductEntity, { name: 'getProductById' })
+  async findById(@Args('id') id: string): Promise<ProductEntity> {
+    return this.productService.findById(id);
+  }
+
   @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
   async updateProduct(

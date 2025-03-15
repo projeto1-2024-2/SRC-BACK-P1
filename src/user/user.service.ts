@@ -19,11 +19,18 @@ export class UserService {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
+    const address = await this.prismaService.address.create({
+      data: createUserDto.newAddress,
+    });
+
     const user = await this.prismaService.user.create({
       data: {
-        ...createUserDto,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        name: createUserDto.name,
+        pseudonym: createUserDto.pseudonym,
+        email: createUserDto.email,
         password: await bcrypt.hash(createUserDto.password, this.saltRounds),
+        phoneNumber: createUserDto.phoneNumber,
+        addressId: address.id,
       },
     });
 

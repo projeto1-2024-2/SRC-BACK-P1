@@ -3,6 +3,7 @@ import { UserEntity } from '../entities/user.entity';
 import { Optional } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 import { Role } from '../user.types';
+import { CreateAddressInput } from 'src/address/dto/create-address.input';
 
 @InputType('CreateUserInput')
 export class CreateUserInput extends OmitType(UserEntity, [
@@ -49,9 +50,9 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @IsString()
   image: Buffer;
 
-  @Field(() => String, { nullable: true })
-  @Optional()
-  addressId: string;
+  @Field(() => CreateAddressInput, { nullable: false })
+  @IsNotEmpty()
+  newAddress: CreateAddressInput;
 
   @Field(() => String, { defaultValue: Role.CONSUMER })
   role: Role;

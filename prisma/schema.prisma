@@ -29,8 +29,8 @@ model user {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   pseudonym   String?
-  addressId   String?
-  address     address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  addressId   String    @default(uuid())
+  address     address   @relation(fields: [addressId], references: [id], name: "UserAddress")
   contexts    context[]
   role        Role      @default(CONSUMER)
 }
@@ -42,16 +42,17 @@ model product {
   brand           String
   imagens         Json?
   quantity        Int               @default(0)
-  establishmentId String            @default(uuid())
+  establishmentid String            @default(uuid())
   category        String?
   status          StatusEnum        
   price           Decimal
-  establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  establishment   establishment?     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
   created_at      DateTime   @default(now()) @map("created_at")
   updated_at      DateTime   @default(now()) @map("updated_at")
   is_deleted      Boolean    @default(false)
+  last_update     DateTime   @default(now()) @map("last_update")
 }
 
 enum StatusEnum {

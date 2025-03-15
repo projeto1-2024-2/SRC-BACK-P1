@@ -38,4 +38,7 @@ export class EstablishmentEntity implements EstablishmentPrisma {
 
   @Field(() => GraphQLISODateTime)
   updatedAt: Date;
+
+  @Field(() => String)
+  password: string;
 }

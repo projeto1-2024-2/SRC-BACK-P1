@@ -9,7 +9,7 @@ import { AuthResponse } from './entities/auth.entity';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
   @Mutation(() => AuthResponse, { name: 'authenticate' })
-  createAuth(@Args('login') login: AuthInput): Promise<any> {
+  createAuth(@Args('login') login: AuthInput): Promise<AuthResponse> {
     return this.authService.validateUser(login);
   }
 }

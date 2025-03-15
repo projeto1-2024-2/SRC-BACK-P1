@@ -5,17 +5,18 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { CreateEstablishmentInput } from './dto/create_full_itens-establishment.input';
+import { CreateEstablishmentInput } from './dto/create-establishment.input';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UpdateFullItensEstablishmentInput } from './dto/update_full_itens-establishment.input';
+import { UpdateFullItensEstablishmentInput } from './dto/update-establishment.input';
 import { EstablishmentEntity } from './entities/establishment.entity';
 import { ProductService } from 'src/product/product.service';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedEstablishment } from './dto/paginated-establishment.input';
-
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class EstablishmentService {
+  private saltRounds = 10;
   constructor(
     private readonly prismaService: PrismaService,
     @Inject(forwardRef(() => ProductService))
@@ -35,6 +36,7 @@ export class EstablishmentService {
         commercialPhone: data.commercialPhone,
         taxId: data.taxId,
         addressId: address.id,
+        password: await bcrypt.hash(data.password, this.saltRounds),
       },
     });
 
@@ -185,6 +187,13 @@ export class EstablishmentService {
       where: { id },
     });
     return id;
+  }
+
+  async getByTaxId(taxId: string): Promise<EstablishmentEntity> {
+    await this.checkEstablishmentByTaxId(taxId);
+    return this.prismaService.establishment.findFirst({
+      where: { taxId },
+    });
   }
 
   async checkEstablishmentByid(id: string) {

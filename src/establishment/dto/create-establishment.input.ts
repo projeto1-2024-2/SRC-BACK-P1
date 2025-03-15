@@ -17,15 +17,15 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @IsString()
   name: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @IsNotEmpty()
   @IsDate()
-  openingHours: Date;
+  openingHours: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @IsNotEmpty()
   @IsDate()
-  closingHours: Date;
+  closingHours: string;
 
   @Field(() => String)
   @IsNotEmpty()
@@ -44,4 +44,11 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()
   newAddress: CreateAddressInput;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }

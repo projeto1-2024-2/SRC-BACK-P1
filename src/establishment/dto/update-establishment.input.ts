@@ -1,5 +1,5 @@
 import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
-import { CreateEstablishmentInput } from './create_full_itens-establishment.input';
+import { CreateEstablishmentInput } from './create-establishment.input';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { Optional } from '@nestjs/common';
 import { CreateProductInput } from 'src/product/dto/create-product.input';
@@ -20,15 +20,15 @@ export class UpdateFullItensEstablishmentInput extends PartialType(
   @IsString()
   name?: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @Optional()
   @IsDate()
-  openingHours?: Date;
+  openingHours?: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @Optional()
   @IsDate()
-  closingHours?: Date;
+  closingHours?: string;
 
   @Field(() => String)
   @Optional()

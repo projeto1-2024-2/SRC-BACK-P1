@@ -24,7 +24,47 @@ export class ProductService {
     private readonly searchService: SearchService,
   ) {}
 
-  async create(data: CreateProductInput): Promise<ProductEntity> {
+  async create(
+    establishmentId: string,
+    data: CreateProductInput,
+  ): Promise<ProductEntity> {
+    if (data.keywords.length == 0) {
+      data.keywords = this.createKeywordsByTitleDescription(
+        data.title,
+        data.description,
+      );
+    }
+    await this.checkProductExistsByTitleDescription(
+      data.title,
+      data.description,
+    );
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
+    const product = await this.prismaService.product.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        brand: data.brand,
+        quantity: data.quantity,
+        category: data.category,
+        price: data.price,
+        keywords: data.keywords,
+        status: data.status,
+        establishment: {
+          connect: { id: establishmentId },
+        },
+      },
+    });
+
+    return {
+      ...product,
+      created_at: new Date(),
+      updated_at: new Date(),
+      is_deleted: false,
+      status: StatusEnum[product.status as keyof typeof StatusEnum],
+    };
+  }
+
+  async createByAdmin(data: CreateProductInput): Promise<ProductEntity> {
     if (data.keywords.length == 0) {
       data.keywords = this.createKeywordsByTitleDescription(
         data.title,
@@ -90,14 +130,20 @@ export class ProductService {
     };
   }
 
-  async findById(id: string): Promise<ProductEntity | null> {
+  async findById(
+    productId: string,
+    establishmentId: string,
+  ): Promise<ProductEntity | null> {
     try {
       const product = await this.prismaService.product.findUnique({
-        where: { id: id },
+        where: {
+          establishmentid: establishmentId,
+          id: productId,
+        },
       });
       if (!product) {
         throw new HttpException(
-          `Product with id:${id} does not exists`,
+          `Product with id:${productId} does not exists`,
           HttpStatus.NOT_FOUND,
         );
       }
@@ -111,14 +157,15 @@ export class ProductService {
     }
   }
 
-  async update(data: UpdateProductInput): Promise<ProductEntity> {
-    await this.establishmentService.checkEstablishmentByid(
-      data.establishmentId,
-    );
+  async update(
+    data: UpdateProductInput,
+    establishmentId: string,
+  ): Promise<ProductEntity> {
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
     try {
       await this.checkProductExists(data.id);
       const product = await this.prismaService.product.update({
-        where: { id: data.id },
+        where: { id: data.id, establishmentid: establishmentId },
         data: data,
       });
       await this.searchService.updateDocumentByQuery(
@@ -136,20 +183,43 @@ export class ProductService {
     }
   }
 
-  async delete(idProduct: string): Promise<string> {
+  async delete(productId: string, establishmentId: string): Promise<string> {
     try {
-      await this.checkProductExists(idProduct);
+      await this.checkProductExists(productId);
       await this.prismaService.product.delete({
-        where: { id: idProduct },
+        where: { id: productId, establishmentid: establishmentId },
       });
 
-      return idProduct;
+      return productId;
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        `Product with id:${idProduct} does not exists`,
+        `Product with id:${productId} does not exists`,
         HttpStatus.NOT_FOUND,
       );
+    }
+  }
+
+  async searchFindById(productId: string): Promise<ProductEntity> {
+    try {
+      const product = await this.prismaService.product.findUnique({
+        where: {
+          id: productId,
+        },
+      });
+      if (!product) {
+        throw new HttpException(
+          `Product with id:${productId} does not exists`,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return {
+        ...product,
+        status: StatusEnum[product.status as keyof typeof StatusEnum],
+      };
+    } catch (error) {
+      console.log(error);
+      throw new Error('Failed to fetch product');
     }
   }
 

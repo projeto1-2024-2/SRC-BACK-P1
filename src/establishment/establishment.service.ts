@@ -99,7 +99,7 @@ export class EstablishmentService {
 
     const productsToAdd = await Promise.all(
       productsId.map(async (id) => {
-        return this.productService.findById(id);
+        return this.productService.findById(id, establishmentId);
       }),
     );
 
@@ -122,7 +122,7 @@ export class EstablishmentService {
 
     const productsToRemove = await Promise.all(
       productsId.map(async (id) => {
-        return this.productService.findById(id);
+        return this.productService.findById(id, establishmentId);
       }),
     );
 
@@ -136,7 +136,7 @@ export class EstablishmentService {
     });
     await Promise.all(
       productsToRemove.map(async (i) => {
-        await this.productService.delete(i.id);
+        await this.productService.delete(i.id, establishmentId);
       }),
     );
 

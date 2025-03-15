@@ -28,8 +28,7 @@ export class UpdateProductInput {
   @IsNumber()
   quantity?: number;
 
-  @Field(() => String, { nullable: false })
-  @IsNotEmpty()
+  @Field(() => String, { nullable: true })
   @IsString()
   establishmentId: string;
 

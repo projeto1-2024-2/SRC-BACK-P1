@@ -3,6 +3,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,7 @@ export class UserService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createUserDto: CreateUserInput) {
+  async create(createUserDto: CreateUserInput): Promise<UserEntity> {
     const userExists = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });

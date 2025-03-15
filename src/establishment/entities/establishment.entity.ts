@@ -12,11 +12,11 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   name: string;
 
-  @Field(() => Date)
-  openingHours: Date;
+  @Field(() => String)
+  openingHours: string;
 
-  @Field(() => Date)
-  closingHours: Date;
+  @Field(() => String)
+  closingHours: string;
 
   @Field(() => String)
   commercialPhone: string;

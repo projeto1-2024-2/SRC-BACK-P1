@@ -70,8 +70,8 @@ model location {
 model establishment {
   id              String     @id @default(uuid())
   name            String
-  openingHours    DateTime
-  closingHours    DateTime
+  openingHours    String
+  closingHours    String
   commercialPhone String
   taxId           String
   addressId       String?    @default(uuid())

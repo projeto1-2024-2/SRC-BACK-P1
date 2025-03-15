@@ -45,7 +45,7 @@ model product {
   category        String?
   status          StatusEnum        
   price           Decimal
-  establishment   establishment?     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
+  establishment   establishment     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
   created_at      DateTime   @default(now()) @map("created_at")
@@ -80,6 +80,7 @@ model establishment {
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @default(now()) @map("updated_at")
   password        String    @map("password_hash")
+  role            Role      @default(SUPPLIER)
 }
 
 

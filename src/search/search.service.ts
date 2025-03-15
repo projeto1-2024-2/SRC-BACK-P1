@@ -16,7 +16,7 @@ export class SearchService {
     try {
       const keywords =
       await this.nplService.getKeywordsByConversation(conversation);
-
+      
       const products_id: { id: string }[] =
         await this.searchProductsElasticSearch(keywords);
 

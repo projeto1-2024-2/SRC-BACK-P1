@@ -13,6 +13,7 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   'is_deleted',
   'created_at',
   'updated_at',
+  'updated_at',
 ]) {
   @Field(() => String)
   @IsNotEmpty()
@@ -28,10 +29,6 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   @IsNotEmpty()
   @IsString()
   brand: string;
-
-  @Field(() => GraphQLJSON)
-  @IsOptional()
-  imagens: Prisma.JsonValue;
 
   @Field(() => Number)
   @IsNotEmpty()

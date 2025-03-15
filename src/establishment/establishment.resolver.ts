@@ -1,10 +1,13 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { CreateEstablishmentInput } from './dto/input/create_full_itens-establishment.input';
+import { CreateEstablishmentInput } from './dto/create_full_itens-establishment.input';
 import { EstablishmentService } from './establishment.service';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
+import { UpdateFullItensEstablishmentInput } from './dto/update_full_itens-establishment.input';
+import { PaginationInput } from 'src/pagination/pagination.input';
+import { PaginatedEstablishment } from './dto/paginated-establishment.input';
 
 @Resolver(() => EstablishmentEntity)
 @UseGuards(JwtAuthGuard)
@@ -19,11 +22,33 @@ export class EstablishmentResolver {
     return await this.establishmentService.create(data);
   }
 
-  //TODO: REFAZER UPDATE
+  @Mutation(() => EstablishmentEntity, { name: 'updateEstablishment' })
+  async update(
+    @Args('data') data: UpdateFullItensEstablishmentInput,
+  ): Promise<EstablishmentEntity> {
+    return await this.establishmentService.update(data);
+  }
 
-  @Mutation(() => Boolean, { name: 'deleteEstablishment' })
-  async delete(@Args('id') id: string): Promise<boolean> {
-    return await this.establishmentService.delete(id);
+  @Mutation(() => EstablishmentEntity, { name: 'addingProductEstablishment' })
+  async addingProduct(
+    @Args('establishmentId') establishmentId: string,
+    @Args('productsId', { type: () => [String] }) productsId: string[],
+  ): Promise<EstablishmentEntity> {
+    return await this.establishmentService.addingProducts(
+      establishmentId,
+      productsId,
+    );
+  }
+
+  @Mutation(() => EstablishmentEntity, { name: 'removeProductEstablishment' })
+  async deleteProduct(
+    @Args('establishmentId') establishmentId: string,
+    @Args('productsId', { type: () => [String] }) productsId: [string],
+  ): Promise<EstablishmentEntity> {
+    return await this.establishmentService.removeProducts(
+      establishmentId,
+      productsId,
+    );
   }
 
   @IsPublicRoute()
@@ -34,7 +59,14 @@ export class EstablishmentResolver {
 
   @IsPublicRoute()
   @Query(() => [EstablishmentEntity], { name: 'findAllEstablishments' })
-  async findAll(): Promise<EstablishmentEntity[]> {
-    return await this.establishmentService.findAll();
+  async findAll(
+    @Args('pagination', { nullable: true }) pagination: PaginationInput,
+  ): Promise<PaginatedEstablishment> {
+    return await this.establishmentService.findAll(pagination);
+  }
+
+  @Mutation(() => String, { name: 'deleteEstablishment' })
+  async delete(@Args('id') id: string): Promise<string> {
+    return await this.establishmentService.delete(id);
   }
 }

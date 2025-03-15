@@ -20,9 +20,6 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => String)
   brand: string;
 
-  @Field(() => GraphQLJSON)
-  imagens: Prisma.JsonValue;
-
   @Field(() => Int)
   quantity: number;
 
@@ -49,4 +46,7 @@ export class ProductEntity implements ProductPrisma {
 
   @Field(() => Date)
   updated_at: Date;
+
+  @Field(() => Date)
+  last_update: Date;
 }

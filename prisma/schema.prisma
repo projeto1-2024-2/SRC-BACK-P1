@@ -40,7 +40,6 @@ model product {
   title           String
   description     String
   brand           String
-  imagens         Json?
   quantity        Int               @default(0)
   establishmentid String            @default(uuid())
   category        String?
@@ -67,7 +66,6 @@ model location {
   y         BigInt
   z         BigInt
 }
-
 
 model establishment {
   id              String     @id @default(uuid())

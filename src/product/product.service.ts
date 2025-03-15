@@ -51,14 +51,14 @@ export class ProductService {
 
   async findAll(
     pagination: PaginationInput,
-    establishmentId: string,
+    establishmentid: string,
   ): Promise<PaginatedProducts> {
     const { take, skip, cursor } = pagination;
     const products = await this.prismaService.product.findMany({
       take: take + 1,
       skip: skip || 0,
       cursor: cursor ? { id: cursor } : undefined,
-      where: { establishmentId },
+      where: { establishmentid },
     });
 
     const hasMore = products.length > take;
@@ -72,14 +72,14 @@ export class ProductService {
   async findByCategory(
     pagination: PaginationInput,
     category: string,
-    establishmentId: string,
+    establishmentid: string,
   ): Promise<PaginatedProducts> {
     const { take, skip, cursor } = pagination;
     const products = await this.prismaService.product.findMany({
       take: take + 1,
       skip: skip || 0,
       cursor: cursor ? { id: cursor } : undefined,
-      where: { establishmentId, category },
+      where: { establishmentid, category },
     });
 
     const hasMore = products.length > take;

@@ -1,8 +1,6 @@
 import { Field, InputType, OmitType } from '@nestjs/graphql';
 import { ProductEntity } from '../entities/product.entity';
-import { Prisma } from '@prisma/client';
 import { Decimal } from '@prisma/client/runtime';
-import GraphQLJSON from 'graphql-type-json';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';

@@ -16,6 +16,7 @@ import { EstablishmentService } from 'src/establishment/establishment.service';
 import { SearchService } from 'src/search/search.service';
 import { FileUpload } from 'graphql-upload-ts';
 import { uploadFileStream } from 'src/utils/uploadFileStream';
+import { downloadFileStream } from 'src/utils/downloadFileStream';
 
 @Injectable()
 export class ProductService {
@@ -241,6 +242,24 @@ export class ProductService {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
     return await uploadFileStream(establishmentId, productId, files);
+  }
+
+  async downloadImages(
+    establishmentId: string,
+    productId: string,
+  ): Promise<{ name: string; image: string }[]> {
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
+    const existingProduct = await this.prismaService.product.findFirst({
+      where: {
+        id: productId,
+        establishmentid: establishmentId,
+      },
+    });
+    if (!existingProduct) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+
+    return downloadFileStream(establishmentId, productId);
   }
 
   private async checkProductExistsByTitleDescription(

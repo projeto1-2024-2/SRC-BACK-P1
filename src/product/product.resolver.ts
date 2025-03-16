@@ -11,7 +11,7 @@ import { PaginationInput } from 'src/pagination/pagination.input';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
 import { UploadImageProductInput } from './dto/upload-image-product.input';
-import { uploadFileStream } from 'src/utils/uploadFileStream';
+import { DownloadImage } from 'src/shared/models/downloadImage.dto';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => ProductEntity)
@@ -98,5 +98,15 @@ export class ProductResolver {
       productId,
       filePromise,
     );
+  }
+
+  @Query(() => [DownloadImage], {
+    name: 'downloadImagesProduct',
+  })
+  async downloadImagesProduct(
+    @Args('establishmentId') establismentId: string,
+    @Args('productId') productId: string,
+  ) {
+    return await this.productService.downloadImages(establismentId, productId);
   }
 }

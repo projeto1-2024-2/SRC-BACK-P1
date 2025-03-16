@@ -9,7 +9,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma/status.enum';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedProducts } from './dto/paginated-products.input';
 import { EstablishmentService } from 'src/establishment/establishment.service';
@@ -17,6 +17,7 @@ import { SearchService } from 'src/search/search.service';
 import { FileUpload } from 'graphql-upload-ts';
 import { uploadFileStream } from 'src/utils/uploadFileStream';
 import { downloadFileStream } from 'src/utils/downloadFileStream';
+import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
 
 @Injectable()
 export class ProductService {
@@ -285,10 +286,10 @@ export class ProductService {
     }
   }
 
-  private mapToProductEntity(product: any): ProductEntity {
+  private mapToProductEntity(product: ProductPrisma): ProductEntity {
     return {
       ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
+      status: StatusEnum[product.status],
     };
   }
 

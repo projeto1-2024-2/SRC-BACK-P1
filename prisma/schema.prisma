@@ -29,8 +29,8 @@ model user {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @default(now()) @map("updated_at")
   pseudonym   String?
-  addressId   String?
-  address     address?   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  addressId   String    @default(uuid())
+  address     address   @relation(fields: [addressId], references: [id], name: "UserAddress")
   contexts    context[]
   role        Role      @default(CONSUMER)
 }
@@ -41,11 +41,11 @@ model product {
   description     String
   brand           String
   quantity        Int               @default(0)
-  establishmentId String            @default(uuid())
+  establishmentid String            @default(uuid())
   category        String?
   status          StatusEnum        
   price           Decimal
-  establishment   establishment?     @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  establishment   establishment     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
   created_at      DateTime   @default(now()) @map("created_at")
@@ -70,8 +70,8 @@ model location {
 model establishment {
   id              String     @id @default(uuid())
   name            String
-  openingHours    DateTime
-  closingHours    DateTime
+  openingHours    String
+  closingHours    String
   commercialPhone String
   taxId           String
   addressId       String?    @default(uuid())
@@ -79,6 +79,8 @@ model establishment {
   address         address?   @relation(name: "EstablishmentAddress", fields: [addressId], references: [id], onDelete: Cascade)
   createdAt       DateTime   @default(now()) @map("created_at")
   updatedAt       DateTime   @default(now()) @map("updated_at")
+  password        String    @map("password_hash")
+  role            Role      @default(SUPPLIER)
 }
 
 

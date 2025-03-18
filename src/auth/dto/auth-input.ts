@@ -1,12 +1,15 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class AuthInput {
-  @Field(() => String)
-  @IsNotEmpty()
-  @IsString()
+  @Field(() => String, { nullable: true })
+  @IsOptional()
   email: string;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  taxId: string;
 
   @Field(() => String)
   @IsNotEmpty()

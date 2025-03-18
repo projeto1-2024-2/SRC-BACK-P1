@@ -1,11 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { CreateEstablishmentInput } from './dto/create_full_itens-establishment.input';
+import { CreateEstablishmentInput } from './dto/create-establishment.input';
 import { EstablishmentService } from './establishment.service';
 import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UseGuards } from '@nestjs/common';
-import { UpdateFullItensEstablishmentInput } from './dto/update_full_itens-establishment.input';
+import { UpdateFullItensEstablishmentInput } from './dto/update-establishment.input';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedEstablishment } from './dto/paginated-establishment.input';
 

@@ -21,7 +21,9 @@ export class SearchService {
         await this.searchProductsElasticSearch(keywords);
 
       const result: ProductEntity[] = await Promise.all(
-        products_id.map(async (p) => await this.productService.findById(p.id)),
+        products_id.map(
+          async (p) => await this.productService.searchFindById(p.id),
+        ),
       );
 
       return result;

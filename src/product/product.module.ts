@@ -7,7 +7,11 @@ import { SearchModule } from 'src/search/search.module';
 
 @Module({
   providers: [ProductService, ProductResolver],
-  imports: [PrismaModule, forwardRef(() => SearchModule), EstablishmentModule],
+  imports: [
+    PrismaModule,
+    forwardRef(() => SearchModule),
+    forwardRef(() => EstablishmentModule),
+  ],
   exports: [ProductService],
 })
 export class ProductModule {}

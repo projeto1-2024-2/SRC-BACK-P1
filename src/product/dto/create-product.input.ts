@@ -34,8 +34,7 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   @IsNotEmpty()
   quantity: number;
 
-  @Field(() => String)
-  @IsNotEmpty()
+  @Field(() => String, { nullable: false })
   @IsString()
   establishmentId: string;
 

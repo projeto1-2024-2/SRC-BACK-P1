@@ -5,6 +5,7 @@ import { Optional } from '@nestjs/common';
 import { CreateAddressInput } from 'src/address/dto/create-address.input';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { product } from 'src/shared/prismagraphql/product';
+import { Role } from '../../user/user.types';
 
 @InputType('CreateEstablishmentInput')
 export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
@@ -17,15 +18,15 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @IsString()
   name: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @IsNotEmpty()
   @IsDate()
-  openingHours: Date;
+  openingHours: string;
 
-  @Field(() => Date)
+  @Field(() => String)
   @IsNotEmpty()
   @IsDate()
-  closingHours: Date;
+  closingHours: string;
 
   @Field(() => String)
   @IsNotEmpty()
@@ -44,4 +45,14 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()
   newAddress: CreateAddressInput;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
+  @Field(() => String, { defaultValue: Role.SUPPLIER })
+  role: Role;
 }

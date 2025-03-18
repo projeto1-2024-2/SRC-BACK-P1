@@ -1,5 +1,6 @@
 export class PayloadJwt {
   sub: string;
   name: string;
-  email: string;
+  email?: string;
+  taxId?: string;
 }

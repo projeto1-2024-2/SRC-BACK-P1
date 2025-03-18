@@ -13,8 +13,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 export class AddressResolver {
   constructor(private readonly addressService: AddressService) {}
 
-  @Mutation(() => AddressEntity, { name: 'registerAddress' })
-  async registerAddress(
+  @Mutation(() => AddressEntity, { name: 'createAddress' })
+  async createAddress(
     @CurrentUser() user: UserEntity,
     @Args('data') data: CreateAddressInput,
   ) {

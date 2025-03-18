@@ -1,9 +1,20 @@
-import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import {
+  Field,
+  GraphQLISODateTime,
+  ID,
+  ObjectType,
+  registerEnumType,
+} from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
 import { establishment as EstablishmentPrisma } from 'src/shared/prismagraphql/establishment';
 import { EstablishmentCount } from 'src/shared/prismagraphql/prisma';
 import { product } from 'src/shared/prismagraphql/product';
+import { Role } from '@prisma/client';
 
+registerEnumType(Role, {
+  name: 'Role',
+  description: 'User role',
+});
 @ObjectType()
 export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => ID)
@@ -12,11 +23,11 @@ export class EstablishmentEntity implements EstablishmentPrisma {
   @Field(() => String)
   name: string;
 
-  @Field(() => Date)
-  openingHours: Date;
+  @Field(() => String)
+  openingHours: string;
 
-  @Field(() => Date)
-  closingHours: Date;
+  @Field(() => String)
+  closingHours: string;
 
   @Field(() => String)
   commercialPhone: string;
@@ -38,4 +49,10 @@ export class EstablishmentEntity implements EstablishmentPrisma {
 
   @Field(() => GraphQLISODateTime)
   updatedAt: Date;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String)
+  role: Role;
 }

@@ -8,9 +8,10 @@ import { Roles } from 'src/user/decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PaginatedProducts } from './dto/paginated-products.input';
 import { PaginationInput } from 'src/pagination/pagination.input';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
 
 @UseGuards(JwtAuthGuard)
-@Roles('SUPPLIER', 'ADMIN')
 @Resolver(() => ProductEntity)
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
@@ -19,42 +20,66 @@ export class ProductResolver {
   @Mutation(() => ProductEntity, { name: 'createProduct' })
   async createProduct(
     @Args('data') data: CreateProductInput,
+    @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<ProductEntity> {
-    return this.productService.create(data);
+    return this.productService.create(establishment.id, data);
   }
 
+  @Roles('ADMIN')
+  @Mutation(() => ProductEntity, { name: 'createProductByAdmin' })
+  async createProductByAdmin(
+    @Args('data') data: CreateProductInput,
+  ): Promise<ProductEntity> {
+    return this.productService.createByAdmin(data);
+  }
+
+  @Roles('SUPPLIER', 'ADMIN')
   @Query(() => PaginatedProducts, { name: 'getProducts' })
   async findAll(
     @Args('pagination', { nullable: true }) pagination: PaginationInput,
-    @Args('establishmentId') establishmentId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<PaginatedProducts> {
-    return this.productService.findAll(pagination, establishmentId);
+    return this.productService.findAll(pagination, establishment.id);
   }
 
+  @Roles('SUPPLIER', 'ADMIN')
   @Query(() => PaginatedProducts, { name: 'getProductsByCategory' })
   async findAllByCategory(
     @Args('pagination', { nullable: true }) pagination: PaginationInput,
     @Args('category') category: string,
-    @Args('establishmentId') establishmentId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<PaginatedProducts> {
     return this.productService.findByCategory(
       pagination,
       category,
-      establishmentId,
+      establishment.id,
     );
+  }
+
+  @Roles('SUPPLIER', 'ADMIN')
+  @Query(() => ProductEntity, { name: 'getProductById' })
+  async findById(
+    @Args('id') productId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
+  ): Promise<ProductEntity> {
+    return this.productService.findById(productId, establishment.id);
   }
 
   @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
   async updateProduct(
     @Args('data') data: UpdateProductInput,
+    @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<ProductEntity> {
-    return this.productService.update(data);
+    return this.productService.update(data, establishment.id);
   }
 
   @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'deleteProduct' })
-  async deleteProduct(@Args('id') id: string): Promise<string> {
-    return this.productService.delete(id);
+  async deleteProduct(
+    @Args('id') productId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
+  ): Promise<string> {
+    return this.productService.delete(productId, establishment.id);
   }
 }

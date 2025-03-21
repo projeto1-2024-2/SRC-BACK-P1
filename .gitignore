@@ -60,3 +60,5 @@ prismagraphql
 graphql/schema.gql
 *.sql
 *.toml
+
+storage

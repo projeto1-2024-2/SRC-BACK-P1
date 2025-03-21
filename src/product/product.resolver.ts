@@ -10,6 +10,8 @@ import { PaginatedProducts } from './dto/paginated-products.input';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
+import { UploadImageProductInput } from './dto/upload-image-product.input';
+import { DownloadImage } from 'src/shared/models/downloadImage.dto';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => ProductEntity)
@@ -81,5 +83,30 @@ export class ProductResolver {
     @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<string> {
     return this.productService.delete(productId, establishment.id);
+  }
+
+  @Mutation(() => String, { name: 'saveProductImages' })
+  async uploadImagesProduct(
+    @Args('productImages') images: UploadImageProductInput,
+    @CurrentUser() establishment: EstablishmentEntity,
+    @Args('productId') productId: string,
+  ): Promise<string> {
+    const file = images?.image;
+    const filePromise = Promise.resolve(file);
+    return await this.productService.uploadImagesProduct(
+      establishment.id,
+      productId,
+      filePromise,
+    );
+  }
+
+  @Query(() => [DownloadImage], {
+    name: 'downloadImagesProduct',
+  })
+  async downloadImagesProduct(
+    @Args('establishmentId') establismentId: string,
+    @Args('productId') productId: string,
+  ) {
+    return await this.productService.downloadImages(establismentId, productId);
   }
 }

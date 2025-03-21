@@ -9,11 +9,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { StatusEnum } from 'src/shared/prismagraphql/prisma/status.enum';
 import { PaginationInput } from 'src/pagination/pagination.input';
 import { PaginatedProducts } from './dto/paginated-products.input';
 import { EstablishmentService } from 'src/establishment/establishment.service';
 import { SearchService } from 'src/search/search.service';
+import { FileUpload } from 'graphql-upload-ts';
+import { uploadFileStream } from 'src/utils/uploadFileStream';
+import { downloadFileStream } from 'src/utils/downloadFileStream';
+import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
 
 @Injectable()
 export class ProductService {
@@ -163,7 +167,7 @@ export class ProductService {
   ): Promise<ProductEntity> {
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     try {
-      await this.checkProductExists(data.id);
+      await this.checkProductExists(establishmentId, data.id);
       const product = await this.prismaService.product.update({
         where: { id: data.id, establishmentid: establishmentId },
         data: data,
@@ -185,7 +189,7 @@ export class ProductService {
 
   async delete(productId: string, establishmentId: string): Promise<string> {
     try {
-      await this.checkProductExists(productId);
+      await this.checkProductExists(establishmentId, productId);
       await this.prismaService.product.delete({
         where: { id: productId, establishmentid: establishmentId },
       });
@@ -223,6 +227,42 @@ export class ProductService {
     }
   }
 
+  async uploadImagesProduct(
+    establishmentId: string,
+    productId: string,
+    files: Promise<FileUpload>,
+  ): Promise<string> {
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
+    const existingProduct = await this.prismaService.product.findFirst({
+      where: {
+        id: productId,
+        establishmentid: establishmentId,
+      },
+    });
+    if (!existingProduct) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+    return await uploadFileStream(establishmentId, productId, files);
+  }
+
+  async downloadImages(
+    establishmentId: string,
+    productId: string,
+  ): Promise<{ name: string; image: string }[]> {
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
+    const existingProduct = await this.prismaService.product.findFirst({
+      where: {
+        id: productId,
+        establishmentid: establishmentId,
+      },
+    });
+    if (!existingProduct) {
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
+    }
+
+    return downloadFileStream(establishmentId, productId);
+  }
+
   private async checkProductExistsByTitleDescription(
     title: string,
     description: string,
@@ -234,19 +274,22 @@ export class ProductService {
       throw new HttpException('Product already exits', HttpStatus.CONFLICT);
     }
   }
-  private async checkProductExists(id: string) {
-    const existingProduct = await this.prismaService.product.findUnique({
-      where: { id },
+  private async checkProductExists(establishmentId: string, productId: string) {
+    const existingProduct = await this.prismaService.product.findFirst({
+      where: {
+        id: productId,
+        establishmentid: establishmentId,
+      },
     });
     if (existingProduct) {
       throw new HttpException('Product already exits', HttpStatus.CONFLICT);
     }
   }
 
-  private mapToProductEntity(product: any): ProductEntity {
+  private mapToProductEntity(product: ProductPrisma): ProductEntity {
     return {
       ...product,
-      status: StatusEnum[product.status as keyof typeof StatusEnum],
+      status: StatusEnum[product.status],
     };
   }
 

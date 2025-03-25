@@ -31,6 +31,7 @@ model user {
   pseudonym   String?
   addressId   String    @default(uuid())
   address     address   @relation(fields: [addressId], references: [id], name: "UserAddress")
+  // remover context
   contexts    context[]
   role        Role      @default(CONSUMER)
 }
@@ -105,6 +106,16 @@ model productDimension {
   width     Float?
   product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+// Refatorar conversation para isso
+// Remover contexto
+// model conversation {
+//   user_id relation...
+//   title string
+//   id String @id @default(uuid())
+//   chat_history Json
+//   keywords Json
+// }
 
 model conversation {
   id               String    @id @default(uuid())

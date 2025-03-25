@@ -12,8 +12,18 @@ export class SearchService {
     private productService: ProductService,
   ) {}
 
+  // método: Buscar todas as conversations do usuário
+  // o método recebe o id do usuário e retorna todas as conversations dele
+
+  // método: Buscar uma conversation (especifica) existente
+  // o método recebe o id do usuário e o titulo da busca
+
+  
   async searchProductsPipeline(conversation: string) {
     try {
+      // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
+      // const keywords =
+      // await this.nplService.getKeywordsByConversation(conversationId, conversation);
       const keywords =
       await this.nplService.getKeywordsByConversation(conversation);
       

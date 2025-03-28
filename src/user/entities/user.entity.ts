@@ -1,6 +1,11 @@
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { User as UserPrisma } from '@prisma/client';
-import { RoleEntity } from './role.entity';
+import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { user as UserPrisma } from '@prisma/client';
+import { Role } from '@prisma/client';
+
+registerEnumType(Role, {
+  name: 'Role',
+  description: 'User role',
+});
 
 @ObjectType()
 export class UserEntity implements UserPrisma {
@@ -23,17 +28,17 @@ export class UserEntity implements UserPrisma {
   phoneNumber: string;
 
   @Field(() => String)
-  picture: string;
+  image: Buffer;
 
   @Field(() => Date)
   createdAt: Date;
 
-  @Field(() => RoleEntity)
-  role: RoleEntity;
-
   @Field(() => Date)
   updatedAt: Date;
 
+  @Field(() => String, { nullable: true })
+  addressId: string;
+
   @Field(() => String)
-  userStatus: string;
+  role: Role;
 }

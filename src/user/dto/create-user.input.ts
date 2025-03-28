@@ -1,30 +1,59 @@
 import { InputType, Field, OmitType } from '@nestjs/graphql';
 import { UserEntity } from '../entities/user.entity';
 import { Optional } from '@nestjs/common';
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { Role } from '../user.types';
+import { CreateAddressInput } from 'src/address/dto/create-address.input';
 
 @InputType('CreateUserInput')
 export class CreateUserInput extends OmitType(UserEntity, [
   'id',
   'createdAt',
   'updatedAt',
-  'role',
+  'addressId',
 ]) {
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsNotEmpty()
+  @IsString()
   name: string;
 
   @Field(() => String)
+  @Optional()
+  @IsString()
   pseudonym: string;
 
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
   email: string;
 
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsNotEmpty()
+  @IsString()
   password: string;
 
-  @Field(() => String)
+  @Field(() => String, {
+    nullable: false,
+  })
+  @IsPhoneNumber()
   phoneNumber: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Optional()
-  picture: string;
+  @IsString()
+  image: Buffer;
+
+  @Field(() => CreateAddressInput, { nullable: false })
+  @IsNotEmpty()
+  newAddress: CreateAddressInput;
+
+  @Field(() => String, { defaultValue: Role.CONSUMER })
+  role: Role;
 }

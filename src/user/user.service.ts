@@ -3,6 +3,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,7 @@ export class UserService {
 
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createUserDto: CreateUserInput) {
+  async create(createUserDto: CreateUserInput): Promise<UserEntity> {
     const userExists = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
@@ -19,11 +20,18 @@ export class UserService {
       throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
 
+    const address = await this.prismaService.address.create({
+      data: createUserDto.newAddress,
+    });
+
     const user = await this.prismaService.user.create({
       data: {
-        ...createUserDto,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        name: createUserDto.name,
+        pseudonym: createUserDto.pseudonym,
+        email: createUserDto.email,
         password: await bcrypt.hash(createUserDto.password, this.saltRounds),
+        phoneNumber: createUserDto.phoneNumber,
+        addressId: address.id,
       },
     });
 
@@ -75,5 +83,12 @@ export class UserService {
     }
 
     await this.prismaService.user.delete({ where: { id } });
+  }
+
+  async existsById(id: string): Promise<boolean> {
+    const user = await this.prismaService.user.findUnique({
+      where: { id },
+    });
+    return !!user;
   }
 }

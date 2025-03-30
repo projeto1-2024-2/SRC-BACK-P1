@@ -1,8 +1,6 @@
 import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
 import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
-import { Decimal } from '@prisma/client/runtime';
 import { StatusEnum } from 'src/shared/prismagraphql/prisma';
-import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
 @ObjectType()
 export class ProductEntity implements ProductPrisma {
@@ -30,8 +28,8 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => StatusEnum)
   status: StatusEnum;
 
-  @Field(() => GraphQLDecimal)
-  price: Decimal;
+  @Field(() => String)
+  price: string;
 
   @Field(() => [String])
   keywords: string[];

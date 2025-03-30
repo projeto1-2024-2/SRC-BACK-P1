@@ -44,7 +44,7 @@ model product {
   establishmentid String            @default(uuid())
   category        String?
   status          StatusEnum        
-  price           Decimal
+  price           String           
   establishment   establishment     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]

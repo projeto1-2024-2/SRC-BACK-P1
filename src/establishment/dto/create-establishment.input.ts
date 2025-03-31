@@ -20,12 +20,12 @@ export class CreateEstablishmentInput extends OmitType(EstablishmentEntity, [
 
   @Field(() => String)
   @IsNotEmpty()
-  @IsDate()
+  @IsString()
   openingHours: string;
 
   @Field(() => String)
   @IsNotEmpty()
-  @IsDate()
+  @IsString()
   closingHours: string;
 
   @Field(() => String)

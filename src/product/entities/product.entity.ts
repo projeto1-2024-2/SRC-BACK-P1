@@ -30,8 +30,8 @@ export class ProductEntity implements ProductPrisma {
   @Field(() => StatusEnum)
   status: StatusEnum;
 
-  @Field(() => GraphQLDecimal)
-  price: Decimal;
+  @Field(() => String)
+  price: string;
 
   @Field(() => [String])
   keywords: string[];

@@ -28,10 +28,7 @@ export class ProductService {
     private readonly searchService: SearchService,
   ) {}
 
-  async create(
-    establishmentId: string,
-    data: CreateProductInput,
-  ): Promise<ProductEntity> {
+  async create(establishmentId: string, data: CreateProductInput) {
     if (data.keywords.length == 0) {
       data.keywords = this.createKeywordsByTitleDescription(
         data.title,
@@ -58,7 +55,6 @@ export class ProductService {
         },
       },
     });
-
     return {
       ...product,
       created_at: new Date(),
@@ -97,7 +93,7 @@ export class ProductService {
     pagination: PaginationInput,
     establishmentid: string,
   ): Promise<PaginatedProducts> {
-    const { take, skip, cursor } = pagination;
+    const { take = 10, skip = 0, cursor } = pagination;
     const products = await this.prismaService.product.findMany({
       take: take + 1,
       skip: skip || 0,

@@ -33,4 +33,9 @@ export class AddressResolver {
   async getAddress(@CurrentUser() user: UserEntity) {
     return this.addressService.get(user);
   }
+
+  @Query(() => AddressEntity, { name: 'getAddressById' })
+  async getAddressById(@Args('id') id: string) {
+    return this.addressService.getById(id);
+  }
 }

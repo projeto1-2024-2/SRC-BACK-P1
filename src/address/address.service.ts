@@ -53,4 +53,17 @@ export class AddressService {
       );
     }
   }
+
+  async getById(id: string): Promise<AddressEntity> {
+    try {
+      return await this.prismaService.address.findUnique({
+        where: { id: id },
+      });
+    } catch {
+      throw new HttpException(
+        `Address with id:${id} does not exists`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+  }
 }

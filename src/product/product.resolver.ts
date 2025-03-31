@@ -4,14 +4,14 @@ import { ProductEntity } from './entities/product.entity';
 import { CreateProductInput } from './dto/create-product.input';
 import { UpdateProductInput } from './dto/update-product.input';
 import { UseGuards } from '@nestjs/common';
-import { Roles } from 'src/user/decorators';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from '../user/decorators';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PaginatedProducts } from './dto/paginated-products.input';
-import { PaginationInput } from 'src/pagination/pagination.input';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
+import { PaginationInput } from '../pagination/pagination.input';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { EstablishmentEntity } from '../establishment/entities/establishment.entity';
 import { UploadImageProductInput } from './dto/upload-image-product.input';
-import { DownloadImage } from 'src/shared/models/downloadImage.dto';
+import { DownloadImage } from '../shared/models/downloadImage.dto';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => ProductEntity)

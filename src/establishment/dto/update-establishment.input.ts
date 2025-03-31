@@ -2,9 +2,9 @@ import { Field, ID, InputType, PartialType } from '@nestjs/graphql';
 import { CreateEstablishmentInput } from './create-establishment.input';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { Optional } from '@nestjs/common';
-import { CreateProductInput } from 'src/product/dto/create-product.input';
-import { CreateAddressInput } from 'src/address/dto/create-address.input';
-import { UpdateProductInput } from 'src/product/dto/update-product.input';
+import { CreateProductInput } from '../../product/dto/create-product.input';
+import { CreateAddressInput } from '../../address/dto/create-address.input';
+import { UpdateProductInput } from '../../product/dto/update-product.input';
 
 @InputType('UpdateFullItensEstablishmentInput')
 export class UpdateFullItensEstablishmentInput extends PartialType(

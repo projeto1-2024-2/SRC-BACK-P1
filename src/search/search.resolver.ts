@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ProductEntity } from 'src/product/entities/product.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ProductEntity } from '../product/entities/product.entity';
 import { SearchService } from './search.service';
 
 @Resolver(() => ProductEntity)

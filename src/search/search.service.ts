@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ProductEntity } from '../product/entities/product.entity';
 import axios from 'axios';
-import { NlpService } from 'src/nlp/nlp.service';
-import { ProductService } from 'src/product/product.service';
+import { NlpService } from '../nlp/nlp.service';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class SearchService {

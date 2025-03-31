@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { AddressEntity } from './entities/address.entity';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 import { CreateAddressInput } from './dto/create-address.input';
 import { UpdateAddressInput } from './dto/update-address.input';
 
@@ -27,30 +27,27 @@ export class AddressService {
     user: UserEntity,
     data: UpdateAddressInput,
   ): Promise<AddressEntity> {
-    try {
-      const address = await this.prismaService.address.update({
-        where: { id: user.addressId },
-        data: data,
-      });
-      return address;
-    } catch {
-      throw new HttpException(
-        `Address with id:${user.addressId} does not exists`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    const address = await this.prismaService.address.update({
+      where: { id: user.addressId },
+      data: data,
+    });
+
+    this.validateAddress(address);
+    return address;
   }
 
   async get(data: UserEntity): Promise<AddressEntity> {
-    try {
-      return await this.prismaService.address.findUnique({
-        where: { id: data.addressId },
-      });
-    } catch {
-      throw new HttpException(
-        `Address with id:${data.addressId} does not exists`,
-        HttpStatus.NOT_FOUND,
-      );
+    const address = await this.prismaService.address.findUnique({
+      where: { id: data.addressId },
+    });
+
+    this.validateAddress(address);
+    return address;
+  }
+
+  private validateAddress(address: AddressEntity): void {
+    if (!address) {
+      throw new HttpException('Address not found', HttpStatus.NOT_FOUND);
     }
   }
 }

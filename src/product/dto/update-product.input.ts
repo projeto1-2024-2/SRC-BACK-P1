@@ -1,5 +1,5 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { StatusEnum } from '../../shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Decimal } from '@prisma/client/runtime';

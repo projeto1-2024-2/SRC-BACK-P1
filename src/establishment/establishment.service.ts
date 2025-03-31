@@ -6,11 +6,11 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { CreateEstablishmentInput } from './dto/create-establishment.input';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { UpdateFullItensEstablishmentInput } from './dto/update-establishment.input';
 import { EstablishmentEntity } from './entities/establishment.entity';
-import { ProductService } from 'src/product/product.service';
-import { PaginationInput } from 'src/pagination/pagination.input';
+import { ProductService } from '../product/product.service';
+import { PaginationInput } from '../pagination/pagination.input';
 import { PaginatedEstablishment } from './dto/paginated-establishment.input';
 import * as bcrypt from 'bcrypt';
 

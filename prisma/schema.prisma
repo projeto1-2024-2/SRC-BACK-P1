@@ -31,9 +31,8 @@ model user {
   pseudonym   String?
   addressId   String    @default(uuid())
   address     address   @relation(fields: [addressId], references: [id], name: "UserAddress")
-  // remover context
-  contexts    context[]
   role        Role      @default(CONSUMER)
+  conversations conversation[]
 }
 
 model product {
@@ -107,31 +106,12 @@ model productDimension {
   product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-// Refatorar conversation para isso
-// Remover contexto
-// model conversation {
-//   user_id relation...
-//   title string
-//   id String @id @default(uuid())
-//   chat_history Json
-//   keywords Json
-// }
 
 model conversation {
   id               String    @id @default(uuid())
-  returnedProducts Json?
-  searchRating     Int?      @default(0)
-  createdAt        DateTime  @default(now())
-  contexts         context[]
-}
-
-model context {
-  userId         String       @default(uuid())
-  conversationId String       @default(uuid())
-  searchQuery    String?
-  createdAt      DateTime     @default(now())
-  conversation   conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  user           user         @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, conversationId])
+  title String
+  chat_history Json
+  keywords Json
+  user_id   String
+  user   user         @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

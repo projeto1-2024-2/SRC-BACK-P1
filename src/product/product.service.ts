@@ -135,7 +135,7 @@ export class ProductService {
     establishmentId: string,
   ): Promise<ProductEntity | null> {
     try {
-      const product = await this.prismaService.product.findUnique({
+      const product = await this.prismaService.product.findFirst({
         where: {
           establishmentid: establishmentId,
           id: productId,

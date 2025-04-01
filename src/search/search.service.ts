@@ -3,20 +3,32 @@ import { ProductEntity } from '../product/entities/product.entity';
 import axios from 'axios';
 import { NlpService } from '../nlp/nlp.service';
 import { ProductService } from '../product/product.service';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
 
 @Injectable()
 export class SearchService {
   constructor(
-    private nplService: NlpService,
+    private nlpService: NlpService,
     @Inject(forwardRef(() => ProductService))
     private productService: ProductService,
   ) {}
 
-  async searchProductsPipeline(conversation: string) {
+  async searchProductsPipeline(user: UserEntity, userConversation: string) {
     try {
-      const keywords =
-      await this.nplService.getKeywordsByConversation(conversation);
-      
+      // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
+      const conversationInput: CreateConversationInput = {
+        title: userConversation,
+        user_id: user.id,
+      };
+      const conversation_id =
+        await this.nlpService.registerConversation(conversationInput);
+
+      const keywords = await this.nlpService.getKeywordsByConversation(
+        conversation_id,
+        userConversation,
+      );
+
       const products_id: { id: string }[] =
         await this.searchProductsElasticSearch(keywords);
 

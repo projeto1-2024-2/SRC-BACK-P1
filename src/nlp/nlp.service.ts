@@ -14,28 +14,31 @@ export class NlpService {
   async registerConversation(data: CreateConversationInput): Promise<string> {
     // Como o usuário pode utilizar o chat mesmo deslogado. Só vai salvar a conversa
     // se estiver logado.
-    if (data.user_id != null) {
-      try {
-        await this.userService.existsById(data.user_id);
-        const conversation = await this.prismaService.conversation.create({
-          data: {
-            title: data.title,
-            chat_history: null,
-            keywords: null,
-            user_id: data.user_id,
-          },
-        });
-        return conversation.id;
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      await this.userService.existsById(data.user_id);
+      const conversation = await this.prismaService.conversation.create({
+        data: {
+          title: data.title,
+          chat_history: undefined,
+          keywords: undefined,
+          userId: data.user_id,
+          establishmentid: data.establishment_id,
+          userType: data.user_type,
+        },
+      });
+      return conversation.id;
+    } catch (error) {
+      console.log(error);
     }
   }
-  async getKeywordsByConversation(conversation_id: string, conversation: string) {
+  async getKeywordsByConversation(
+    conversation_id: string,
+    conversation: string,
+  ) {
     try {
       const query = `
         query {
-            keywords(conversation: ${JSON.stringify(conversation)}, conversation_id: ${conversation_id}) { 
+            keywords(sessionId: ${conversation_id}, conversation: ${JSON.stringify(conversation)}) { 
               keywords
             }
         }
@@ -55,7 +58,7 @@ export class NlpService {
     try {
       await this.userService.existsById(userId);
       return await this.prismaService.conversation.findMany({
-        where: { user_id: userId },
+        where: { userId: userId },
       });
     } catch (error) {
       console.log(error);
@@ -68,7 +71,7 @@ export class NlpService {
     try {
       await this.userService.existsById(userId);
       return await this.prismaService.conversation.findFirst({
-        where: { user_id: userId, title: conversationTitle },
+        where: { userId: userId, title: conversationTitle },
       });
     } catch (error) {
       console.log(error);

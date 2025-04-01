@@ -5,6 +5,8 @@ import { NlpService } from 'src/nlp/nlp.service';
 import { ProductService } from 'src/product/product.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
+import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
+import { Role } from 'src/user/user.types';
 
 @Injectable()
 export class SearchService {
@@ -14,15 +16,24 @@ export class SearchService {
     private productService: ProductService,
   ) {}
 
-  async searchProductsPipeline(user: UserEntity, userConversation: string) {
+  async searchProductsPipeline(
+    userConversation: string,
+    user?: EstablishmentEntity | UserEntity,
+  ) {
     try {
       // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
-      const conversationInput: CreateConversationInput = {
-        title: userConversation,
-        user_id: user.id,
-      };
-      const conversation_id =
-        await this.nlpService.registerConversation(conversationInput);
+      let conversation_id = null;
+      if (user) {
+        const conversationInput: CreateConversationInput = {
+          title: userConversation,
+          user_id: user.id,
+          establishment_id: user.id,
+          user_type: user.role == 'CONSUMER' ? Role.CONSUMER : Role.SUPPLIER,
+        };
+
+        conversation_id =
+          await this.nlpService.registerConversation(conversationInput);
+      }
 
       const keywords = await this.nlpService.getKeywordsByConversation(
         conversation_id,

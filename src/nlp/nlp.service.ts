@@ -26,27 +26,29 @@ export class NlpService {
           userType: data.user_type,
         },
       });
+      await this.createSession(conversation.id);
       return conversation.id;
     } catch (error) {
       console.log(error);
     }
   }
-  async getKeywordsByConversation(
-    conversation_id: string,
-    conversation: string,
-  ) {
+  async chatMessage(conversation_id: string, conversation: string) {
     try {
       const query = `
         query {
-            keywords(sessionId: ${conversation_id}, conversation: ${JSON.stringify(conversation)}) { 
+            keywords(sessionId: "${conversation_id}", conversation: "${conversation}") { 
+              response
               keywords
             }
         }
       `;
-      const response = await axios.post(process.env.NLP_URL, {
-        query,
-      });
-      return response.data.data.keywords.keywords;
+      const response = await axios.post(process.env.NLP_URL, { query: query });
+
+      const chat = {
+        keywords: response.data.data.keywords.keywords,
+        response: response.data.data.keywords.response,
+      }
+      return chat;
     } catch (error) {
       console.log(error);
     }
@@ -73,6 +75,27 @@ export class NlpService {
       return await this.prismaService.conversation.findFirst({
         where: { userId: userId, title: conversationTitle },
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async createSession(sessionId: string) {
+    try {
+      const query = `
+        mutation {
+          createSession(sessionId: "${sessionId}"){
+            success
+            errors
+            sessionId
+          }
+        }
+      `;
+      const response = await axios.post(process.env.NLP_URL, {
+        query,
+      });
+      console.log(response.data);
+      return response;
     } catch (error) {
       console.log(error);
     }

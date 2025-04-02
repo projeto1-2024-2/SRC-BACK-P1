@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, ID, ArgsType, Field } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ArgsType,
+  Field,
+} from '@nestjs/graphql';
 import { UserService } from '../user.service';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
@@ -13,7 +21,7 @@ import { IsNotEmpty, IsUUID } from 'class-validator';
 class FindOneUserArgs {
   @Field(() => ID)
   @IsNotEmpty({ message: 'O ID não pode ser vazio' })
-  @IsUUID('4', { message: 'ID deve ser um UUID válido' }) // Versão 4 do UUID
+  @IsUUID('4', { message: 'ID deve ser um UUID válido' })
   id: string;
 }
 @Resolver(() => UserEntity)

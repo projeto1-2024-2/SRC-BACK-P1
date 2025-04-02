@@ -38,6 +38,12 @@ describe('UserService', () => {
     jest.clearAllMocks();
   });
 
+  describe('service defined', () => {
+    it('should be defined', () => {
+      expect(service).toBeDefined();
+    });
+  });
+
   describe('create', () => {
     it('should create a new user', async () => {
       mockPrismaService.user.findUnique.mockResolvedValue(null);
@@ -72,7 +78,11 @@ describe('UserService', () => {
         image: undefined,
       });
 
-      expect(result).toEqual({ id: 'user-id', email: 'test@example.com' });
+      expect(result).toEqual({
+        id: 'user-id',
+        email: 'test@example.com',
+        password: null,
+      });
       expect(prisma.user.create).toHaveBeenCalled();
     });
 
@@ -157,6 +167,91 @@ describe('UserService', () => {
     });
   });
 
+  describe('create user with duplicate email', () => {
+    it('should throw ConflictException when email already exists', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        id: 'existing-user-id',
+        email: 'existing@example.com',
+        name: 'Existing User',
+        password: 'ValidPass123!',
+        phoneNumber: '+123456789',
+        newAddress: {
+          street: 'New Street',
+          number: 123,
+          neighbourhood: 'New Neighbourhood',
+          city: 'New City',
+          state: 'NS',
+          zipCode: '12345-678',
+          complement: 'de',
+        },
+        role: Role.CONSUMER,
+      });
+
+      const duplicateUserData = {
+        name: 'New User',
+        email: 'existing@example.com',
+        password: 'ValidPass123!',
+        phoneNumber: '+1234759',
+        newAddress: {
+          street: 'New Street',
+          number: 123,
+          neighbourhood: 'New Neighbourhood',
+          city: 'New City',
+          state: 'NS',
+          zipCode: '12345-678',
+          complement: 'de',
+        },
+        role: Role.CONSUMER,
+      };
+
+      await expect(service.create(duplicateUserData)).rejects.toThrow(
+        new HttpException('User already exists', HttpStatus.CONFLICT),
+      );
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'existing@example.com' },
+      });
+
+      expect(mockPrismaService.user.create).not.toHaveBeenCalled();
+    });
+
+    it('should check email case insensitively', async () => {
+      mockPrismaService.user.findUnique.mockImplementation((args) => {
+        if (args.where.email.toLowerCase() === 'existing@example.com') {
+          return Promise.resolve({
+            id: 'existing-user-id',
+            email: 'EXISTING@example.com',
+            name: 'Existing User',
+          });
+        }
+        return Promise.resolve(null);
+      });
+
+      await expect(
+        service.create({
+          email: 'existing@example.com',
+          password: 'ValidPass123!',
+          name: 'New User',
+          phoneNumber: '+123456789',
+          newAddress: {
+            street: 'New Street',
+            number: 123,
+            neighbourhood: 'New Neighbourhood',
+            city: 'New City',
+            state: 'NS',
+            zipCode: '12345-678',
+            complement: '',
+          },
+          role: Role.CONSUMER,
+        }),
+      ).rejects.toThrow(HttpException);
+
+      expect(mockPrismaService.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'existing@example.com' },
+      });
+    });
+  });
+
   describe('findAll', () => {
     it('should return a list of users', async () => {
       mockPrismaService.user.findMany.mockResolvedValue([
@@ -165,7 +260,9 @@ describe('UserService', () => {
 
       const result = await service.findAll();
 
-      expect(result).toEqual([{ id: '1', email: 'user@example.com' }]);
+      expect(result).toEqual([
+        { id: '1', email: 'user@example.com', password: null },
+      ]);
       expect(prisma.user.findMany).toHaveBeenCalled();
     });
 
@@ -194,7 +291,11 @@ describe('UserService', () => {
         email: 'user@example.com',
       });
       const result = await service.findOne('1');
-      expect(result).toEqual({ id: '1', email: 'user@example.com' });
+      expect(result).toEqual({
+        id: '1',
+        email: 'user@example.com',
+        password: null,
+      });
     });
   });
 
@@ -207,7 +308,7 @@ describe('UserService', () => {
       });
 
       const result = await service.update({ id: '1', name: 'Updated Name' });
-      expect(result).toEqual({ id: '1', name: 'Updated Name' });
+      expect(result).toEqual({ id: '1', name: 'Updated Name', password: null });
     });
 
     it('should throw an error if the user does not exist', async () => {
@@ -230,8 +331,11 @@ describe('UserService', () => {
       mockPrismaService.user.findUnique.mockResolvedValue(existingUser);
       mockPrismaService.user.update.mockImplementation((args) => args.data);
 
-      const result = await service.update({ id: '1', name: 'New Name' });
-      expect(result.password).toBeUndefined();
+      const result = await service.update({
+        id: '1',
+        name: 'New Name',
+      });
+      expect(result.password).toEqual(null);
     });
   });
 
@@ -339,15 +443,9 @@ describe('UserService', () => {
 
       const result = await service.findOne('1');
 
-      expect(result).toEqual(
-        expect.not.objectContaining({
-          password: expect.anything(),
-        }),
-      );
-
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('email');
-      expect(result).not.toHaveProperty('password');
+      expect(result.password).toEqual(null);
     });
 
     it('should never include password in response objects', async () => {
@@ -383,16 +481,10 @@ describe('UserService', () => {
       const results = await service.findAll();
 
       results.forEach((user) => {
-        expect(user).toEqual(
-          expect.not.objectContaining({
-            password: expect.anything(),
-          }),
-        );
-
         expect(user).toHaveProperty('id');
         expect(user).toHaveProperty('email');
         expect(user).toHaveProperty('name');
-        expect(user).not.toHaveProperty('password');
+        expect(user.password).toEqual(null);
       });
 
       expect(results).toHaveLength(2);

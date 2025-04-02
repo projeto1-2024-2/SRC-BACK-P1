@@ -11,6 +11,8 @@ export class CreateUserInput extends OmitType(UserEntity, [
   'createdAt',
   'updatedAt',
   'addressId',
+  'pseudonym',
+  'image',
 ]) {
   @Field(() => String, {
     nullable: false,
@@ -42,6 +44,7 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @Field(() => String, {
     nullable: false,
   })
+  @IsNotEmpty()
   @IsPhoneNumber()
   phoneNumber: string;
 

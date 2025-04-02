@@ -41,9 +41,7 @@ export class SearchService {
         conversation_id,
         userConversation,
       );
-
-      console.log("keywords processadas", keywords);
-      
+     
       const products_id: { id: string }[] =
         await this.searchProductsElasticSearch(keywords.keywords);
 
@@ -58,9 +56,7 @@ export class SearchService {
         chatResponse: keywords.response
       };
 
-      console.log(result);
-
-      // return result;
+      return result;
     } catch (error) {
       console.log(error);
     }

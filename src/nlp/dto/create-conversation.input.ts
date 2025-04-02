@@ -11,7 +11,4 @@ export class CreateConversationInput {
 
   @Field(() => String)
   user_type: Role;
-
-  @Field(() => String, { nullable: true })
-  establishment_id: string;
 }

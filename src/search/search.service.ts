@@ -42,16 +42,23 @@ export class SearchService {
         userConversation,
       );
 
-      console.log(keywords);
+      console.log("keywords processadas", keywords);
+      
+      const products_id: { id: string }[] =
+        await this.searchProductsElasticSearch(keywords.keywords);
 
-      // const products_id: { id: string }[] =
-      //   await this.searchProductsElasticSearch(keywords);
+      const products: ProductEntity[] = await Promise.all(
+        products_id.map(
+          async (p) => await this.productService.searchFindById(p.id),
+        ),
+      );
 
-      // const result: ProductEntity[] = await Promise.all(
-      //   products_id.map(
-      //     async (p) => await this.productService.searchFindById(p.id),
-      //   ),
-      // );
+      const result = {
+        products: products,
+        chatResponse: keywords.response
+      };
+
+      console.log(result);
 
       // return result;
     } catch (error) {

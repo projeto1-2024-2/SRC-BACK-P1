@@ -42,15 +42,13 @@ export class NlpService {
             }
         }
       `;
-      console.log(query);
       const response = await axios.post(process.env.NLP_URL, { query: query });
-      console.log(response.data);
-      // console.log({
-      //   keywords: response.data.keywords.keywords,
-      //   response: response.data.keywords.response,
-      // });
-      
-      return response.data.data.keywords.keywords;
+
+      const chat = {
+        keywords: response.data.data.keywords.keywords,
+        response: response.data.data.keywords.response,
+      }
+      return chat;
     } catch (error) {
       console.log(error);
     }

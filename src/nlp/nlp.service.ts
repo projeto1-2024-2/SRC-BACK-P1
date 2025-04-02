@@ -22,7 +22,6 @@ export class NlpService {
           chat_history: undefined,
           keywords: undefined,
           userId: data.user_id,
-          establishmentid: data.establishment_id,
           userType: data.user_type,
         },
       });

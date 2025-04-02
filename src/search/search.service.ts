@@ -5,7 +5,6 @@ import { NlpService } from 'src/nlp/nlp.service';
 import { ProductService } from 'src/product/product.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
-import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
 import { Role } from 'src/user/user.types';
 import { randomUUID } from 'crypto';
 
@@ -17,10 +16,7 @@ export class SearchService {
     private productService: ProductService,
   ) {}
 
-  async searchProductsPipeline(
-    userConversation: string,
-    user?: EstablishmentEntity | UserEntity,
-  ) {
+  async searchProductsPipeline(userConversation: string, user?: UserEntity) {
     try {
       // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
       let conversation_id = '123';
@@ -28,8 +24,7 @@ export class SearchService {
         const conversationInput: CreateConversationInput = {
           title: userConversation,
           user_id: user.id,
-          establishment_id: user.id,
-          user_type: user.role == 'CONSUMER' ? Role.CONSUMER : Role.SUPPLIER,
+          user_type: Role.CONSUMER,
         };
 
         conversation_id =

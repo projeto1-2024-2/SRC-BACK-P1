@@ -81,7 +81,6 @@ model establishment {
   updatedAt       DateTime   @default(now()) @map("updated_at")
   password        String    @map("password_hash")
   role            Role      @default(SUPPLIER)
-  conversations conversation[]
 }
 
 
@@ -115,8 +114,6 @@ model conversation {
   keywords         Json?
   userType         Role
   userId           String?       
-  establishmentid  String?       
-
-  user             user?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  establishment    establishment? @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
+  establishmentid  String? 
+  user             user?        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

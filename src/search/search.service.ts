@@ -7,6 +7,7 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
 import { EstablishmentEntity } from 'src/establishment/entities/establishment.entity';
 import { Role } from 'src/user/user.types';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class SearchService {
@@ -22,7 +23,7 @@ export class SearchService {
   ) {
     try {
       // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
-      let conversation_id = null;
+      let conversation_id = '123';
       if (user) {
         const conversationInput: CreateConversationInput = {
           title: userConversation,
@@ -34,22 +35,25 @@ export class SearchService {
         conversation_id =
           await this.nlpService.registerConversation(conversationInput);
       }
+      await this.nlpService.createSession(conversation_id);
 
-      const keywords = await this.nlpService.getKeywordsByConversation(
+      const keywords = await this.nlpService.chatMessage(
         conversation_id,
         userConversation,
       );
 
-      const products_id: { id: string }[] =
-        await this.searchProductsElasticSearch(keywords);
+      console.log(keywords);
 
-      const result: ProductEntity[] = await Promise.all(
-        products_id.map(
-          async (p) => await this.productService.searchFindById(p.id),
-        ),
-      );
+      // const products_id: { id: string }[] =
+      //   await this.searchProductsElasticSearch(keywords);
 
-      return result;
+      // const result: ProductEntity[] = await Promise.all(
+      //   products_id.map(
+      //     async (p) => await this.productService.searchFindById(p.id),
+      //   ),
+      // );
+
+      // return result;
     } catch (error) {
       console.log(error);
     }

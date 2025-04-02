@@ -17,7 +17,6 @@ export class SearchResolver {
     @Args({ name: 'conversation', type: () => String }) conversation: string,
     @CurrentUser() user: EstablishmentEntity | UserEntity,
   ) {
-    console.log(user);
     return await this.searchService.searchProductsPipeline(conversation, user);
   }
 

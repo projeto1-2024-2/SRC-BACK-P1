@@ -104,9 +104,12 @@ export class ProductResolver {
     name: 'downloadImagesProduct',
   })
   async downloadImagesProduct(
-    @Args('establishmentId') establismentId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
     @Args('productId') productId: string,
   ) {
-    return await this.productService.downloadImages(establismentId, productId);
+    return await this.productService.downloadImages(
+      establishment.id,
+      productId,
+    );
   }
 }

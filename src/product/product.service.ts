@@ -163,7 +163,7 @@ export class ProductService {
   ): Promise<ProductEntity> {
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     try {
-      await this.checkProductExists(establishmentId, data.id);
+      await this.checkProductExists(data.id);
       const product = await this.prismaService.product.update({
         where: { id: data.id, establishmentid: establishmentId },
         data: data,
@@ -183,13 +183,11 @@ export class ProductService {
     }
   }
 
-  async delete(productId: string, establishmentId: string): Promise<string> {
+  async delete(productId: string): Promise<string> {
     try {
-      await this.checkProductExists(establishmentId, productId);
       await this.prismaService.product.delete({
-        where: { id: productId, establishmentid: establishmentId },
+        where: { id: productId },
       });
-
       return productId;
     } catch (error) {
       console.log(error);
@@ -270,11 +268,10 @@ export class ProductService {
       throw new HttpException('Product already exits', HttpStatus.CONFLICT);
     }
   }
-  private async checkProductExists(establishmentId: string, productId: string) {
+  private async checkProductExists(productId: string) {
     const existingProduct = await this.prismaService.product.findFirst({
       where: {
         id: productId,
-        establishmentid: establishmentId,
       },
     });
     if (existingProduct) {

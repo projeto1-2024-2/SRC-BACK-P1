@@ -29,28 +29,6 @@ export class EstablishmentResolver {
     return await this.establishmentService.update(data);
   }
 
-  @Mutation(() => EstablishmentEntity, { name: 'addingProductEstablishment' })
-  async addingProduct(
-    @Args('establishmentId') establishmentId: string,
-    @Args('productsId', { type: () => [String] }) productsId: string[],
-  ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.addingProducts(
-      establishmentId,
-      productsId,
-    );
-  }
-
-  @Mutation(() => EstablishmentEntity, { name: 'removeProductEstablishment' })
-  async deleteProduct(
-    @Args('establishmentId') establishmentId: string,
-    @Args('productsId', { type: () => [String] }) productsId: [string],
-  ): Promise<EstablishmentEntity> {
-    return await this.establishmentService.removeProducts(
-      establishmentId,
-      productsId,
-    );
-  }
-
   @IsPublicRoute()
   @Query(() => EstablishmentEntity, { name: 'findEstablishmentById' })
   async findById(@Args('id') id: string): Promise<EstablishmentEntity> {

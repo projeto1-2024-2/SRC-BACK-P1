@@ -77,12 +77,9 @@ export class ProductResolver {
   }
 
   @Roles('SUPPLIER', 'ADMIN')
-  @Mutation(() => ProductEntity, { name: 'deleteProduct' })
-  async deleteProduct(
-    @Args('id') productId: string,
-    @CurrentUser() establishment: EstablishmentEntity,
-  ): Promise<string> {
-    return this.productService.delete(productId, establishment.id);
+  @Mutation(() => String, { name: 'deleteProduct' })
+  async deleteProduct(@Args('id') productId: string): Promise<string> {
+    return this.productService.delete(productId);
   }
 
   @Mutation(() => String, { name: 'saveProductImages' })

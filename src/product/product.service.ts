@@ -163,16 +163,16 @@ export class ProductService {
   ): Promise<ProductEntity> {
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     try {
-      await this.checkProductExists(data.id);
       const product = await this.prismaService.product.update({
-        where: { id: data.id, establishmentid: establishmentId },
+        where: { id: data.id },
         data: data,
       });
       await this.searchService.updateDocumentByQuery(
         data.id,
         data.title,
-        data.brand,
         data.description,
+        data.brand,
+        data.keywords,
       );
       return this.mapToProductEntity(product);
     } catch {

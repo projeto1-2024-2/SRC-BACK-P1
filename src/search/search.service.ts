@@ -78,8 +78,9 @@ export class SearchService {
   async updateDocumentByQuery(
     id: string,
     title: string,
-    brand: string,
     description: string,
+    brand: string,
+    keywords: string[],
   ) {
     try {
       const query = `
@@ -89,6 +90,7 @@ export class SearchService {
               newBrand: ${JSON.stringify(brand)}, 
               newTitle: ${JSON.stringify(title)}, 
               newDescription: ${JSON.stringify(description)}
+              newKeywords: ${JSON.stringify(keywords)}
             )
           }
         `;

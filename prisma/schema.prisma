@@ -108,10 +108,12 @@ model productDimension {
 
 
 model conversation {
-  id               String    @id @default(uuid())
-  title String
-  chat_history Json
-  keywords Json
-  user_id   String
-  user   user         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id               String        @id @default(uuid())
+  title            String
+  chat_history     Json?        @default("{}")
+  keywords         Json?
+  userType         Role
+  userId           String?       
+  establishmentid  String? 
+  user             user?        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

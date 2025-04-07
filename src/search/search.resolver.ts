@@ -4,16 +4,27 @@ import { ProductEntity } from '../product/entities/product.entity';
 import { SearchService } from './search.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { SearchProductsResponse } from './dto/SearchProductsResponse';
 
 @Resolver(() => ProductEntity)
 export class SearchResolver {
   constructor(private readonly searchService: SearchService) {}
 
-  @Query(() => [ProductEntity], { name: 'searchProducts' })
-  async searchProducts(
+  @UseGuards(JwtAuthGuard)
+  @Query(() => SearchProductsResponse, { name: 'searchProductsAuth' })
+  async searchProductsAuth(
     @Args({ name: 'conversation', type: () => String }) conversation: string,
     @CurrentUser() user: UserEntity,
-  ) {
-    return await this.searchService.searchProductsPipeline(user, conversation);
+  ): Promise<SearchProductsResponse> {
+    return await this.searchService.searchProductsPipeline(conversation, user);
+  }
+
+  @Query(() => SearchProductsResponse, { name: 'searchProducts' })
+  async searchProducts(
+    @Args({ name: 'conversation', type: () => String }) conversation: string,
+  ): Promise<SearchProductsResponse> {
+    return await this.searchService.searchProductsPipeline(conversation);
   }
 }

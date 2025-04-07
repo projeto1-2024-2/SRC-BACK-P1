@@ -14,36 +14,40 @@ export class NlpService {
   async registerConversation(data: CreateConversationInput): Promise<string> {
     // Como o usuário pode utilizar o chat mesmo deslogado. Só vai salvar a conversa
     // se estiver logado.
-    if (data.user_id != null) {
-      try {
-        await this.userService.existsById(data.user_id);
-        const conversation = await this.prismaService.conversation.create({
-          data: {
-            title: data.title,
-            chat_history: null,
-            keywords: null,
-            user_id: data.user_id,
-          },
-        });
-        return conversation.id;
-      } catch (error) {
-        console.log(error);
-      }
+    try {
+      await this.userService.existsById(data.user_id);
+      const conversation = await this.prismaService.conversation.create({
+        data: {
+          title: data.title,
+          chat_history: undefined,
+          keywords: undefined,
+          userId: data.user_id,
+          userType: data.user_type,
+        },
+      });
+      await this.createSession(conversation.id);
+      return conversation.id;
+    } catch (error) {
+      console.log(error);
     }
   }
-  async getKeywordsByConversation(conversation_id: string, conversation: string) {
+  async chatMessage(conversation_id: string, conversation: string) {
     try {
       const query = `
         query {
-            keywords(conversation: ${JSON.stringify(conversation)}, conversation_id: ${conversation_id}) { 
+            keywords(sessionId: "${conversation_id}", conversation: "${conversation}") { 
+              response
               keywords
             }
         }
       `;
-      const response = await axios.post(process.env.NLP_URL, {
-        query,
-      });
-      return response.data.data.keywords.keywords;
+      const response = await axios.post(process.env.NLP_URL, { query: query });
+
+      const chat = {
+        keywords: response.data.data.keywords.keywords,
+        response: response.data.data.keywords.response,
+      }
+      return chat;
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +59,7 @@ export class NlpService {
     try {
       await this.userService.existsById(userId);
       return await this.prismaService.conversation.findMany({
-        where: { user_id: userId },
+        where: { userId: userId },
       });
     } catch (error) {
       console.log(error);
@@ -68,8 +72,29 @@ export class NlpService {
     try {
       await this.userService.existsById(userId);
       return await this.prismaService.conversation.findFirst({
-        where: { user_id: userId, title: conversationTitle },
+        where: { userId: userId, title: conversationTitle },
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async createSession(sessionId: string) {
+    try {
+      const query = `
+        mutation {
+          createSession(sessionId: "${sessionId}"){
+            success
+            errors
+            sessionId
+          }
+        }
+      `;
+      const response = await axios.post(process.env.NLP_URL, {
+        query,
+      });
+      console.log(response.data);
+      return response;
     } catch (error) {
       console.log(error);
     }

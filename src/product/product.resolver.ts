@@ -12,6 +12,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { EstablishmentEntity } from '../establishment/entities/establishment.entity';
 import { UploadImageProductInput } from './dto/upload-image-product.input';
 import { DownloadImage } from '../shared/models/downloadImage.dto';
+import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 
 @UseGuards(JwtAuthGuard)
 @Resolver(() => ProductEntity)
@@ -77,22 +78,19 @@ export class ProductResolver {
   }
 
   @Roles('SUPPLIER', 'ADMIN')
-  @Mutation(() => ProductEntity, { name: 'deleteProduct' })
-  async deleteProduct(
-    @Args('id') productId: string,
-    @CurrentUser() establishment: EstablishmentEntity,
-  ): Promise<string> {
-    return this.productService.delete(productId, establishment.id);
+  @Mutation(() => String, { name: 'deleteProduct' })
+  async deleteProduct(@Args('id') productId: string): Promise<string> {
+    return this.productService.delete(productId);
   }
 
   @Mutation(() => String, { name: 'saveProductImages' })
   async uploadImagesProduct(
-    @Args('productImages') images: UploadImageProductInput,
-    @CurrentUser() establishment: EstablishmentEntity,
+    @Args('imageId') imageId: string,
+    @Args({ name: 'image', type: () => GraphQLUpload }) image: FileUpload,
     @Args('productId') productId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
   ): Promise<string> {
-    const file = images?.image;
-    const filePromise = Promise.resolve(file);
+    const filePromise = Promise.resolve(image);
     return await this.productService.uploadImagesProduct(
       establishment.id,
       productId,
@@ -104,9 +102,12 @@ export class ProductResolver {
     name: 'downloadImagesProduct',
   })
   async downloadImagesProduct(
-    @Args('establishmentId') establismentId: string,
+    @CurrentUser() establishment: EstablishmentEntity,
     @Args('productId') productId: string,
   ) {
-    return await this.productService.downloadImages(establismentId, productId);
+    return await this.productService.downloadImages(
+      establishment.id,
+      productId,
+    );
   }
 }

@@ -94,57 +94,6 @@ export class EstablishmentService {
     });
   }
 
-  async addingProducts(establishmentId: string, productsId: string[]) {
-    await this.checkEstablishmentByid(establishmentId);
-
-    const productsToAdd = await Promise.all(
-      productsId.map(async (id) => {
-        return this.productService.findById(id, establishmentId);
-      }),
-    );
-
-    await this.prismaService.establishment.update({
-      where: { id: establishmentId },
-      data: {
-        products: {
-          connect: productsToAdd.map((product) => ({ id: product.id })),
-        },
-      },
-    });
-
-    return this.prismaService.establishment.findUnique({
-      where: { id: establishmentId },
-    });
-  }
-
-  async removeProducts(establishmentId: string, productsId: string[]) {
-    await this.checkEstablishmentByid(establishmentId);
-
-    const productsToRemove = await Promise.all(
-      productsId.map(async (id) => {
-        return this.productService.findById(id, establishmentId);
-      }),
-    );
-
-    await this.prismaService.establishment.update({
-      where: { id: establishmentId },
-      data: {
-        products: {
-          disconnect: productsToRemove.map((product) => ({ id: product.id })),
-        },
-      },
-    });
-    await Promise.all(
-      productsToRemove.map(async (i) => {
-        await this.productService.delete(i.id, establishmentId);
-      }),
-    );
-
-    return this.prismaService.establishment.findUnique({
-      where: { id: establishmentId },
-    });
-  }
-
   async findById(id: string): Promise<EstablishmentEntity> {
     await this.checkEstablishmentByid(id);
     const establishment = await this.prismaService.establishment.findUnique({

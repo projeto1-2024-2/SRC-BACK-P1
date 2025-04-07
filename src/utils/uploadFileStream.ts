@@ -12,7 +12,6 @@ export const uploadFileStream = async (
 ) => {
   const { filename, createReadStream } = await file;
 
-  const fileName = v4();
   const StoragePath = join(__dirname, '..', '..', 'storage');
   const establishmentPath = join(StoragePath, establishmentId);
   const productPath = join(establishmentPath, productId);

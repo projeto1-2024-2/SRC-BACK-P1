@@ -3,6 +3,7 @@ import { StatusEnum } from '../../shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
+
 @InputType('UpdateProductInput')
 export class UpdateProductInput {
   @Field(() => ID)
@@ -12,38 +13,30 @@ export class UpdateProductInput {
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   title?: string;
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   description?: string;
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   brand?: string;
 
-  @Field(() => Number, { nullable: true })
-  @IsNumber()
-  quantity?: number;
-
   @Field(() => String, { nullable: true })
   @IsString()
-  establishmentId: string;
-
-  @Field(() => String, { nullable: true })
-  @IsString()
+  @IsOptional()
   category?: string;
 
-  @Field(() => StatusEnum, { nullable: true })
-  status?: StatusEnum;
-
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   price?: string;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
   keywords?: string[];
-
-  @Field(() => Boolean)
-  is_deleted?: boolean;
 }

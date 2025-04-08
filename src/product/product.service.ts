@@ -130,14 +130,10 @@ export class ProductService {
     };
   }
 
-  async findById(
-    productId: string,
-    establishmentId: string,
-  ): Promise<ProductEntity | null> {
+  async findById(productId: string): Promise<ProductEntity | null> {
     try {
       const product = await this.prismaService.product.findFirst({
         where: {
-          establishmentid: establishmentId,
           id: productId,
         },
       });

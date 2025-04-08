@@ -61,11 +61,8 @@ export class ProductResolver {
 
   @Roles('SUPPLIER', 'ADMIN')
   @Query(() => ProductEntity, { name: 'getProductById' })
-  async findById(
-    @Args('id') productId: string,
-    @CurrentUser() establishment: EstablishmentEntity,
-  ): Promise<ProductEntity> {
-    return this.productService.findById(productId, establishment.id);
+  async findById(@Args('id') productId: string): Promise<ProductEntity> {
+    return this.productService.findById(productId);
   }
 
   @Roles('SUPPLIER', 'ADMIN')

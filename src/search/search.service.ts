@@ -26,16 +26,18 @@ export class SearchService {
           user_id: user.id,
           user_type: Role.CONSUMER,
         };
-
+        
         conversation_id =
           await this.nlpService.registerConversation(conversationInput);
+        await this.nlpService.createSession(conversation_id);
       }
-      await this.nlpService.createSession(conversation_id);
 
       const keywords = await this.nlpService.chatMessage(
         conversation_id,
         userConversation,
       );
+
+      console.log(keywords);
      
       const products_id: { id: string }[] =
         await this.searchProductsElasticSearch(keywords.keywords);

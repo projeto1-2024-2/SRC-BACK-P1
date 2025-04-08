@@ -1,7 +1,7 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
 import { StatusEnum } from '../../shared/prismagraphql/prisma';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Decimal } from '@prisma/client/runtime';
 
 @InputType('UpdateProductInput')
@@ -13,38 +13,30 @@ export class UpdateProductInput {
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   title?: string;
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   description?: string;
 
   @Field(() => String, { nullable: true })
   @IsString()
+  @IsOptional()
   brand?: string;
 
-  @Field(() => Number, { nullable: true })
-  @IsNumber()
-  quantity?: number;
-
   @Field(() => String, { nullable: true })
   @IsString()
-  establishmentId: string;
-
-  @Field(() => String, { nullable: true })
-  @IsString()
+  @IsOptional()
   category?: string;
 
-  @Field(() => StatusEnum, { nullable: true })
-  status?: StatusEnum;
-
-  @Field(() => GraphQLDecimal, { nullable: true })
-  @IsNumber()
-  price?: Decimal;
+  @Field(() => String, { nullable: true })
+  @IsString()
+  @IsOptional()
+  price?: string;
 
   @Field(() => String, { nullable: true })
+  @IsOptional()
   keywords?: string[];
-
-  @Field(() => Boolean)
-  is_deleted?: boolean;
 }

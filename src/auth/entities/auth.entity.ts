@@ -4,6 +4,8 @@ import { user } from '../../shared/prismagraphql/user';
 
 @ObjectType()
 export class AuthResponse {
+  @Field(() => String)
+  id: string;
   @Field(() => UserOrEstablishment)
   user: user | establishment;
   @Field(() => String)

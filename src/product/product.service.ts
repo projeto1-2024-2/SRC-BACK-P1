@@ -28,10 +28,7 @@ export class ProductService {
     private readonly searchService: SearchService,
   ) {}
 
-  async create(
-    establishmentId: string,
-    data: CreateProductInput,
-  ): Promise<ProductEntity> {
+  async create(establishmentId: string, data: CreateProductInput) {
     if (data.keywords.length == 0) {
       data.keywords = this.createKeywordsByTitleDescription(
         data.title,
@@ -58,7 +55,6 @@ export class ProductService {
         },
       },
     });
-
     return {
       ...product,
       created_at: new Date(),
@@ -97,7 +93,7 @@ export class ProductService {
     pagination: PaginationInput,
     establishmentid: string,
   ): Promise<PaginatedProducts> {
-    const { take, skip, cursor } = pagination;
+    const { take = 10, skip = 0, cursor } = pagination;
     const products = await this.prismaService.product.findMany({
       take: take + 1,
       skip: skip || 0,
@@ -139,7 +135,7 @@ export class ProductService {
     establishmentId: string,
   ): Promise<ProductEntity | null> {
     try {
-      const product = await this.prismaService.product.findUnique({
+      const product = await this.prismaService.product.findFirst({
         where: {
           establishmentid: establishmentId,
           id: productId,
@@ -167,16 +163,16 @@ export class ProductService {
   ): Promise<ProductEntity> {
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     try {
-      await this.checkProductExists(establishmentId, data.id);
       const product = await this.prismaService.product.update({
-        where: { id: data.id, establishmentid: establishmentId },
+        where: { id: data.id },
         data: data,
       });
       await this.searchService.updateDocumentByQuery(
         data.id,
         data.title,
-        data.brand,
         data.description,
+        data.brand,
+        data.keywords,
       );
       return this.mapToProductEntity(product);
     } catch {
@@ -187,13 +183,11 @@ export class ProductService {
     }
   }
 
-  async delete(productId: string, establishmentId: string): Promise<string> {
+  async delete(productId: string): Promise<string> {
     try {
-      await this.checkProductExists(establishmentId, productId);
       await this.prismaService.product.delete({
-        where: { id: productId, establishmentid: establishmentId },
+        where: { id: productId },
       });
-
       return productId;
     } catch (error) {
       console.log(error);
@@ -274,11 +268,10 @@ export class ProductService {
       throw new HttpException('Product already exits', HttpStatus.CONFLICT);
     }
   }
-  private async checkProductExists(establishmentId: string, productId: string) {
+  private async checkProductExists(productId: string) {
     const existingProduct = await this.prismaService.product.findFirst({
       where: {
         id: productId,
-        establishmentid: establishmentId,
       },
     });
     if (existingProduct) {

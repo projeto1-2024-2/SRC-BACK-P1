@@ -32,9 +32,10 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   @IsNotEmpty()
   quantity: number;
 
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: true })
   @IsString()
-  establishmentId: string;
+  @IsOptional()
+  establishmentId?: string;
 
   @Field(() => String)
   @IsNotEmpty()
@@ -45,10 +46,10 @@ export class CreateProductInput extends OmitType(ProductEntity, [
   @IsOptional()
   status: StatusEnum;
 
-  @Field(() => GraphQLDecimal)
+  @Field(() => String)
   @IsNotEmpty()
-  @IsNumber()
-  price: Decimal;
+  @IsString()
+  price: string;
 
   @Field(() => [String])
   @IsOptional()

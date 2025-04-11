@@ -9,10 +9,10 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Resolver()
-@UseGuards(JwtAuthGuard)
 export class AddressResolver {
   constructor(private readonly addressService: AddressService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => AddressEntity, { name: 'createAddress' })
   async createAddress(
     @CurrentUser() user: UserEntity,
@@ -21,6 +21,7 @@ export class AddressResolver {
     return this.addressService.create(user, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => AddressEntity, { name: 'updateAddress' })
   async updateAddress(
     @CurrentUser() user: UserEntity,

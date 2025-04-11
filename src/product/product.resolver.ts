@@ -102,13 +102,7 @@ export class ProductResolver {
   @Query(() => [DownloadImage], {
     name: 'downloadImagesProduct',
   })
-  async downloadImagesProduct(
-    @CurrentUser() establishment: EstablishmentEntity,
-    @Args('productId') productId: string,
-  ) {
-    return await this.productService.downloadImages(
-      establishment.id,
-      productId,
-    );
+  async downloadImagesProduct(@Args('productId') productId: string) {
+    return await this.productService.downloadImages(productId);
   }
 }

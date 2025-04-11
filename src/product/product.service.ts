@@ -235,19 +235,18 @@ export class ProductService {
   }
 
   async downloadImages(
-    establishmentId: string,
     productId: string,
   ): Promise<{ name: string; image: string }[]> {
-    await this.establishmentService.checkEstablishmentByid(establishmentId);
-    const existingProduct = await this.prismaService.product.findFirst({
+    const product = await this.prismaService.product.findFirst({
       where: {
         id: productId,
       },
     });
-    if (!existingProduct) {
+    if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
-
+    const establishmentId = product.establishmentid;
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
     return downloadFileStream(establishmentId, productId);
   }
 

@@ -242,7 +242,6 @@ export class ProductService {
     const existingProduct = await this.prismaService.product.findFirst({
       where: {
         id: productId,
-        establishmentid: establishmentId,
       },
     });
     if (!existingProduct) {

@@ -222,7 +222,6 @@ export class ProductService {
     productId: string,
     files: Promise<FileUpload>,
   ): Promise<string> {
-    await this.establishmentService.checkEstablishmentByid(establishmentId);
     const existingProduct = await this.prismaService.product.findFirst({
       where: {
         id: productId,
@@ -231,7 +230,15 @@ export class ProductService {
     if (!existingProduct) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
-    return await uploadFileStream(establishmentId, productId, files);
+    await this.establishmentService.checkEstablishmentByid(
+      existingProduct.establishmentid,
+    );
+
+    return await uploadFileStream(
+      existingProduct.establishmentid,
+      productId,
+      files,
+    );
   }
 
   async downloadImages(
@@ -246,6 +253,7 @@ export class ProductService {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
     const establishmentId = product.establishmentid;
+    console.log(establishmentId)
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     return downloadFileStream(establishmentId, productId);
   }

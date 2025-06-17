@@ -1,38 +1,62 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import axios from 'axios';
-import { UserEntity } from '../user/entities/user.entity';
 import { PrismaService } from '../prisma/prisma.service';
+
+interface UserGeo {
+  latitude:  number;
+  longitude: number;
+}
+
+interface DistanceOutput {
+  establishmentId: string;
+  distance:        number;
+}
 
 @Injectable()
 export class GeolocationService {
   constructor(private readonly prismaService: PrismaService) {}
 
+  /**
+   * Calcula a distância de um usuário até vários estabelecimentos
+   * usando coords do usuário informadas e o model Location para estabelecimentos.
+   *
+   * @param userGeo          Obj com latitude e longitude do usuário
+   * @param establishmentIds IDs dos estabelecimentos
+   * @returns                Array de objetos { establishmentId, distance }
+   */
   async geolocation(
-    user: UserEntity,
-    establishmentId: string,
-  ): Promise<number> {
-    const userAddress = await this.prismaService.address.findUnique({
-      where: { id: user.addressId },
-      include: { location: true },
-    });
+    userGeo: UserGeo,
+    establishmentIds: string[],
+  ): Promise<DistanceOutput[]> {
+    const { longitude: userLon, latitude: userLat } = userGeo;
 
-    const establishmentAddress = await this.prismaService.address.findUnique({
-      where: { establishments: { id: establishmentId } },
-      include: { location: true },
-    });
+    const results = await Promise.all(
+      establishmentIds.map(async (estId) => {
+        const estRec = await this.prismaService.location.findFirst({
+          where: { address: { establishments: { some: { id: estId } } } },
+        });
+        if (!estRec) {
+          console.error(`Estabelecimento ${estId} sem localização`);
+          return { establishmentId: estId, distance: -1 };
+        }
+        const estLon = Number(estRec.x);
+        const estLat = Number(estRec.y);
 
-    try {
-      // Montando a URL para o OSRM (IP:porta do serviço)
-      const url = `http://127.0.0.1:5000/route/v1/driving/${userAddress.location.x},${userAddress.location.y};${establishmentAddress.location.x},${establishmentAddress.location.y}?overview=full`;
+        const url = `http://127.0.0.1:5000/route/v1/driving/` +
+                    `${userLon},${userLat};${estLon},${estLat}` +
+                    `?overview=false&alternatives=false&steps=false`;
+        try {
+          const response = await axios.get(url);
+          const dist = response.data?.routes?.[0]?.legs?.[0]?.distance;
+          if (typeof dist !== 'number') throw new Error('Distância inválida');
+          return { establishmentId: estId, distance: dist };
+        } catch (err) {
+          console.error(`[GeolocationService] erro ao calcular distância para ${estId}:`, err);
+          return { establishmentId: estId, distance: -1 };
+        }
+      }),
+    );
 
-      // Fazendo a requisição para a API do OSRM
-      const response = await axios.get(url);
-
-      // A distância estará no campo 'routes[0].legs[0].distance' da resposta JSON
-      return response.data.routes[0].legs[0].distance;
-    } catch (error) {
-      console.error('Erro ao calcular a distância:', error);
-      throw new Error('Erro ao calcular a distância');
-    }
+    return results;
   }
 }

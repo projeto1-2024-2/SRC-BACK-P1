@@ -6,6 +6,8 @@ import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
 import { Role } from 'src/user/user.types';
 import { randomUUID } from 'crypto';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { SearchProductsResponse } from './dto/SearchProductsResponse';
+import { ChatOutput } from 'src/nlp/dto/chat.output';
 @Injectable()
 export class SearchService {
   constructor(
@@ -13,7 +15,10 @@ export class SearchService {
     private readonly elasticsearchService: ElasticsearchService,
   ) {}
 
-  async searchProductsPipeline(userConversation: string, user?: UserEntity) {
+  async searchProductsPipeline(
+    userConversation: string,
+    user?: UserEntity,
+  ): Promise<SearchProductsResponse> {
     try {
       // REGISTRAR ESSA CONVERSA NO BD E RETORNAR NO SERVIÇO DE NLP O ID DA CONVERSATION;
       let conversation_id = randomUUID() as string;
@@ -29,12 +34,10 @@ export class SearchService {
         await this.nlpService.createSession(conversation_id);
       }
 
-      const conversation = await this.nlpService.chatMessage(
+      const conversation: ChatOutput = await this.nlpService.chatMessage(
         conversation_id,
         userConversation,
       );
-
-      console.log(conversation);
 
       const products: ProductEntity[] = await this.searchProducts(
         conversation.keywords,
@@ -42,7 +45,7 @@ export class SearchService {
 
       const result = {
         products: products,
-        chatResponse: conversation.response
+        chatResponse: conversation.conversation,
       };
 
       return result;

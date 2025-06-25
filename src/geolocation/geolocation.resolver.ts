@@ -1,41 +1,32 @@
 import { Args, Resolver, Query } from '@nestjs/graphql';
 import { GeolocationService } from './geolocation.service';
+import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Roles } from 'src/user/decorators';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
-import { InputType, Field, ID, ObjectType } from '@nestjs/graphql';
-
-@InputType()
-class UserGeoInput {
-  @Field()
-  latitude: number;
-
-  @Field()
-  longitude: number;
-}
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @ObjectType()
 class EstablishmentDistanceType {
   @Field(() => ID)
   establishmentId: string;
 
-  @Field()
+  @Field(() => Int)
   distance: number;
 }
 
-@Resolver()
+@Resolver(() => EstablishmentDistanceType)
+@UseGuards(JwtAuthGuard)
 export class GeolocationResolver {
   constructor(private readonly geolocationService: GeolocationService) {}
 
   @Query(() => [EstablishmentDistanceType], { name: 'geolocation' })
   async getGeolocation(
-    @Args('userGeo') userGeo: UserGeoInput,
+    @Args('latitude', { type: () => Number }) latitude: number,
+    @Args('longitude', { type: () => Number }) longitude: number,
     @Args('establishmentIds', { type: () => [ID] })
     establishmentIds: string[],
   ): Promise<EstablishmentDistanceType[]> {
     return this.geolocationService.geolocation(
-      { latitude: userGeo.latitude, longitude: userGeo.longitude },
+      { latitude, longitude },
       establishmentIds,
     );
   }

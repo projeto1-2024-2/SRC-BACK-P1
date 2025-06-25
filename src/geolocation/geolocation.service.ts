@@ -28,7 +28,8 @@ export class GeolocationService {
     userGeo: UserGeo,
     establishmentIds: string[],
   ): Promise<DistanceOutput[]> {
-    const { longitude: userLon, latitude: userLat } = userGeo;
+    const { latitude: userLon, longitude: userLat } = userGeo;
+    const OSMR_HOST = process.env.OSMR_HOST;
 
     const results = await Promise.all(
       establishmentIds.map(async (estId) => {
@@ -42,16 +43,20 @@ export class GeolocationService {
         const estLon = Number(estRec.x);
         const estLat = Number(estRec.y);
 
-        const url = `http://127.0.0.1:5000/route/v1/driving/` +
-                    `${userLon},${userLat};${estLon},${estLat}` +
-                    `?overview=false&alternatives=false&steps=false`;
+        const url = OSMR_HOST
+          .replace('userLon', userLon.toString())
+          .replace('userLat', userLat.toString())
+          .replace('estLon',  estLon.toString())
+          .replace('estLat',  estLat.toString());
+
         try {
           const response = await axios.get(url);
           const dist = response.data?.routes?.[0]?.legs?.[0]?.distance;
-          if (typeof dist !== 'number') throw new Error('Distância inválida');
+
+          if (typeof dist !== 'number') return { establishmentId: estId, distance: -1 };
           return { establishmentId: estId, distance: dist };
         } catch (err) {
-          console.error(`[GeolocationService] erro ao calcular distância para ${estId}:`, err);
+          console.error(`[GeolocationService] erro ao calcular distância para ${estId}:`);
           return { establishmentId: estId, distance: -1 };
         }
       }),

@@ -48,6 +48,7 @@ model product {
   establishment   establishment     @relation(fields: [establishmentid], references: [id], onDelete: Cascade)
   dimensions      productDimension?
   keywords        String[]
+  image       Bytes?
   created_at      DateTime   @default(now()) @map("created_at")
   updated_at      DateTime   @default(now()) @map("updated_at")
   is_deleted      Boolean    @default(false)

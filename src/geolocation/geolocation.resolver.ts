@@ -1,6 +1,7 @@
 import { Args, Resolver, Query } from '@nestjs/graphql';
 import { GeolocationService } from './geolocation.service';
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import type { Decimal } from '@prisma/client/runtime/library';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
@@ -9,8 +10,8 @@ class EstablishmentDistanceType {
   @Field(() => ID)
   establishmentId: string;
 
-  @Field(() => Int)
-  distance: number;
+  @Field(() => String)
+  distance: string;
 }
 
 @Resolver(() => EstablishmentDistanceType)

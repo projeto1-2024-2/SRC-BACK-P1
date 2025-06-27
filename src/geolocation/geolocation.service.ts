@@ -7,9 +7,9 @@ interface UserGeo {
   longitude: number;
 }
 
-interface DistanceOutput {
+export interface DistanceOutput {
   establishmentId: string;
-  distance:        number;
+  distance:        string;
 }
 
 @Injectable()
@@ -38,27 +38,26 @@ export class GeolocationService {
         });
         if (!estRec) {
           console.error(`Estabelecimento ${estId} sem localização`);
-          return { establishmentId: estId, distance: -1 };
+          return { establishmentId: estId, distance: '-1' };
         }
         const estLon = Number(estRec.x);
         const estLat = Number(estRec.y);
 
         const url = OSMR_HOST
-          .replace('userLon', userLon.toString())
-          .replace('userLat', userLat.toString())
-          .replace('estLon',  estLon.toString())
-          .replace('estLat',  estLat.toString());
+          .replace('userLon', userLat.toString())
+          .replace('userLat', userLon.toString())
+          .replace('estLon',  estLat.toString())
+          .replace('estLat',  estLon.toString());
 
-        try {
-          const response = await axios.get(url);
-          const dist = response.data?.routes?.[0]?.legs?.[0]?.distance;
-
-          if (typeof dist !== 'number') return { establishmentId: estId, distance: -1 };
-          return { establishmentId: estId, distance: dist };
-        } catch (err) {
-          console.error(`[GeolocationService] erro ao calcular distância para ${estId}:`);
-          return { establishmentId: estId, distance: -1 };
-        }
+          try {
+            const response = await axios.get(url);
+            const dist = String(response?.data?.routes?.[0]?.legs?.[0]?.distance ?? '-1');
+          
+            return { establishmentId: estId, distance: dist };
+          } catch (err) {
+            console.error(`[GeolocationService] erro ao calcular distância para ${estId}:`, err);
+            return { establishmentId: estId, distance: '-1' };
+          }          
       }),
     );
 

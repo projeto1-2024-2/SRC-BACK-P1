@@ -11,7 +11,7 @@ import { EstablishmentModule } from './establishment/establishment.module';
 import { SearchModule } from './search/search.module';
 import { NlpModule } from './nlp/nlp.module';
 import { APP_PIPE } from '@nestjs/core';
-
+import { GeolocationModule } from './geolocation/geolocation.module';
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -31,6 +31,7 @@ import { APP_PIPE } from '@nestjs/core';
     EstablishmentModule,
     SearchModule,
     NlpModule,
+    GeolocationModule,
   ],
   controllers: [],
   providers: [

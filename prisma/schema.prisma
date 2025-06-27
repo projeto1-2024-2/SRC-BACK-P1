@@ -60,11 +60,11 @@ enum StatusEnum {
 }
 
 model location {
-  addressId String  @id @default(uuid())
-  address   address @relation(fields: [addressId], references: [id])
-  x         BigInt
-  y         BigInt
-  z         BigInt
+  addressId String   @id @default(uuid())
+  address   address  @relation(fields: [addressId], references: [id])
+  x         Decimal  @db.Decimal(9,6)
+  y         Decimal  @db.Decimal(9,6)
+  z         Decimal  @db.Decimal(9,6)
 }
 
 model establishment {

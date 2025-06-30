@@ -253,7 +253,6 @@ export class ProductService {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
     const establishmentId = product.establishmentid;
-    console.log(establishmentId)
     await this.establishmentService.checkEstablishmentByid(establishmentId);
     return downloadFileStream(establishmentId, productId);
   }

@@ -1,21 +1,22 @@
 services:
   api_p1:
+    build: .
     container_name: src-back-p1
-    build: ./
     restart: unless-stopped
     env_file:
-      - ./.env
+      - .env
     ports:
-      - 8088:3005
-    depends_on:
-      - pgsql_p1
+      - "${API_EXTERNAL_PORT}:${API_INTERNAL_PORT}"
     volumes:
-      - .:/usr/src/app_dev
-      - /usr/src/app_dev/node_modules
+      - .:/app
+    depends_on:
+      pgsql_p1:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_INTERNAL_PORT}/${POSTGRES_DB}?schema=public
     networks:
       - ondeacho
     command: npm run start:dev
-    
   pgsql_p1:
     image: postgres
     container_name: pgsql_p1
@@ -25,12 +26,65 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
-      - 5437:5432
+      - ${POSTGRES_EXTERNAL_PORT}:${POSTGRES_INTERNAL_PORT}
     networks:
       - ondeacho
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elastic_p1
+    restart: unless-stopped
+    ports:
+      - ${ELASTIC_EXTERNAL_PORT}:${ELASTIC_INTERNAL_PORT}
+      - ${ELASTIC_EXTERNAL_PORT_2}:${ELASTIC_INTERNAL_PORT_2}
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - discovery.type=single-node
+    deploy:
+      resources:
+        limits:
+          memory: 1GB
+        reservations:
+          cpus: '0.0001'
+          memory: 20M
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.0
+    container_name: kibana
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - ${KIBANA_EXTERNAL_PORT}:${KIBANA_INTERNAL_PORT}
+    depends_on:
+      - elasticsearch
+  logstash:
+    container_name: logstash
+    restart: unless-stopped
+    build:
+      context: ./logstash/
+      dockerfile: Dockerfile
+    environment:
+      - LOGSTASH_JAVA_OPTS=-Xmx1g -Xms1g
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - CONFIG_SUPPORT_ESCAPE=true
+    ports:
+      - ${LOGSTASH_EXTERNAL_PORT}:${LOGSTASH_INTERNAL_PORT}
+    volumes:
+      - ./src/config/logstash.conf:/usr/share/logstash/config/logstash.conf
+      - logstashvolume:/usr/share/logstash/data
+    depends_on:
+      - elasticsearch 
 
 networks:
   ondeacho:
@@ -40,3 +94,6 @@ networks:
 
 volumes:
   postgres:
+  logstashvolume:
+  esdata:
+    driver: local

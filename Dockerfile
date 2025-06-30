@@ -1,19 +1,26 @@
-FROM node:20-alpine3.17 as base
+FROM node:20-slim
 
 USER root
 
-FROM base as development
-RUN mkdir -p /home/node/app_dev
+RUN apt-get update && \
+    apt-get install -y curl ca-certificates gnupg && \
+    echo "deb http://security.debian.org/debian-security bullseye-security main" > /etc/apt/sources.list.d/bullseye-security.list && \
+    apt-get update && \
+    apt-get install -y libssl1.1 openssl && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /home/node/app_dev
 
-COPY package.json .
+COPY package*.json ./
 RUN npm install
 
-COPY --chown=node:node . .
+COPY . .
 
 RUN chown -R node:node /home/node/app_dev
 
 USER node
 
 RUN npx prisma generate
-RUN npx prisma migrate deploy
+
+# ENTRYPOINT
+CMD ["npm", "run", "start:dev"]

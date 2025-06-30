@@ -54,94 +54,45 @@ export class EstablishmentService {
   ): Promise<EstablishmentEntity> {
     await this.checkEstablishmentByid(data.id);
 
-    return this.prismaService.$transaction(async (prisma) => {
-      const establishmentData = await prisma.establishment.findUnique({
-        where: { id: data.id },
-        select: { addressId: true },
-      });
+    return this.prismaService.$transaction(async () => {
+      const establishmentData =
+        await this.prismaService.establishment.findUnique({
+          where: { id: data.id },
+          select: { addressId: true },
+        });
 
       let addressId = establishmentData?.addressId;
       if (data.newAddress) {
-        const newAddress = await prisma.address.create({
+        const newAddress = await this.prismaService.address.create({
           data: data.newAddress,
         });
         addressId = newAddress.id;
       }
 
-      const updatedEstablishment = await prisma.establishment.update({
-        where: { id: data.id },
-        data: {
-          name: data.name,
-          openingHours: data.openingHours,
-          closingHours: data.closingHours,
-          commercialPhone: data.commercialPhone,
-          taxId: data.taxId,
-          addressId: addressId,
-        },
-        include: {
-          products: true,
-          address: true,
-        },
-      });
+      const updatedEstablishment =
+        await this.prismaService.establishment.update({
+          where: { id: data.id },
+          data: {
+            name: data.name,
+            openingHours: data.openingHours,
+            closingHours: data.closingHours,
+            commercialPhone: data.commercialPhone,
+            taxId: data.taxId,
+            addressId: addressId,
+          },
+          include: {
+            products: true,
+            address: true,
+          },
+        });
 
       if (data.newAddress && establishmentData?.addressId) {
-        await prisma.address.delete({
+        await this.prismaService.address.delete({
           where: { id: establishmentData.addressId },
         });
       }
 
       return updatedEstablishment;
-    });
-  }
-
-  async addingProducts(establishmentId: string, productsId: string[]) {
-    await this.checkEstablishmentByid(establishmentId);
-
-    const productsToAdd = await Promise.all(
-      productsId.map(async (id) => {
-        return this.productService.findById(id, establishmentId);
-      }),
-    );
-
-    await this.prismaService.establishment.update({
-      where: { id: establishmentId },
-      data: {
-        products: {
-          connect: productsToAdd.map((product) => ({ id: product.id })),
-        },
-      },
-    });
-
-    return this.prismaService.establishment.findUnique({
-      where: { id: establishmentId },
-    });
-  }
-
-  async removeProducts(establishmentId: string, productsId: string[]) {
-    await this.checkEstablishmentByid(establishmentId);
-
-    const productsToRemove = await Promise.all(
-      productsId.map(async (id) => {
-        return this.productService.findById(id, establishmentId);
-      }),
-    );
-
-    await this.prismaService.establishment.update({
-      where: { id: establishmentId },
-      data: {
-        products: {
-          disconnect: productsToRemove.map((product) => ({ id: product.id })),
-        },
-      },
-    });
-    await Promise.all(
-      productsToRemove.map(async (i) => {
-        await this.productService.delete(i.id, establishmentId);
-      }),
-    );
-
-    return this.prismaService.establishment.findUnique({
-      where: { id: establishmentId },
     });
   }
 

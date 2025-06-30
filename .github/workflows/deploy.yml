@@ -1,0 +1,63 @@
+name: Deploy Backend via SSH with Docker Compose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Upload repository to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "."
+          target: "/home/${{ secrets.SSH_USER }}/back"
+
+      - name: Generate env file
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_JWT_SECRET: ${{secrets.JWT_SECRET}}
+          envkey_JWT_EXPIRES_IN: ${{secrets.JWT_EXPIRES_IN}}
+          envkey_ENV: ${{secrets.ENV}}
+          envkey_POSTGRES_HOST: ${{secrets.POSTGRES_HOST}}
+          envkey_POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+          envkey_POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+          envkey_POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+          envkey_API_INTERNAL_PORT: ${{secrets.API_INTERNAL_PORT}}
+          envkey_API_EXTERNAL_PORT: ${{secrets.API_EXTERNAL_PORT}}
+          envkey_POSTGRES_EXTERNAL_PORT: ${{secrets.POSTGRES_EXTERNAL_PORT}}
+          envkey_POSTGRES_INTERNAL_PORT: ${{secrets.POSTGRES_INTERNAL_PORT}}
+          envkey_ELASTIC_EXTERNAL_PORT: ${{secrets.ELASTIC_EXTERNAL_PORT}}
+          envkey_ELASTIC_INTERNAL_PORT: ${{secrets.ELASTIC_INTERNAL_PORT}}
+          envkey_ELASTIC_EXTERNAL_PORT_2: ${{secrets.ELASTIC_EXTERNAL_PORT_2}}
+          envkey_ELASTIC_INTERNAL_PORT_2: ${{secrets.ELASTIC_INTERNAL_PORT_2}}
+          envkey_LOGSTASH_EXTERNAL_PORT: ${{secrets.LOGSTASH_EXTERNAL_PORT}}
+          envkey_LOGSTASH_INTERNAL_PORT: ${{secrets.LOGSTASH_INTERNAL_PORT}}
+          envkey_KIBANA_EXTERNAL_PORT: ${{secrets.KIBANA_EXTERNAL_PORT}}
+          envkey_KIBANA_INTERNAL_PORT: ${{secrets.KIBANA_INTERNAL_PORT}}
+          envkey_DATABASE_URL: ${{secrets.DATABASE_URL}}
+          fail_on_empty: true
+
+      - name: Restart Docker Compose on remote server
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd /home/${{ secrets.SSH_USER }}/back
+            docker compose down
+            docker compose up -d
+          EOF

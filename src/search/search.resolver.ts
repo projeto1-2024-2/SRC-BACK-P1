@@ -5,7 +5,6 @@ import { SearchService } from './search.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { SearchProductsResponse } from './dto/SearchProductsResponse';
 
 @Resolver(() => ProductEntity)

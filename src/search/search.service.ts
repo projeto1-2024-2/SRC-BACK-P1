@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ProductEntity } from '../product/entities/product.entity';
-import axios from 'axios';
 import { NlpService } from '../nlp/nlp.service';
 import { ProductService } from '../product/product.service';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -33,8 +32,8 @@ export class SearchService {
 
         conversation_id =
           await this.nlpService.registerConversation(conversationInput);
-        await this.nlpService.createSession(conversation_id);
       }
+      await this.nlpService.createSession(conversation_id);
 
       const conversation: ChatOutput = await this.nlpService.chatMessage(
         conversation_id,
@@ -45,9 +44,11 @@ export class SearchService {
         conversation.keywords,
       );
 
+      //console.log(products);
+
       const result = {
         products: products,
-        chatResponse: conversation.conversation,
+        chatResponse: conversation.response,
       };
 
       return result;
@@ -69,7 +70,7 @@ export class SearchService {
                 },
                 {
                   multi_match: {
-                    query: searchKeywords.join(' '),
+                    query: searchKeywords.join(''),
                     fields: ['title', 'description'],
                     type: 'best_fields',
                   },

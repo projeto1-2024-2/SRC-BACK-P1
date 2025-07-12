@@ -5,6 +5,17 @@ import { UserService } from 'src/user/user.service';
 import { CreateConversationInput } from './dto/create-conversation.input';
 import { ChatOutput } from './dto/chat.output';
 
+interface KeywordsData {
+  keywords: string[];
+  response: string;
+}
+
+interface GraphQLResponse {
+  data: {
+    keywords: KeywordsData;
+  };
+}
+
 @Injectable()
 export class NlpService {
   constructor(
@@ -38,25 +49,36 @@ export class NlpService {
   ): Promise<ChatOutput> {
     try {
       const query = `
-        query {
-            keywords(sessionId: "${conversation_id}", conversation: "${conversation}") { 
-              response
-              keywords
-            }
+        query GetKeywords($conversation: String!, $sessionId: String!) {
+          keywords(conversation: $conversation, sessionId: $sessionId) { 
+            keywords
+            response
+          }
         }
       `;
-      const response: ChatOutput = await axios.post(process.env.NLP_URL, {
-        query: query,
+
+      const variables = {
+        conversation,
+        sessionId: conversation_id,
+      };
+
+      const response = await axios.post<GraphQLResponse>(process.env.NLP_URL, {
+        query,
+        variables,
       });
 
-      const chat = {
-        keywords: response.keywords,
-        conversation: response.conversation,
+      const chat: ChatOutput = {
+        keywords: response.data.data.keywords.keywords || [],
+        response: response.data.data.keywords.response || '',
       };
 
       return chat;
     } catch (error) {
-      console.log(error);
+      console.error('Error when trying to get chat', error);
+      return {
+        keywords: [],
+        response: '',
+      };
     }
   }
 
@@ -100,10 +122,9 @@ export class NlpService {
       const response = await axios.post(process.env.NLP_URL, {
         query,
       });
-      console.log(response.data);
       return response;
     } catch (error) {
-      console.log(error);
+      console.log(`Failed when create session: ${error}`);
     }
   }
 }

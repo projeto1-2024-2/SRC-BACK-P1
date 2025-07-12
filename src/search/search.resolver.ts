@@ -1,5 +1,6 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { ProductEntity } from 'src/product/entities/product.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ProductEntity } from '../product/entities/product.entity';
 import { SearchService } from './search.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';

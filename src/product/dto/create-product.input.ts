@@ -1,7 +1,9 @@
 import { Field, InputType, OmitType } from '@nestjs/graphql';
 import { ProductEntity } from '../entities/product.entity';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Decimal } from '@prisma/client/runtime';
+import { StatusEnum } from '../../shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 @InputType('CreateProductInput')
 export class CreateProductInput extends OmitType(ProductEntity, [

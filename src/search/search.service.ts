@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ProductEntity } from '../product/entities/product.entity';
-import { NlpService } from 'src/nlp/nlp.service';
+import axios from 'axios';
+import { NlpService } from '../nlp/nlp.service';
+import { ProductService } from '../product/product.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
 import { Role } from 'src/user/user.types';

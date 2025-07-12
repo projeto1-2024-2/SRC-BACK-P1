@@ -3,9 +3,9 @@ import { UserService } from '../user.service';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
-import { IsPublicRoute } from 'src/auth/decorators/is-public-route.decorator';
+import { IsPublicRoute } from '../../auth/decorators/is-public-route.decorator';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
 
 @Resolver(() => UserEntity)

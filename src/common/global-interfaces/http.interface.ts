@@ -1,4 +1,4 @@
-import { Role } from 'src/shared/prismagraphql/prisma';
+import { Role } from '../../shared/prismagraphql/prisma';
 import { Request, Response } from 'express';
 
 export interface IHttpContext {

@@ -1,6 +1,8 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { StatusEnum } from '../../shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+
 
 @InputType('UpdateProductInput')
 export class UpdateProductInput {

@@ -58,6 +58,8 @@ services:
           memory: 20M
     volumes:
       - esdata:/usr/share/elasticsearch/data
+    networks:
+      - ondeacho
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.0
     container_name: kibana
@@ -68,6 +70,8 @@ services:
       - ${KIBANA_EXTERNAL_PORT}:${KIBANA_INTERNAL_PORT}
     depends_on:
       - elasticsearch
+    networks:
+      - ondeacho
   logstash:
     container_name: logstash
     restart: unless-stopped
@@ -85,13 +89,14 @@ services:
       - logstashvolume:/usr/share/logstash/data
     depends_on:
       - elasticsearch 
+    networks:
+      - ondeacho
 
 networks:
   ondeacho:
     name: ondeacho
     external: true
     
-
 volumes:
   postgres:
   logstashvolume:

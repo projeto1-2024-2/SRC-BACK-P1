@@ -62,7 +62,7 @@ services:
       - ondeacho
   kibana:
     image: docker.elastic.co/kibana/kibana:7.10.0
-    container_name: kibana
+    container_name: kibana_p1
     restart: unless-stopped
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
@@ -73,7 +73,7 @@ services:
     networks:
       - ondeacho
   logstash:
-    container_name: logstash
+    container_name: logstash_p1
     restart: unless-stopped
     build:
       context: ./logstash/

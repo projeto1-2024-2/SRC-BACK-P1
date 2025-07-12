@@ -11,7 +11,7 @@ import { EstablishmentModule } from './establishment/establishment.module';
 import { SearchModule } from './search/search.module';
 import { NlpModule } from './nlp/nlp.module';
 import { APP_PIPE } from '@nestjs/core';
-
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -22,6 +22,9 @@ import { APP_PIPE } from '@nestjs/core';
       useGlobalPrefix: true,
       path: '/graphql',
       csrfPrevention: true,
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     UserModule,
     PrismaModule,

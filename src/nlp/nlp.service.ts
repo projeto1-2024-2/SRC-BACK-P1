@@ -3,6 +3,7 @@ import axios from 'axios';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { CreateConversationInput } from './dto/create-conversation.input';
+import { ChatOutput } from './dto/chat.output';
 
 @Injectable()
 export class NlpService {
@@ -31,7 +32,10 @@ export class NlpService {
       console.log(error);
     }
   }
-  async chatMessage(conversation_id: string, conversation: string) {
+  async chatMessage(
+    conversation_id: string,
+    conversation: string,
+  ): Promise<ChatOutput> {
     try {
       const query = `
         query {
@@ -41,12 +45,15 @@ export class NlpService {
             }
         }
       `;
-      const response = await axios.post(process.env.NLP_URL, { query: query });
+      const response: ChatOutput = await axios.post(process.env.NLP_URL, {
+        query: query,
+      });
 
       const chat = {
-        keywords: response.data.data.keywords.keywords,
-        response: response.data.data.keywords.response,
-      }
+        keywords: response.keywords,
+        conversation: response.conversation,
+      };
+
       return chat;
     } catch (error) {
       console.log(error);

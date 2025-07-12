@@ -4,6 +4,7 @@ import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Decimal } from '@prisma/client/runtime';
 
+
 @InputType('UpdateProductInput')
 export class UpdateProductInput {
   @Field(() => ID)
@@ -36,7 +37,7 @@ export class UpdateProductInput {
   @IsOptional()
   price?: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => [String], { nullable: true })
   @IsOptional()
   keywords?: string[];
 }

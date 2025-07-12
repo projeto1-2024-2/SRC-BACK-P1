@@ -36,7 +36,7 @@ export class UpdateProductInput {
   @IsOptional()
   price?: string;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => [String], { nullable: true })
   @IsOptional()
   keywords?: string[];
 }

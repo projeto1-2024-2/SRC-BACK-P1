@@ -130,14 +130,10 @@ export class ProductService {
     };
   }
 
-  async findById(
-    productId: string,
-    establishmentId: string,
-  ): Promise<ProductEntity | null> {
+  async findById(productId: string): Promise<ProductEntity | null> {
     try {
       const product = await this.prismaService.product.findFirst({
         where: {
-          establishmentid: establishmentId,
           id: productId,
         },
       });
@@ -226,34 +222,38 @@ export class ProductService {
     productId: string,
     files: Promise<FileUpload>,
   ): Promise<string> {
-    await this.establishmentService.checkEstablishmentByid(establishmentId);
     const existingProduct = await this.prismaService.product.findFirst({
       where: {
         id: productId,
-        establishmentid: establishmentId,
       },
     });
     if (!existingProduct) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
-    return await uploadFileStream(establishmentId, productId, files);
+    await this.establishmentService.checkEstablishmentByid(
+      existingProduct.establishmentid,
+    );
+
+    return await uploadFileStream(
+      existingProduct.establishmentid,
+      productId,
+      files,
+    );
   }
 
   async downloadImages(
-    establishmentId: string,
     productId: string,
   ): Promise<{ name: string; image: string }[]> {
-    await this.establishmentService.checkEstablishmentByid(establishmentId);
-    const existingProduct = await this.prismaService.product.findFirst({
+    const product = await this.prismaService.product.findFirst({
       where: {
         id: productId,
-        establishmentid: establishmentId,
       },
     });
-    if (!existingProduct) {
+    if (!product) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
-
+    const establishmentId = product.establishmentid;
+    await this.establishmentService.checkEstablishmentByid(establishmentId);
     return downloadFileStream(establishmentId, productId);
   }
 

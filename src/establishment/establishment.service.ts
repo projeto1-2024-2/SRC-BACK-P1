@@ -54,38 +54,40 @@ export class EstablishmentService {
   ): Promise<EstablishmentEntity> {
     await this.checkEstablishmentByid(data.id);
 
-    return this.prismaService.$transaction(async (prisma) => {
-      const establishmentData = await prisma.establishment.findUnique({
-        where: { id: data.id },
-        select: { addressId: true },
-      });
+    return this.prismaService.$transaction(async () => {
+      const establishmentData =
+        await this.prismaService.establishment.findUnique({
+          where: { id: data.id },
+          select: { addressId: true },
+        });
 
       let addressId = establishmentData?.addressId;
       if (data.newAddress) {
-        const newAddress = await prisma.address.create({
+        const newAddress = await this.prismaService.address.create({
           data: data.newAddress,
         });
         addressId = newAddress.id;
       }
 
-      const updatedEstablishment = await prisma.establishment.update({
-        where: { id: data.id },
-        data: {
-          name: data.name,
-          openingHours: data.openingHours,
-          closingHours: data.closingHours,
-          commercialPhone: data.commercialPhone,
-          taxId: data.taxId,
-          addressId: addressId,
-        },
-        include: {
-          products: true,
-          address: true,
-        },
-      });
+      const updatedEstablishment =
+        await this.prismaService.establishment.update({
+          where: { id: data.id },
+          data: {
+            name: data.name,
+            openingHours: data.openingHours,
+            closingHours: data.closingHours,
+            commercialPhone: data.commercialPhone,
+            taxId: data.taxId,
+            addressId: addressId,
+          },
+          include: {
+            products: true,
+            address: true,
+          },
+        });
 
       if (data.newAddress && establishmentData?.addressId) {
-        await prisma.address.delete({
+        await this.prismaService.address.delete({
           where: { id: establishmentData.addressId },
         });
       }

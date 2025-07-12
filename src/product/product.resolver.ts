@@ -14,11 +14,11 @@ import { UploadImageProductInput } from './dto/upload-image-product.input';
 import { DownloadImage } from '../shared/models/downloadImage.dto';
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts';
 
-@UseGuards(JwtAuthGuard)
 @Resolver(() => ProductEntity)
 export class ProductResolver {
   constructor(private readonly productService: ProductService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Roles('SUPPLIER')
   @Mutation(() => ProductEntity, { name: 'createProduct' })
   async createProduct(
@@ -28,6 +28,7 @@ export class ProductResolver {
     return this.productService.create(establishment.id, data);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Roles('ADMIN')
   @Mutation(() => ProductEntity, { name: 'createProductByAdmin' })
   async createProductByAdmin(
@@ -61,13 +62,11 @@ export class ProductResolver {
 
   @Roles('SUPPLIER', 'ADMIN')
   @Query(() => ProductEntity, { name: 'getProductById' })
-  async findById(
-    @Args('id') productId: string,
-    @CurrentUser() establishment: EstablishmentEntity,
-  ): Promise<ProductEntity> {
-    return this.productService.findById(productId, establishment.id);
+  async findById(@Args('id') productId: string): Promise<ProductEntity> {
+    return this.productService.findById(productId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => ProductEntity, { name: 'updateProduct' })
   async updateProduct(
@@ -77,12 +76,14 @@ export class ProductResolver {
     return this.productService.update(data, establishment.id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Roles('SUPPLIER', 'ADMIN')
   @Mutation(() => String, { name: 'deleteProduct' })
   async deleteProduct(@Args('id') productId: string): Promise<string> {
     return this.productService.delete(productId);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => String, { name: 'saveProductImages' })
   async uploadImagesProduct(
     @Args('imageId') imageId: string,
@@ -101,13 +102,7 @@ export class ProductResolver {
   @Query(() => [DownloadImage], {
     name: 'downloadImagesProduct',
   })
-  async downloadImagesProduct(
-    @CurrentUser() establishment: EstablishmentEntity,
-    @Args('productId') productId: string,
-  ) {
-    return await this.productService.downloadImages(
-      establishment.id,
-      productId,
-    );
+  async downloadImagesProduct(@Args('productId') productId: string) {
+    return await this.productService.downloadImages(productId);
   }
 }

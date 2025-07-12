@@ -1,4 +1,12 @@
-import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ID,
+  ArgsType,
+  Field,
+} from '@nestjs/graphql';
 import { UserService } from '../user.service';
 import { UserEntity } from '../entities/user.entity';
 import { CreateUserInput } from '../dto/create-user.input';
@@ -7,7 +15,15 @@ import { IsPublicRoute } from '../../auth/decorators/is-public-route.decorator';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { Roles } from '../decorators/roles.decorator';
+import { IsNotEmpty, IsUUID } from 'class-validator';
 
+@ArgsType()
+class FindOneUserArgs {
+  @Field(() => ID)
+  @IsNotEmpty({ message: 'O ID não pode ser vazio' })
+  @IsUUID('4', { message: 'ID deve ser um UUID válido' })
+  id: string;
+}
 @Resolver(() => UserEntity)
 @UseGuards(JwtAuthGuard)
 export class UserResolver {
@@ -33,7 +49,7 @@ export class UserResolver {
 
   @Roles('ADMIN')
   @Query(() => UserEntity, { name: 'findOneuser', nullable: true })
-  async findOne(@Args('id', { type: () => ID }) id: string) {
+  async findOne(@Args() { id }: FindOneUserArgs) {
     return this.userService.findOne(id);
   }
 
@@ -45,7 +61,7 @@ export class UserResolver {
 
   @Roles('CONSUMER', 'ADMIN')
   @Mutation(() => UserEntity, { name: 'deleteUser', nullable: true })
-  async remove(@Args('id', { type: () => ID }) id: string) {
+  async remove(@Args() { id }: FindOneUserArgs) {
     return this.userService.remove(id);
   }
 }

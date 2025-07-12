@@ -11,6 +11,8 @@ export class CreateUserInput extends OmitType(UserEntity, [
   'createdAt',
   'updatedAt',
   'addressId',
+  'pseudonym',
+  'image',
 ]) {
   @Field(() => String, {
     nullable: false,
@@ -19,10 +21,10 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @IsString()
   name: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Optional()
   @IsString()
-  pseudonym: string;
+  pseudonym?: string;
 
   @Field(() => String, {
     nullable: false,
@@ -42,8 +44,14 @@ export class CreateUserInput extends OmitType(UserEntity, [
   @Field(() => String, {
     nullable: false,
   })
-  @IsString()
+  @IsNotEmpty()
+  @IsPhoneNumber()
   phoneNumber: string;
+
+  @Field(() => String, { nullable: true })
+  @Optional()
+  @IsString()
+  image?: Buffer;
 
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()

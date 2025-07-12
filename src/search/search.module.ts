@@ -4,6 +4,7 @@ import { SearchService } from './search.service';
 import { NlpModule } from '../nlp/nlp.module';
 import { ProductModule } from '../product/product.module';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
+
 @Module({
   providers: [SearchResolver, SearchService],
   imports: [

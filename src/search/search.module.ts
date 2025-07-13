@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
 import { SearchResolver } from './search.resolver';
 import { SearchService } from './search.service';
-import { NlpModule } from 'src/nlp/nlp.module';
+import { NlpModule } from '../nlp/nlp.module';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
+
 @Module({
   providers: [SearchResolver, SearchService],
   imports: [
     NlpModule,
     ElasticsearchModule.registerAsync({
       useFactory: () => ({
-        node: 'http://172.20.0.1:9200',
+        node: process.env.ELASTIC_NODE_URL,
         auth: {
-          apiKey:
-            'bjAza0JaVUJPWXZKaUIzSEI0V3g6Q0dLaFh4QVk4RVN4RHNyLUpDWmZfdw==',
+          apiKey: process.env.ELASTIC_API_KEY,
         },
       }),
     }),

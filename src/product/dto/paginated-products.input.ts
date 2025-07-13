@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { product } from 'src/shared/prismagraphql/product';
+import { product } from '../../shared/prismagraphql/product';
 
 @ObjectType()
 export class PaginatedProducts {

@@ -1,5 +1,5 @@
-import { establishment } from 'src/shared/prismagraphql/establishment';
-import { user } from 'src/shared/prismagraphql/user';
+import { establishment } from '../../shared/prismagraphql/establishment';
+import { user } from '../../shared/prismagraphql/user';
 
 export class AuthRequest extends Request {
   user: user | establishment;

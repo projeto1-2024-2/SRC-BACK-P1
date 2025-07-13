@@ -1,5 +1,5 @@
 import { Field, ObjectType } from '@nestjs/graphql';
-import { establishment } from 'src/shared/prismagraphql/establishment';
+import { establishment } from '../../shared/prismagraphql/establishment';
 
 @ObjectType()
 export class PaginatedEstablishment {

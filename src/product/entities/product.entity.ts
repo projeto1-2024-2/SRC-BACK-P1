@@ -1,6 +1,8 @@
 import { Field, ObjectType, ID, Int } from '@nestjs/graphql';
-import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma';
+import { product as ProductPrisma } from '../../shared/prismagraphql/product';
+import { Decimal } from '@prisma/client/runtime';
+import { StatusEnum } from '../../shared/prismagraphql/prisma';
+import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 
 @ObjectType()
 export class ProductEntity implements ProductPrisma {

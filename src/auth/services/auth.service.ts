@@ -1,13 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
-import { user } from 'src/shared/prismagraphql/user';
-import { UserService } from 'src/user/user.service';
+import { user } from '../../shared/prismagraphql/user';
+import { UserService } from '../../user/user.service';
 import { AuthInput } from '../dto/auth-input';
 import { PayloadJwt } from '../dto/payload-jwt';
 import { AuthResponse } from '../entities/auth.entity';
-import { EstablishmentService } from 'src/establishment/establishment.service';
-import { establishment } from 'src/shared/prismagraphql/establishment';
+import { EstablishmentService } from '../../establishment/establishment.service';
+import { establishment } from '../../shared/prismagraphql/establishment';
 
 @Injectable()
 export class AuthService {

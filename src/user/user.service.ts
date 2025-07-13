@@ -4,6 +4,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from './entities/user.entity';
+import { use } from 'passport';
 
 @Injectable()
 export class UserService {
@@ -35,17 +36,23 @@ export class UserService {
       },
     });
 
+    user.password = null;
     return user;
   }
 
   async findAll() {
-    return this.prismaService.user.findMany();
+    const users = await this.prismaService.user.findMany();
+    return users.map((user) => {
+      user.password = null;
+      return user;
+    });
   }
 
   async findOne(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
+    user.password = null;
     return user;
   }
 
@@ -70,6 +77,7 @@ export class UserService {
       data: data,
     });
 
+    user.password = null;
     return user;
   }
 

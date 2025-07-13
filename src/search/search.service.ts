@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ProductEntity } from '../product/entities/product.entity';
-import { NlpService } from 'src/nlp/nlp.service';
+import { NlpService } from '../nlp/nlp.service';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { CreateConversationInput } from 'src/nlp/dto/create-conversation.input';
 import { Role } from 'src/user/user.types';
@@ -8,6 +8,25 @@ import { randomUUID } from 'crypto';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { SearchProductsResponse } from './dto/SearchProductsResponse';
 import { ChatOutput } from 'src/nlp/dto/chat.output';
+
+interface HitResponse {
+  _index: string;
+  _type: string;
+  _id: string;
+  _score: number;
+  _source: ProductEntity;
+}
+
+interface GraphQLResponse {
+  body: {
+    hits: {
+      total?: string;
+      max_score?: number;
+      hits: HitResponse[];
+    };
+  };
+}
+
 @Injectable()
 export class SearchService {
   constructor(
@@ -31,8 +50,8 @@ export class SearchService {
 
         conversation_id =
           await this.nlpService.registerConversation(conversationInput);
-        await this.nlpService.createSession(conversation_id);
       }
+      await this.nlpService.createSession(conversation_id);
 
       const conversation: ChatOutput = await this.nlpService.chatMessage(
         conversation_id,
@@ -43,9 +62,14 @@ export class SearchService {
         conversation.keywords,
       );
 
+      if (products.length == 0) {
+        conversation.response =
+          'Nenhum produto foi encontrado com essa especificação. Tente melhorar a sua pergunta';
+      }
+
       const result = {
         products: products,
-        chatResponse: conversation.conversation,
+        chatResponse: conversation.response,
       };
 
       return result;
@@ -56,7 +80,7 @@ export class SearchService {
 
   async searchProducts(searchKeywords: string[]): Promise<ProductEntity[]> {
     try {
-      const response = await this.elasticsearchService.search({
+      const response: GraphQLResponse = await this.elasticsearchService.search({
         index: 'product',
         body: {
           query: {
@@ -67,7 +91,7 @@ export class SearchService {
                 },
                 {
                   multi_match: {
-                    query: searchKeywords.join(' '),
+                    query: searchKeywords.join(''),
                     fields: ['title', 'description'],
                     type: 'best_fields',
                   },
@@ -78,14 +102,11 @@ export class SearchService {
           },
         },
       });
-
-      const hits = response.body;
-
-      console.log(hits);
-
-      const products: ProductEntity[] = hits.map((hit: any) => ({
-        id: hit._source.id,
-      }));
+      const hits: HitResponse[] = response.body.hits.hits;
+      const products: ProductEntity[] = [];
+      if (hits) {
+        hits.map((hit: HitResponse) => products.push(hit._source));
+      }
 
       return products;
     } catch (error) {

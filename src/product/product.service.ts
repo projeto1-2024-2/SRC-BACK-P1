@@ -5,19 +5,19 @@ import {
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductInput } from './dto/create-product.input';
 import { ProductEntity } from './entities/product.entity';
 import { UpdateProductInput } from './dto/update-product.input';
-import { StatusEnum } from 'src/shared/prismagraphql/prisma/status.enum';
-import { PaginationInput } from 'src/pagination/pagination.input';
+import { StatusEnum } from '../shared/prismagraphql/prisma/status.enum';
+import { PaginationInput } from '../pagination/pagination.input';
 import { PaginatedProducts } from './dto/paginated-products.input';
-import { EstablishmentService } from 'src/establishment/establishment.service';
-import { SearchService } from 'src/search/search.service';
+import { EstablishmentService } from '../establishment/establishment.service';
+import { SearchService } from '../search/search.service';
 import { FileUpload } from 'graphql-upload-ts';
-import { uploadFileStream } from 'src/utils/uploadFileStream';
-import { downloadFileStream } from 'src/utils/downloadFileStream';
-import { product as ProductPrisma } from 'src/shared/prismagraphql/product';
+import { uploadFileStream } from '../utils/uploadFileStream';
+import { downloadFileStream } from '../utils/downloadFileStream';
+import { product as ProductPrisma } from '../shared/prismagraphql/product';
 
 @Injectable()
 export class ProductService {

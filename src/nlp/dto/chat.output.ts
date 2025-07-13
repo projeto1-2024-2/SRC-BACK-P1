@@ -3,7 +3,7 @@ import { Field, InputType } from '@nestjs/graphql';
 @InputType('ChatOutput')
 export class ChatOutput {
   @Field(() => String)
-  conversation: string;
+  response: string;
 
   @Field(() => [String])
   keywords: string[];

@@ -6,9 +6,9 @@ import {
   registerEnumType,
 } from '@nestjs/graphql';
 import { GraphQLJSONObject } from 'graphql-type-json';
-import { establishment as EstablishmentPrisma } from 'src/shared/prismagraphql/establishment';
-import { EstablishmentCount } from 'src/shared/prismagraphql/prisma';
-import { product } from 'src/shared/prismagraphql/product';
+import { establishment as EstablishmentPrisma } from '../../shared/prismagraphql/establishment';
+import { EstablishmentCount } from '../../shared/prismagraphql/prisma';
+import { product } from '../../shared/prismagraphql/product';
 import { Role } from '@prisma/client';
 
 registerEnumType(Role, {

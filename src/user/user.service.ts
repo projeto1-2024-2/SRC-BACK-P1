@@ -42,17 +42,15 @@ export class UserService {
 
   async findAll() {
     const users = await this.prismaService.user.findMany();
-    return users.map((user) => {
-      user.password = null;
-      return user;
-    });
+    users.map((user) => delete user.password);
+    return users;
   }
 
   async findOne(id: string) {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
-    user.password = null;
+    delete user.password;
     return user;
   }
 
@@ -60,6 +58,7 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { email: email },
     });
+    delete user.password;
     return user;
   }
 

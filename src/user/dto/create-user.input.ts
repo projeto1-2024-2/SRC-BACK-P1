@@ -45,13 +45,8 @@ export class CreateUserInput extends OmitType(UserEntity, [
     nullable: false,
   })
   @IsNotEmpty()
-  @IsPhoneNumber()
+  @IsPhoneNumber('BR')
   phoneNumber: string;
-
-  @Field(() => String, { nullable: true })
-  @Optional()
-  @IsString()
-  image?: Buffer;
 
   @Field(() => CreateAddressInput, { nullable: false })
   @IsNotEmpty()

@@ -1,0 +1,63 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.0
+    container_name: elastic_p1
+    restart: unless-stopped
+    ports:
+      - ${ELASTIC_EXTERNAL_PORT}:${ELASTIC_INTERNAL_PORT}
+      - ${ELASTIC_EXTERNAL_PORT_2}:${ELASTIC_INTERNAL_PORT_2}
+    environment:
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - discovery.type=single-node
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+        reservations:
+          cpus: '0.5'
+          memory: 1g
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - ondeacho
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.10.0
+    container_name: kibana_p1
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - ${KIBANA_EXTERNAL_PORT}:${KIBANA_INTERNAL_PORT}
+    depends_on:
+      - elasticsearch
+    networks:
+      - ondeacho
+  logstash:
+    container_name: logstash_p1
+    restart: unless-stopped
+    build:
+      context: ./logstash/
+      dockerfile: Dockerfile
+    environment:
+      - LOGSTASH_JAVA_OPTS=-Xmx1g -Xms1g
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - CONFIG_SUPPORT_ESCAPE=true
+    ports:
+      - ${LOGSTASH_EXTERNAL_PORT}:${LOGSTASH_INTERNAL_PORT}
+    volumes:
+      - ./src/config/logstash.conf:/usr/share/logstash/config/logstash.conf
+      - logstashvolume:/usr/share/logstash/data
+    depends_on:
+      - elasticsearch 
+    networks:
+      - ondeacho
+
+networks:
+  ondeacho:
+    name: ondeacho
+    external: true
+    
+volumes:
+  logstashvolume:
+  esdata:
+    driver: local

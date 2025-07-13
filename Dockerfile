@@ -10,17 +10,16 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/node/app_dev
-
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-
-RUN chown -R node:node /home/node/app_dev
+RUN mkdir -p /home/node/app_dev && chown -R node:node /home/node
 
 USER node
 
+COPY --chown=node:node package*.json ./
+
+RUN npm install
+
+COPY --chown=node:node . .
+
 RUN npx prisma generate
 
-# ENTRYPOINT
 CMD ["npm", "run", "start:dev"]

@@ -50,7 +50,9 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { id },
     });
-    delete user.password;
+    if (user) {
+      delete user.password;
+    }
     return user;
   }
 
@@ -58,7 +60,9 @@ export class UserService {
     const user = await this.prismaService.user.findUnique({
       where: { email: email },
     });
-    delete user.password;
+    if (user) {
+      delete user.password;
+    }
     return user;
   }
 
@@ -76,7 +80,9 @@ export class UserService {
       data: data,
     });
 
-    user.password = null;
+    if (user) {
+      delete user.password;
+    }
     return user;
   }
 

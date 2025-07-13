@@ -52,10 +52,10 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1GB
+          memory: 2g
         reservations:
-          cpus: '0.0001'
-          memory: 20M
+          cpus: '0.5'
+          memory: 1g
     volumes:
       - esdata:/usr/share/elasticsearch/data
     networks:
